@@ -102,10 +102,6 @@ export default function MuralMap({
     <div className={`relative ${className}`}>
       {/* Map Container */}
       <div className={`${height} rounded-2xl overflow-hidden shadow-lg`}>
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"
-        />
         <MapContainer
           center={getCenter()}
           zoom={4}
