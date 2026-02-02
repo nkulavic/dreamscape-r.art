@@ -7,6 +7,7 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import ParallaxHero from "../components/ui/ParallaxHero";
 import { murals, Mural } from "../data/murals";
+import MuralMap from "../components/ui/MuralMap";
 
 type CategoryFilter = "all" | Mural["category"];
 
@@ -48,7 +49,7 @@ export default function PortfolioPage() {
       <main>
         {/* Hero Section */}
         <ParallaxHero
-          imageUrl="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1920&q=80"
+          imageUrl="/images/murals/la-rumba-denver.jpg"
           title="PORTFOLIO"
           subtitle="Selected Works"
           description="Transforming spaces across the United States and internationally with vibrant, community-driven murals."
@@ -71,7 +72,7 @@ export default function PortfolioPage() {
                   onClick={() => setActiveFilter(category.value)}
                   className={`px-6 py-3 rounded-full font-heading text-sm tracking-wide uppercase transition-all duration-300 ${
                     activeFilter === category.value
-                      ? "bg-coral text-white"
+                      ? "bg-accent text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
                 >
@@ -114,7 +115,7 @@ export default function PortfolioPage() {
 
                           {/* Hover Content */}
                           <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                            <span className="text-coral-light text-sm font-heading uppercase tracking-wide">
+                            <span className="text-accent-light text-sm font-heading uppercase tracking-wide">
                               {mural.category}
                             </span>
                             {mural.dimensions && (
@@ -131,7 +132,7 @@ export default function PortfolioPage() {
                         </div>
 
                         <div className="p-6">
-                          <h3 className="font-heading font-bold text-xl text-gray-800 mb-2 group-hover:text-coral transition-colors">
+                          <h3 className="font-heading font-bold text-xl text-gray-800 mb-2 group-hover:text-accent transition-colors">
                             {mural.title}
                           </h3>
                           <p className="text-gray-600 text-sm">
@@ -164,6 +165,36 @@ export default function PortfolioPage() {
           </div>
         </section>
 
+        {/* Map Section */}
+        <section className="py-24 bg-cream">
+          <div className="max-w-7xl mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <span className="text-accent font-heading text-sm uppercase tracking-widest">
+                Locations
+              </span>
+              <h2 className="font-display text-h2 text-gray-800 mt-2">
+                MURAL MAP
+              </h2>
+              <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
+                Explore murals across the United States and internationally. Click on a marker to see project details.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <MuralMap height="h-[600px]" selectedCategory={activeFilter} />
+            </motion.div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="py-24 bg-ocean-deep text-white">
           <div className="max-w-4xl mx-auto px-6 text-center">
@@ -172,7 +203,7 @@ export default function PortfolioPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="font-display text-h1 mb-6">
+              <h2 className="font-display text-h1 mb-6 text-white">
                 READY TO START YOUR PROJECT?
               </h2>
               <p className="text-xl text-ocean-pale mb-10 max-w-2xl mx-auto">

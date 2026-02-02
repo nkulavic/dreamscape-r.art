@@ -3,10 +3,11 @@
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { HiArrowLeft, HiLocationMarker, HiCalendar, HiTag } from "react-icons/hi";
+import { HiArrowLeft, HiLocationMarker, HiCalendar, HiTag, HiPlay } from "react-icons/hi";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import ParallaxHero from "../../components/ui/ParallaxHero";
+import VideoPlayer from "../../components/ui/VideoPlayer";
 import { getMuralBySlug, murals } from "../../data/murals";
 
 const fadeInUp = {
@@ -72,7 +73,7 @@ export default function MuralDetailPage() {
       <main>
         {/* Hero */}
         <ParallaxHero
-          imageUrl={mural.images.hero || "https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1920&q=80"}
+          imageUrl={mural.images.hero || "/images/murals/protect-your-peace.jpg"}
           title={mural.title.toUpperCase()}
           subtitle={locationString}
           height="80vh"
@@ -84,7 +85,7 @@ export default function MuralDetailPage() {
           <div className="max-w-7xl mx-auto px-6">
             <Link
               href="/portfolio"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-coral transition-colors"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-accent transition-colors"
             >
               <HiArrowLeft className="w-5 h-5" />
               <span className="font-heading">Back to Portfolio</span>
@@ -104,7 +105,7 @@ export default function MuralDetailPage() {
                 className="lg:col-span-2"
               >
                 <motion.div variants={fadeInUp}>
-                  <p className="font-heading text-coral text-sm tracking-widest uppercase mb-4">
+                  <p className="font-heading text-accent text-sm tracking-widest uppercase mb-4">
                     {mural.category} Project • {mural.year}
                   </p>
                   <h1 className="font-display text-h1 text-gray-800 mb-6">
@@ -126,7 +127,7 @@ export default function MuralDetailPage() {
                   <p className="text-gray-700 italic leading-relaxed">
                     &ldquo;{mural.artistNote}&rdquo;
                   </p>
-                  <p className="text-coral font-heading mt-4">— Rachel Dinda</p>
+                  <p className="text-accent font-heading mt-4">— Rachel Dinda</p>
                 </motion.div>
 
                 {/* Inspiration */}
@@ -164,6 +165,24 @@ export default function MuralDetailPage() {
                     </p>
                   </motion.div>
                 )}
+
+                {/* Video */}
+                {mural.video && (
+                  <motion.div variants={fadeInUp} className="mt-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <HiPlay className="w-5 h-5 text-accent" />
+                      <h2 className="font-heading font-bold text-xl text-gray-800">
+                        Watch the Process
+                      </h2>
+                    </div>
+                    <VideoPlayer
+                      src={mural.video}
+                      poster={mural.images.hero}
+                      title={mural.title}
+                      className="aspect-video"
+                    />
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Sidebar */}
@@ -180,7 +199,7 @@ export default function MuralDetailPage() {
                   <div className="space-y-4">
                     {/* Location */}
                     <div className="flex items-start gap-3">
-                      <HiLocationMarker className="w-5 h-5 text-coral mt-0.5" />
+                      <HiLocationMarker className="w-5 h-5 text-accent mt-0.5" />
                       <div>
                         <p className="text-sm text-gray-500">Location</p>
                         <p className="font-heading text-gray-800">
@@ -191,7 +210,7 @@ export default function MuralDetailPage() {
 
                     {/* Year */}
                     <div className="flex items-start gap-3">
-                      <HiCalendar className="w-5 h-5 text-coral mt-0.5" />
+                      <HiCalendar className="w-5 h-5 text-accent mt-0.5" />
                       <div>
                         <p className="text-sm text-gray-500">Year</p>
                         <p className="font-heading text-gray-800">{mural.year}</p>
@@ -201,7 +220,7 @@ export default function MuralDetailPage() {
                     {/* Dimensions */}
                     {mural.dimensions && (
                       <div className="flex items-start gap-3">
-                        <HiTag className="w-5 h-5 text-coral mt-0.5" />
+                        <HiTag className="w-5 h-5 text-accent mt-0.5" />
                         <div>
                           <p className="text-sm text-gray-500">Size</p>
                           <p className="font-heading text-gray-800">
@@ -214,7 +233,7 @@ export default function MuralDetailPage() {
                     {/* Client */}
                     {mural.client && (
                       <div className="flex items-start gap-3">
-                        <HiTag className="w-5 h-5 text-coral mt-0.5" />
+                        <HiTag className="w-5 h-5 text-accent mt-0.5" />
                         <div>
                           <p className="text-sm text-gray-500">Client</p>
                           <p className="font-heading text-gray-800">
@@ -268,7 +287,7 @@ export default function MuralDetailPage() {
                 viewport={{ once: true }}
                 className="text-center mb-12"
               >
-                <p className="font-heading text-coral text-sm tracking-widest uppercase mb-4">
+                <p className="font-heading text-accent text-sm tracking-widest uppercase mb-4">
                   More {mural.category} Projects
                 </p>
                 <h2 className="font-display text-h2 text-gray-800">
@@ -298,7 +317,7 @@ export default function MuralDetailPage() {
                           />
                         </div>
                         <div className="p-6">
-                          <h3 className="font-heading font-bold text-lg text-gray-800 group-hover:text-coral transition-colors">
+                          <h3 className="font-heading font-bold text-lg text-gray-800 group-hover:text-accent transition-colors">
                             {related.title}
                           </h3>
                           <p className="text-gray-600 text-sm">

@@ -77,7 +77,7 @@ export default function PublicationsPage() {
       <main>
         {/* Hero */}
         <ParallaxHero
-          imageUrl="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1920&q=80"
+          imageUrl="/images/murals/colfax-canvas.jpg"
           title="PRESS & PUBLICATIONS"
           subtitle="Media Coverage"
           description="Featured appearances, interviews, and recognition from media outlets across the country."
@@ -95,9 +95,9 @@ export default function PublicationsPage() {
               variants={staggerContainer}
             >
               <motion.div variants={fadeInUp} className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-coral/10 rounded-full mb-4">
-                  <HiVideoCamera className="w-5 h-5 text-coral" />
-                  <span className="font-heading text-coral text-sm uppercase tracking-wide">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full mb-4">
+                  <HiVideoCamera className="w-5 h-5 text-accent" />
+                  <span className="font-heading text-accent text-sm uppercase tracking-wide">
                     Television
                   </span>
                 </div>
@@ -117,11 +117,11 @@ export default function PublicationsPage() {
                     className="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-coral/10 flex items-center justify-center flex-shrink-0">
-                        <HiVideoCamera className="w-6 h-6 text-coral" />
+                      <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                        <HiVideoCamera className="w-6 h-6 text-accent" />
                       </div>
                       <div>
-                        <span className="text-coral font-heading text-sm">
+                        <span className="text-accent font-heading text-sm">
                           {pub.year}
                         </span>
                         <h3 className="font-heading font-bold text-xl text-gray-800 mt-1">
@@ -261,7 +261,7 @@ export default function PublicationsPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="font-display text-h2 mb-6">PRESS INQUIRIES</h2>
+              <h2 className="font-display text-h2 mb-6 text-white">PRESS INQUIRIES</h2>
               <p className="text-xl text-ocean-pale mb-8 max-w-2xl mx-auto">
                 For media inquiries, interviews, or feature requests, please
                 reach out directly.

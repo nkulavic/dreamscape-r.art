@@ -119,7 +119,7 @@ export default function ContactPage() {
       <main>
         {/* Hero */}
         <ParallaxHero
-          imageUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80"
+          imageUrl="/images/murals/zen-shangri-la.jpg"
           title="GET IN TOUCH"
           subtitle="Let's Create Together"
           description="Ready to transform your space? I'd love to hear about your project."
@@ -140,7 +140,7 @@ export default function ContactPage() {
                 className="lg:col-span-1"
               >
                 <motion.div variants={fadeInUp}>
-                  <p className="font-heading text-coral text-sm tracking-widest uppercase mb-4">
+                  <p className="font-heading text-accent text-sm tracking-widest uppercase mb-4">
                     Contact Info
                   </p>
                   <h2 className="font-display text-h3 text-gray-800 mb-8">
@@ -150,14 +150,14 @@ export default function ContactPage() {
 
                 <motion.div variants={fadeInUp} className="space-y-6 mb-10">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-coral/10 flex items-center justify-center flex-shrink-0">
-                      <HiMail className="w-5 h-5 text-coral" />
+                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      <HiMail className="w-5 h-5 text-accent" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Email</p>
                       <a
                         href="mailto:R.dreamscapes@gmail.com"
-                        className="font-heading text-gray-800 hover:text-coral transition-colors"
+                        className="font-heading text-gray-800 hover:text-accent transition-colors"
                       >
                         R.dreamscapes@gmail.com
                       </a>
@@ -165,8 +165,8 @@ export default function ContactPage() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-coral/10 flex items-center justify-center flex-shrink-0">
-                      <HiLocationMarker className="w-5 h-5 text-coral" />
+                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      <HiLocationMarker className="w-5 h-5 text-accent" />
                     </div>
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Based In</p>
@@ -189,7 +189,7 @@ export default function ContactPage() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-coral hover:text-white transition-colors"
+                        className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-accent hover:text-white transition-colors"
                         aria-label={social.label}
                       >
                         <social.icon className="w-5 h-5" />
@@ -258,7 +258,7 @@ export default function ContactPage() {
                           required
                           value={formState.name}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors"
                           placeholder="Jane Smith"
                         />
                       </div>
@@ -277,7 +277,7 @@ export default function ContactPage() {
                           name="organization"
                           value={formState.organization}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors"
                           placeholder="Company or Organization Name"
                         />
                       </div>
@@ -297,7 +297,7 @@ export default function ContactPage() {
                           required
                           value={formState.email}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors"
                           placeholder="jane@example.com"
                         />
                       </div>
@@ -316,7 +316,7 @@ export default function ContactPage() {
                           name="phone"
                           value={formState.phone}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors"
                           placeholder="(555) 123-4567"
                         />
                       </div>
@@ -335,7 +335,7 @@ export default function ContactPage() {
                           required
                           value={formState.projectType}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors bg-white"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors bg-white"
                         >
                           <option value="">Select a type</option>
                           {projectTypes.map((type) => (
@@ -360,7 +360,7 @@ export default function ContactPage() {
                           name="location"
                           value={formState.location}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors"
                           placeholder="City, State"
                         />
                       </div>
@@ -379,7 +379,7 @@ export default function ContactPage() {
                           name="wallSize"
                           value={formState.wallSize}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors"
                           placeholder="e.g., 20ft x 10ft"
                         />
                       </div>
@@ -398,7 +398,7 @@ export default function ContactPage() {
                           name="timeline"
                           value={formState.timeline}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors"
+                          className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors"
                           placeholder="e.g., Summer 2025"
                         />
                       </div>
@@ -417,7 +417,7 @@ export default function ContactPage() {
                         name="budget"
                         value={formState.budget}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors bg-white"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors bg-white"
                       >
                         <option value="">Select a range</option>
                         {budgetRanges.map((range) => (
@@ -443,7 +443,7 @@ export default function ContactPage() {
                         rows={5}
                         value={formState.message}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-coral focus:ring-2 focus:ring-coral/20 outline-none transition-colors resize-none"
+                        className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none transition-colors resize-none"
                         placeholder="Share your vision, ideas, and any details that would help me understand your project..."
                       />
                     </div>
@@ -475,7 +475,7 @@ export default function ContactPage() {
             >
               <motion.p
                 variants={fadeInUp}
-                className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
               >
                 Common Questions
               </motion.p>

@@ -43,7 +43,7 @@ export default function CVPage() {
       <main>
         {/* Hero */}
         <ParallaxHero
-          imageUrl="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1920&q=80"
+          imageUrl="/images/murals/molson-coors-trailer.jpg"
           title="CURRICULUM VITAE"
           subtitle="Experience & Recognition"
           height="70vh"
@@ -69,7 +69,7 @@ export default function CVPage() {
                 <p className="text-gray-600">
                   <a
                     href="mailto:R.dreamscapes@gmail.com"
-                    className="text-coral hover:underline"
+                    className="text-accent hover:underline"
                   >
                     R.dreamscapes@gmail.com
                   </a>
@@ -118,7 +118,7 @@ export default function CVPage() {
                     variants={fadeInUp}
                     className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8"
                   >
-                    <span className="font-heading text-coral font-bold w-16 flex-shrink-0">
+                    <span className="font-heading text-accent font-bold w-16 flex-shrink-0">
                       {exhibition.year}
                     </span>
                     <div className="flex-1">
@@ -161,7 +161,7 @@ export default function CVPage() {
                     variants={fadeInUp}
                     className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8"
                   >
-                    <span className="font-heading text-coral font-bold w-16 flex-shrink-0">
+                    <span className="font-heading text-accent font-bold w-16 flex-shrink-0">
                       {festival.year}
                     </span>
                     <div className="flex-1">
@@ -204,7 +204,7 @@ export default function CVPage() {
                     variants={fadeInUp}
                     className="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8"
                   >
-                    <span className="font-heading text-coral font-bold w-16 flex-shrink-0">
+                    <span className="font-heading text-accent font-bold w-16 flex-shrink-0">
                       {pub.year}
                     </span>
                     <div className="flex-1">
@@ -239,14 +239,14 @@ export default function CVPage() {
             >
               <motion.h2
                 variants={fadeInUp}
-                className="font-display text-h3 mb-8 pb-4 border-b border-white/20"
+                className="font-display text-h3 mb-8 pb-4 border-b border-white/20 text-white"
               >
                 SELECTED CLIENTS
               </motion.h2>
 
               {/* Corporate */}
               <motion.div variants={fadeInUp} className="mb-8">
-                <h3 className="font-heading font-bold text-coral-light mb-4">
+                <h3 className="font-heading font-bold text-accent-light mb-4">
                   Corporate & Commercial
                 </h3>
                 <div className="flex flex-wrap gap-3">
@@ -263,7 +263,7 @@ export default function CVPage() {
 
               {/* Community */}
               <motion.div variants={fadeInUp} className="mb-8">
-                <h3 className="font-heading font-bold text-coral-light mb-4">
+                <h3 className="font-heading font-bold text-accent-light mb-4">
                   Community & Nonprofit
                 </h3>
                 <div className="flex flex-wrap gap-3">
@@ -280,7 +280,7 @@ export default function CVPage() {
 
               {/* Education */}
               <motion.div variants={fadeInUp}>
-                <h3 className="font-heading font-bold text-coral-light mb-4">
+                <h3 className="font-heading font-bold text-accent-light mb-4">
                   Educational Institutions
                 </h3>
                 <div className="flex flex-wrap gap-3">

@@ -83,7 +83,7 @@ export default function ParallaxHero({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="font-heading text-coral-light text-lg md:text-xl tracking-widest uppercase mb-4"
+            className="font-heading text-accent-light text-lg md:text-xl tracking-widest uppercase mb-4"
           >
             {subtitle}
           </motion.p>
@@ -93,7 +93,11 @@ export default function ParallaxHero({
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="font-display text-display text-white mb-6 drop-shadow-lg"
+          className="font-display text-display mb-6"
+          style={{
+            color: "#ffffff",
+            textShadow: "0 4px 30px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.9)"
+          }}
         >
           {title}
         </motion.h1>

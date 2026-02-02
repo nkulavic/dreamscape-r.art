@@ -6,12 +6,15 @@ import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import ParallaxHero from "./components/ui/ParallaxHero";
 import ParallaxSection from "./components/ui/ParallaxSection";
+import VideoPlayer from "./components/ui/VideoPlayer";
 import { getFeaturedMurals } from "./data/murals";
 import { getFeaturedClients } from "./data/clients";
+import { getFeaturedVideos } from "./data/videos";
 
 // Get real data from data layer
 const featuredMurals = getFeaturedMurals().slice(0, 3);
 const featuredClients = getFeaturedClients();
+const featuredVideos = getFeaturedVideos().slice(0, 3);
 
 // Animation variants
 const fadeInUp = {
@@ -37,7 +40,7 @@ export default function Home() {
       <main>
         {/* Hero Section */}
         <ParallaxHero
-          imageUrl="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=1920&q=80"
+          imageUrl="/images/murals/protect-your-peace.jpg"
           title="DREAMSCAPER"
           subtitle="Rachel Dinda • Professional Muralist"
           description="Transforming spaces with vibrant, large-scale murals. Guided by community, inspired by culture."
@@ -59,7 +62,7 @@ export default function Home() {
             >
               <motion.p
                 variants={fadeInUp}
-                className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
               >
                 Selected Work
               </motion.p>
@@ -96,7 +99,7 @@ export default function Home() {
                           }}
                         />
                         <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                          <span className="text-coral-light text-sm font-heading uppercase tracking-wide">
+                          <span className="text-accent-light text-sm font-heading uppercase tracking-wide">
                             {mural.category}
                           </span>
                         </div>
@@ -132,7 +135,7 @@ export default function Home() {
 
         {/* Parallax Divider */}
         <ParallaxSection
-          imageUrl="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1920&q=80"
+          imageUrl="/images/murals/molson-coors-brewery.jpg"
           height="h-80 md:h-96"
           overlayColor="ocean"
           overlayOpacity={0.5}
@@ -167,7 +170,7 @@ export default function Home() {
                     className="w-full h-full bg-cover bg-center"
                     style={{
                       backgroundImage:
-                        "url(https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80)",
+                        "url(/images/murals/vw-bus-artist.jpg)",
                       backgroundColor: "#e5e7eb",
                     }}
                   />
@@ -182,7 +185,7 @@ export default function Home() {
               >
                 <motion.p
                   variants={fadeInUp}
-                  className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                  className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
                 >
                   About the Artist
                 </motion.p>
@@ -221,6 +224,65 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Video Showcase Section */}
+        <section className="py-24 bg-gray-900">
+          <div className="max-w-7xl mx-auto px-6">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={staggerContainer}
+              className="text-center mb-16"
+            >
+              <motion.p
+                variants={fadeInUp}
+                className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
+              >
+                Behind the Scenes
+              </motion.p>
+              <motion.h2
+                variants={fadeInUp}
+                className="font-display text-h1 text-white mb-4"
+              >
+                WATCH THE PROCESS
+              </motion.h2>
+              <motion.p
+                variants={fadeInUp}
+                className="text-gray-400 text-lg max-w-2xl mx-auto"
+              >
+                From blank walls to stunning murals—see how the magic happens.
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={staggerContainer}
+              className="grid grid-cols-1 md:grid-cols-3 gap-6"
+            >
+              {featuredVideos.map((video) => (
+                <motion.div key={video.id} variants={fadeInUp}>
+                  <VideoPlayer
+                    src={video.src}
+                    poster={video.poster}
+                    title={video.title}
+                    className="aspect-video"
+                  />
+                  <div className="mt-4">
+                    <span className="text-accent text-xs font-heading uppercase tracking-wide">
+                      {video.category} • {video.duration}
+                    </span>
+                    <p className="text-gray-400 text-sm mt-2 line-clamp-2">
+                      {video.description}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
         {/* Clients Section */}
         <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-6">
@@ -244,15 +306,37 @@ export default function Home() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={staggerContainer}
-              className="flex flex-wrap justify-center items-center gap-8 md:gap-12"
+              className="flex flex-wrap justify-center items-center gap-8 md:gap-16"
             >
               {featuredClients.map((client) => (
                 <motion.div
                   key={client.id}
                   variants={fadeInUp}
-                  className="text-gray-400 font-heading font-semibold text-lg md:text-xl hover:text-ocean transition-colors"
+                  className="flex items-center justify-center group"
+                  title={client.name}
                 >
-                  {client.name}
+                  {client.logo ? (
+                    <div className="relative h-12 md:h-16 w-auto grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                      <img
+                        src={client.logo}
+                        alt={client.name}
+                        className="h-full w-auto object-contain"
+                        onError={(e) => {
+                          // Fallback to text if logo fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const parent = target.parentElement;
+                          if (parent) {
+                            parent.innerHTML = `<span class="text-gray-400 font-heading font-semibold text-lg md:text-xl hover:text-ocean transition-colors">${client.name}</span>`;
+                          }
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <span className="text-gray-400 font-heading font-semibold text-lg md:text-xl hover:text-ocean transition-colors">
+                      {client.name}
+                    </span>
+                  )}
                 </motion.div>
               ))}
             </motion.div>
@@ -271,7 +355,7 @@ export default function Home() {
             >
               <motion.p
                 variants={fadeInUp}
-                className="font-heading text-coral-light text-sm tracking-widest uppercase mb-4"
+                className="font-heading text-accent-light text-sm tracking-widest uppercase mb-4"
               >
                 Commission Process
               </motion.p>
@@ -322,10 +406,10 @@ export default function Home() {
                   variants={fadeInUp}
                   className="text-center p-8"
                 >
-                  <div className="font-display text-6xl text-coral mb-4">
+                  <div className="font-display text-6xl text-accent mb-4">
                     {item.step}
                   </div>
-                  <h3 className="font-heading font-bold text-2xl mb-4">
+                  <h3 className="font-heading font-bold text-2xl mb-4 text-white">
                     {item.title}
                   </h3>
                   <p className="text-ocean-pale">{item.description}</p>
@@ -349,7 +433,7 @@ export default function Home() {
 
         {/* Final CTA */}
         <ParallaxSection
-          imageUrl="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&q=80"
+          imageUrl="/images/murals/hawaii-navigate-current.jpg"
           height="h-[60vh]"
           overlayColor="dark"
           overlayOpacity={0.6}
@@ -363,7 +447,8 @@ export default function Home() {
           >
             <motion.h2
               variants={fadeInUp}
-              className="font-display text-h1 md:text-display mb-6"
+              className="font-display text-h1 md:text-display mb-6 text-white"
+              style={{ textShadow: "0 4px 30px rgba(0,0,0,0.5)" }}
             >
               READY TO TRANSFORM YOUR SPACE?
             </motion.h2>

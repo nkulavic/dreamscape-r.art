@@ -38,7 +38,7 @@ export default function AboutPage() {
       <main>
         {/* Hero */}
         <ParallaxHero
-          imageUrl="https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1920&q=80"
+          imageUrl="/images/murals/vw-bus-artist.jpg"
           title="ABOUT THE ARTIST"
           subtitle="Rachel Dinda"
           height="80vh"
@@ -57,7 +57,7 @@ export default function AboutPage() {
               >
                 <motion.p
                   variants={fadeInUp}
-                  className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                  className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
                 >
                   The Dreamscaper
                 </motion.p>
@@ -112,7 +112,7 @@ export default function AboutPage() {
                     className="w-full h-full bg-cover bg-center"
                     style={{
                       backgroundImage:
-                        "url(https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&q=80)",
+                        "url(/images/murals/psychedelic-woman.jpg)",
                       backgroundColor: "#e5e7eb",
                     }}
                   />
@@ -138,7 +138,7 @@ export default function AboutPage() {
                   variants={fadeInUp}
                   className="text-center"
                 >
-                  <div className="font-display text-5xl md:text-6xl text-coral mb-2">
+                  <div className="font-display text-5xl md:text-6xl text-accent mb-2">
                     {stat.value}
                   </div>
                   <div className="font-heading text-white/80 text-sm uppercase tracking-wide">
@@ -162,7 +162,7 @@ export default function AboutPage() {
             >
               <motion.p
                 variants={fadeInUp}
-                className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
               >
                 The Journey
               </motion.p>
@@ -220,7 +220,7 @@ export default function AboutPage() {
 
         {/* Parallax Quote */}
         <ParallaxSection
-          imageUrl="https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1920&q=80"
+          imageUrl="/images/murals/ursula-brewery.jpg"
           height="h-80 md:h-96"
           overlayColor="dark"
           overlayOpacity={0.6}
@@ -250,7 +250,7 @@ export default function AboutPage() {
             >
               <motion.p
                 variants={fadeInUp}
-                className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
               >
                 Philosophy
               </motion.p>
@@ -311,7 +311,7 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="font-display text-h1 mb-6">
+              <h2 className="font-display text-h1 mb-6 text-white">
                 LET&apos;S CREATE SOMETHING EXTRAORDINARY
               </h2>
               <p className="text-xl text-ocean-pale mb-10 max-w-2xl mx-auto">

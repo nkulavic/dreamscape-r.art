@@ -49,7 +49,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-coral transition-colors duration-200"
+                  className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent transition-colors duration-200"
                 >
                   <social.icon className="w-5 h-5" />
                 </a>
@@ -65,7 +65,7 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-ocean-pale hover:text-coral transition-colors"
+                  className="text-ocean-pale hover:text-accent transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -79,7 +79,7 @@ export default function Footer() {
             <div className="space-y-4">
               <a
                 href="mailto:R.dreamscapes@gmail.com"
-                className="flex items-center gap-3 text-ocean-pale hover:text-coral transition-colors"
+                className="flex items-center gap-3 text-ocean-pale hover:text-accent transition-colors"
               >
                 <HiMail className="w-5 h-5" />
                 <span>R.dreamscapes@gmail.com</span>
@@ -105,10 +105,10 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-ocean-pale">
             <p>&copy; {currentYear} Rachel Dinda. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link href="/privacy" className="hover:text-coral transition-colors">
+              <Link href="/privacy" className="hover:text-accent transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-coral transition-colors">
+              <Link href="/terms" className="hover:text-accent transition-colors">
                 Terms of Service
               </Link>
             </div>

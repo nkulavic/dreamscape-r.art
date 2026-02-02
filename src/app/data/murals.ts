@@ -7,6 +7,10 @@ export interface Mural {
     city: string;
     state?: string;
     country: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    };
   };
   year: number;
   description: string;
@@ -26,6 +30,7 @@ export interface Mural {
     thumbnail: string;
     gallery: string[];
   };
+  video?: string; // Path to video file (e.g., "/videos/mural-name.mp4")
   client?: string;
   featured: boolean;
 }
@@ -40,6 +45,7 @@ export const murals: Mural[] = [
       city: "Arvada",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.8028, lng: -105.0875 },
     },
     year: 2023,
     description: "A stunning ocean-themed mural featuring a woman with flowing wave hair, underwater elements, and vibrant marine life. This piece celebrates ocean conservation while encouraging viewers to find inner peace.",
@@ -53,6 +59,7 @@ export const murals: Mural[] = [
       thumbnail: "/images/murals/protect-your-peace.jpg",
       gallery: [],
     },
+    video: "/videos/protect-your-peace-arvada.mp4",
     featured: true,
   },
   {
@@ -64,6 +71,7 @@ export const murals: Mural[] = [
       city: "Aurora",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.7294, lng: -104.8319 },
     },
     year: 2022,
     description: "A vibrant ocean conservation piece featuring a coral reef ecosystem with jellyfish and sea life that transformed the brewery's tasting room into an underwater paradise.",
@@ -79,6 +87,7 @@ export const murals: Mural[] = [
       thumbnail: "/images/murals/ursula-brewery.jpg",
       gallery: [],
     },
+    video: "/videos/ocean-conservation.mp4",
     client: "Ursula Brewery",
     featured: true,
   },
@@ -91,6 +100,7 @@ export const murals: Mural[] = [
       city: "Honolulu",
       state: "HI",
       country: "USA",
+      coordinates: { lat: 21.3069, lng: -157.8583 },
     },
     year: 2023,
     description: "An empowering mural featuring a woman with flowing turquoise hair emerging from ocean waves, alongside a whale and tropical flowers, inspiring students to persevere through life's challenges.",
@@ -117,6 +127,7 @@ export const murals: Mural[] = [
       city: "Golden",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.7555, lng: -105.2211 },
     },
     year: 2023,
     description: "A massive mural at the iconic Coors Factory featuring the classic Coors branding with golden wheat, Rocky Mountain landscapes, and hop vines celebrating Colorado's brewing heritage.",
@@ -143,6 +154,7 @@ export const murals: Mural[] = [
       city: "Hayden",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 40.4914, lng: -107.2573 },
     },
     year: 2023,
     description: "A powerful tiger mural in the school gymnasium featuring the Hayden Tigers mascot surrounded by tropical foliage, embodying strength, focus, and determination for student athletes.",
@@ -167,6 +179,7 @@ export const murals: Mural[] = [
       city: "Aurora",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.7294, lng: -104.8319 },
     },
     year: 2025,
     description: "A nostalgic Colorado-themed mural featuring a vintage VW bus, majestic mountain landscapes, soaring eagles, and the iconic 'Welcome to Colorful Colorado' sign, celebrating road trip culture and local pride.",
@@ -193,6 +206,7 @@ export const murals: Mural[] = [
       city: "Colorado Springs",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 38.8339, lng: -104.8214 },
     },
     year: 2022,
     description: "A serene Buddha mural blending Eastern aesthetics with contemporary street art style, featuring lotus flowers, a bonsai tree, and peaceful imagery creating a tranquil atmosphere for diners.",
@@ -217,6 +231,7 @@ export const murals: Mural[] = [
       city: "Denver",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.7392, lng: -104.9903 },
     },
     year: 2022,
     description: "A vibrant celebration of Latin culture featuring a beautiful woman with flowing blue hair adorned with roses, alongside a colorful chameleon, bringing color and movement to Denver's streets.",
@@ -240,6 +255,7 @@ export const murals: Mural[] = [
       city: "Colorado",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.5501, lng: -105.7821 },
     },
     year: 2022,
     description: "A bright, uplifting mural with bold typography encouraging positivity and kindness, featuring Colorado mountain imagery, vibrant flowers, and the inspiring message 'Spread Love - It's the Colorado Way'.",
@@ -263,6 +279,7 @@ export const murals: Mural[] = [
       city: "Meredith",
       state: "NH",
       country: "USA",
+      coordinates: { lat: 43.6576, lng: -71.5001 },
     },
     year: 2022,
     description: "A coastal-themed dual facade mural featuring bold 'SURFSIDE' lettering, ocean waves, starfish, and tiki elements, bringing beach vibes to a multi-tiered dining establishment in New Hampshire.",
@@ -288,6 +305,7 @@ export const murals: Mural[] = [
       city: "Aurora",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.7294, lng: -104.8319 },
     },
     year: 2024,
     description: "A massive collaborative mural featuring Texas-inspired imagery including longhorn skulls, an eagle, desert flowers, cacti, and vibrant flora, created during the Colfax Canvas Mural Festival.",
@@ -311,6 +329,7 @@ export const murals: Mural[] = [
       city: "Colorado",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.5501, lng: -105.7821 },
     },
     year: 2023,
     description: "A stunning residential garage door mural featuring a majestic lion portrait with flowing mane in warm orange and coral tones against a vibrant red and teal background.",
@@ -334,6 +353,7 @@ export const murals: Mural[] = [
       city: "Puerto Caldas",
       state: "",
       country: "Colombia",
+      coordinates: { lat: 4.8333, lng: -75.9333 },
     },
     year: 2023,
     description: "An international mural created during the 'Siempre Estuvimos Aquí' festival in Colombia, featuring a powerful portrait of a woman with a blue radiant crown/halo, celebrating Afro-Colombian heritage and resilience.",
@@ -357,6 +377,7 @@ export const murals: Mural[] = [
       city: "Colorado",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.5501, lng: -105.7821 },
     },
     year: 2022,
     description: "A cosmic space-themed mural featuring DNA helixes, exploding stars, and galaxy imagery spanning multiple buildings at a tattoo studio, creating an otherworldly atmosphere.",
@@ -381,6 +402,7 @@ export const murals: Mural[] = [
       city: "Colorado",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.5501, lng: -105.7821 },
     },
     year: 2022,
     description: "A breathtaking residential mural featuring a colorful nebula with stars, creating an immersive space experience that transforms a room into a window to the cosmos.",
@@ -404,6 +426,7 @@ export const murals: Mural[] = [
       city: "Colorado",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.5501, lng: -105.7821 },
     },
     year: 2022,
     description: "A mesmerizing octopus mural behind a bar, featuring iridescent tentacles swirling through deep blue waters, creating an immersive underwater atmosphere for patrons.",
@@ -427,6 +450,7 @@ export const murals: Mural[] = [
       city: "Colorado",
       state: "CO",
       country: "USA",
+      coordinates: { lat: 39.5501, lng: -105.7821 },
     },
     year: 2023,
     description: "A vibrant, colorful portrait of a woman with flowing psychedelic hair, octopus tentacles, and retro sunglasses, capturing the free spirit of summer and creativity.",

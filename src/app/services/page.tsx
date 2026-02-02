@@ -122,7 +122,7 @@ export default function ServicesPage() {
       <main>
         {/* Hero */}
         <ParallaxHero
-          imageUrl="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1920&q=80"
+          imageUrl="/images/murals/colorful-colorado-vw.jpg"
           title="SERVICES"
           subtitle="Commission Process"
           description="From concept to completion, every mural begins with your vision. Here's how we bring it to life."
@@ -142,7 +142,7 @@ export default function ServicesPage() {
             >
               <motion.p
                 variants={fadeInUp}
-                className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
               >
                 The Process
               </motion.p>
@@ -175,11 +175,11 @@ export default function ServicesPage() {
                 >
                   <div className={index % 2 === 1 ? "lg:order-2" : ""}>
                     <div className="flex items-center gap-4 mb-6">
-                      <div className="w-16 h-16 rounded-full bg-coral/10 flex items-center justify-center">
-                        <step.icon className="w-8 h-8 text-coral" />
+                      <div className="w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center">
+                        <step.icon className="w-8 h-8 text-accent" />
                       </div>
                       <div>
-                        <span className="font-display text-4xl text-coral">
+                        <span className="font-display text-4xl text-accent">
                           {step.number}
                         </span>
                         <h3 className="font-heading font-bold text-2xl text-gray-800">
@@ -207,13 +207,13 @@ export default function ServicesPage() {
                       <div
                         className="w-full h-full bg-cover bg-center"
                         style={{
-                          backgroundImage: `url(https://images.unsplash.com/photo-${
+                          backgroundImage: `url(${
                             index === 0
-                              ? "1552664730-d307ca884978"
+                              ? "/images/murals/zen-shangri-la.jpg"
                               : index === 1
-                              ? "1561070791-2526d30994b5"
-                              : "1578926375605-eaf7559b1458"
-                          }?w=800&q=80)`,
+                              ? "/images/murals/psychedelic-woman.jpg"
+                              : "/images/murals/vw-bus-artist.jpg"
+                          })`,
                           backgroundColor: "#e5e7eb",
                         }}
                       />
@@ -227,7 +227,7 @@ export default function ServicesPage() {
 
         {/* Parallax Divider */}
         <ParallaxSection
-          imageUrl="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=1920&q=80"
+          imageUrl="/images/murals/spread-love-colorado.jpg"
           height="h-64"
           overlayColor="ocean"
           overlayOpacity={0.7}
@@ -254,7 +254,7 @@ export default function ServicesPage() {
             >
               <motion.p
                 variants={fadeInUp}
-                className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
               >
                 Mural Types
               </motion.p>
@@ -279,8 +279,8 @@ export default function ServicesPage() {
                   variants={fadeInUp}
                   className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition-shadow"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-coral/10 flex items-center justify-center mb-6">
-                    <service.icon className="w-7 h-7 text-coral" />
+                  <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center mb-6">
+                    <service.icon className="w-7 h-7 text-accent" />
                   </div>
                   <h3 className="font-heading font-bold text-xl text-gray-800 mb-3">
                     {service.title}
@@ -316,7 +316,7 @@ export default function ServicesPage() {
                     className="w-full h-full bg-cover bg-center"
                     style={{
                       backgroundImage:
-                        "url(https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80)",
+                        "url(/images/murals/colfax-canvas.jpg)",
                       backgroundColor: "#e5e7eb",
                     }}
                   />
@@ -331,7 +331,7 @@ export default function ServicesPage() {
               >
                 <motion.p
                   variants={fadeInUp}
-                  className="font-heading text-coral text-sm tracking-widest uppercase mb-4"
+                  className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
                 >
                   Why Choose Rachel
                 </motion.p>
@@ -364,7 +364,7 @@ export default function ServicesPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="font-display text-h1 mb-6">
+              <h2 className="font-display text-h1 mb-6 text-white">
                 READY TO START YOUR PROJECT?
               </h2>
               <p className="text-xl text-ocean-pale mb-10 max-w-2xl mx-auto">

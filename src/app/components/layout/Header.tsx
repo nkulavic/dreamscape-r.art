@@ -70,7 +70,7 @@ export default function Header({ variant = "transparent" }: HeaderProps) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`font-heading text-sm tracking-wide uppercase ${textColor} hover:text-coral transition-colors duration-200`}
+                  className={`font-heading text-sm tracking-wide uppercase ${textColor} hover:text-accent transition-colors duration-200`}
                 >
                   {link.label}
                 </Link>
@@ -87,7 +87,7 @@ export default function Header({ variant = "transparent" }: HeaderProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.label}
-                    className={`${textColor} hover:text-coral transition-colors duration-200`}
+                    className={`${textColor} hover:text-accent transition-colors duration-200`}
                   >
                     <social.icon className="w-5 h-5" />
                   </a>
@@ -152,7 +152,7 @@ export default function Header({ variant = "transparent" }: HeaderProps) {
                       <Link
                         href={link.href}
                         onClick={() => setIsMobileMenuOpen(false)}
-                        className="block py-3 font-heading text-lg text-gray-800 hover:text-coral transition-colors"
+                        className="block py-3 font-heading text-lg text-gray-800 hover:text-accent transition-colors"
                       >
                         {link.label}
                       </Link>
@@ -178,7 +178,7 @@ export default function Header({ variant = "transparent" }: HeaderProps) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social.label}
-                      className="text-gray-600 hover:text-coral transition-colors"
+                      className="text-gray-600 hover:text-accent transition-colors"
                     >
                       <social.icon className="w-6 h-6" />
                     </a>

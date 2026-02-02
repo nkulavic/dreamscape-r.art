@@ -29,7 +29,7 @@ export default function ParallaxSection({
   const overlayClasses = {
     ocean: "bg-ocean-deep",
     dark: "bg-dark",
-    coral: "bg-coral",
+    coral: "bg-accent",
     none: "",
   };
 

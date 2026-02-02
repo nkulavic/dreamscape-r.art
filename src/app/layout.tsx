@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat, Inter } from "next/font/google";
 import "./globals.css";
+import ThemeSelector from "./components/ui/ThemeSelector";
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-display",
@@ -72,6 +73,7 @@ export default function RootLayout({
         className={`${bebasNeue.variable} ${montserrat.variable} ${inter.variable} antialiased bg-white text-gray-800`}
       >
         {children}
+        <ThemeSelector />
       </body>
     </html>
   );
