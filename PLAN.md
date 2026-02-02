@@ -201,34 +201,35 @@ Each piece needs artist-written content:
 - clients.ts with major client list
 - Download/organize mural images from existing sites
 
-### Phase 5: Homepage
+### Phase 5: Homepage ✅
 - Full-screen parallax hero
 - Featured murals section
 - Client logos
 - About preview
 - CTA section
 
-### Phase 6: Portfolio
+### Phase 6: Portfolio ✅
 - Gallery grid with filters
 - Individual mural pages with artist stories
-- Lightbox functionality
+- Lightbox functionality (planned)
 
-### Phase 7: Content Pages
-- About (new narrative needed)
+### Phase 7: Content Pages ✅
+- About (new narrative)
 - Services/Booking
 - CV/Resume
 - Publications
+- Contact
 
-### Phase 8: Contact & Scheduling
-- Contact form
-- Calendly integration
-- Form submission handling
+### Phase 8: Contact & Scheduling ✅
+- Contact form with project details
+- Scheduling placeholder (HubSpot integration later)
+- Form submission handling (placeholder)
 
-### Phase 9: Polish
-- Scroll animations
-- Image optimization
-- SEO metadata
-- Accessibility audit
+### Phase 9: Polish (In Progress)
+- Scroll animations ✅
+- Image optimization (needs high-res images)
+- SEO metadata (basic done)
+- Accessibility audit (pending)
 
 ---
 
@@ -244,15 +245,15 @@ Each piece needs artist-written content:
 ## Verification
 
 ### Pre-Launch Checklist
-- [ ] All navigation works
-- [ ] Contact form submits
-- [ ] Scheduling widget functional
-- [ ] Gallery/lightbox works
-- [ ] Mobile responsive on all pages
-- [ ] Parallax smooth on scroll
+- [x] All navigation works
+- [x] Contact form submits (placeholder handler)
+- [ ] Scheduling widget functional (HubSpot integration needed)
+- [ ] Gallery/lightbox works (lightbox not yet implemented)
+- [x] Mobile responsive on all pages
+- [x] Parallax smooth on scroll
 - [ ] Lighthouse Performance > 90
-- [ ] Images optimized
-- [ ] SEO metadata complete
+- [ ] Images optimized (waiting for high-res images)
+- [x] SEO metadata complete (basic)
 - [ ] Accessibility (WCAG AA)
 
 ### Cross-Browser Testing
