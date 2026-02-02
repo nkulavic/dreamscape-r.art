@@ -19,6 +19,7 @@ export interface Publication {
   id: string;
   outlet: string;
   title?: string;
+  location?: string;
   year: number;
   type: "tv" | "magazine" | "newspaper" | "online" | "museum";
   url?: string;
