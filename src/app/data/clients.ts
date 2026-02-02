@@ -15,21 +15,21 @@ export const clients: Client[] = [
     projectSize: "7,500 sq ft",
     featured: true,
     category: "corporate",
-    logo: "https://logo.clearbit.com/molsoncoors.com"
+    logo: "/images/logos/molson-coors.png"
   },
   {
     id: "walmart",
     name: "Walmart / Now Mural Arts",
     featured: true,
     category: "corporate",
-    logo: "https://logo.clearbit.com/walmart.com"
+    logo: "/images/logos/walmart.png"
   },
   {
     id: "downtown-denver",
     name: "Downtown Denver Partnership",
     featured: true,
     category: "corporate",
-    logo: "https://logo.clearbit.com/downtowndenver.com"
+    logo: "/images/logos/downtown-denver.png"
   },
 
   // Education
@@ -54,14 +54,14 @@ export const clients: Client[] = [
     name: "Girl Scouts of America",
     featured: true,
     category: "nonprofit",
-    logo: "https://logo.clearbit.com/girlscouts.org"
+    logo: "/images/logos/girl-scouts.png"
   },
   {
     id: "boys-girls-club",
     name: "Boys & Girls Club",
     featured: true,
     category: "nonprofit",
-    logo: "https://logo.clearbit.com/bgca.org"
+    logo: "/images/logos/boys-girls-club.png"
   },
   { id: "counting-coral", name: "Counting Coral 501(c)(3)", featured: false, category: "nonprofit" },
   { id: "family-success", name: "Family Success Center", projectSize: "1,000+ sq ft", featured: false, category: "nonprofit" },
@@ -77,7 +77,7 @@ export const clients: Client[] = [
     name: "Margaritaville Honolulu",
     featured: true,
     category: "restaurant",
-    logo: "https://logo.clearbit.com/margaritaville.com"
+    logo: "/images/logos/margaritaville.png"
   },
 
   // Community & Arts
