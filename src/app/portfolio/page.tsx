@@ -7,7 +7,6 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import ParallaxHero from "../components/ui/ParallaxHero";
 import { murals, Mural } from "../data/murals";
-import MuralMap from "../components/ui/MuralMap";
 
 type CategoryFilter = "all" | Mural["category"];
 
@@ -162,36 +161,6 @@ export default function PortfolioPage() {
                 </p>
               </motion.div>
             )}
-          </div>
-        </section>
-
-        {/* Map Section */}
-        <section className="py-24 bg-cream">
-          <div className="max-w-7xl mx-auto px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-12"
-            >
-              <span className="text-accent font-heading text-sm uppercase tracking-widest">
-                Locations
-              </span>
-              <h2 className="font-display text-h2 text-gray-800 mt-2">
-                MURAL MAP
-              </h2>
-              <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-                Explore murals across the United States and internationally. Click on a marker to see project details.
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              <MuralMap height="h-[600px]" selectedCategory={activeFilter} />
-            </motion.div>
           </div>
         </section>
 

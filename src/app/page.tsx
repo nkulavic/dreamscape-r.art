@@ -306,37 +306,15 @@ export default function Home() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={staggerContainer}
-              className="flex flex-wrap justify-center items-center gap-8 md:gap-16"
+              className="flex flex-wrap justify-center items-center gap-8 md:gap-12"
             >
               {featuredClients.map((client) => (
                 <motion.div
                   key={client.id}
                   variants={fadeInUp}
-                  className="flex items-center justify-center group"
-                  title={client.name}
+                  className="text-gray-400 font-heading font-semibold text-lg md:text-xl hover:text-ocean transition-colors"
                 >
-                  {client.logo ? (
-                    <div className="relative h-12 md:h-16 w-auto grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                      <img
-                        src={client.logo}
-                        alt={client.name}
-                        className="h-full w-auto object-contain"
-                        onError={(e) => {
-                          // Fallback to text if logo fails to load
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.innerHTML = `<span class="text-gray-400 font-heading font-semibold text-lg md:text-xl hover:text-ocean transition-colors">${client.name}</span>`;
-                          }
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <span className="text-gray-400 font-heading font-semibold text-lg md:text-xl hover:text-ocean transition-colors">
-                      {client.name}
-                    </span>
-                  )}
+                  {client.name}
                 </motion.div>
               ))}
             </motion.div>
