@@ -4,20 +4,35 @@ const materials = [
   {
     href: "/marketing/leave-behind",
     title: "One-Page Leave-Behind",
-    description: "8.5\" x 11\" sell sheet with services, stats, clients, credentials, and CTA.",
+    description: "8.5\" x 11\" sell sheet with services, process, investment tiers, clients, credentials, and CTA.",
     size: "Letter",
+    variants: [
+      { href: "/marketing/leave-behind/commercial", label: "Commercial" },
+      { href: "/marketing/leave-behind/education", label: "Education" },
+      { href: "/marketing/leave-behind/community", label: "Community" },
+    ],
   },
   {
     href: "/marketing/brochure",
     title: "Tri-Fold Brochure",
-    description: "11\" x 8.5\" landscape, 6 panels: cover, story, services, portfolio, contact, social.",
+    description: "11\" x 8.5\" landscape, 6 panels: cover, story, services + process + investment, portfolio, contact, social.",
     size: "Letter Landscape",
+    variants: [
+      { href: "/marketing/brochure/commercial", label: "Commercial" },
+      { href: "/marketing/brochure/education", label: "Education" },
+      { href: "/marketing/brochure/community", label: "Community" },
+    ],
   },
   {
     href: "/marketing/capabilities-deck",
     title: "Capabilities Deck",
-    description: "10-slide presentation with case studies, full client list, press, and process overview.",
+    description: "13-slide presentation with process details, investment tiers, getting started flow, case studies, full client list, and press.",
     size: "Letter Landscape",
+    variants: [
+      { href: "/marketing/capabilities-deck/commercial", label: "Commercial" },
+      { href: "/marketing/capabilities-deck/education", label: "Education" },
+      { href: "/marketing/capabilities-deck/community", label: "Community" },
+    ],
   },
   {
     href: "/marketing/business-card",
@@ -41,23 +56,37 @@ export default function MarketingIndex() {
 
         <div className="grid gap-4">
           {materials.map((m) => (
-            <Link
+            <div
               key={m.href}
-              href={m.href}
-              className="block bg-white rounded-lg border border-gray-200 p-6 hover:border-coral hover:shadow-md transition-all group"
+              className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-ocean-deep group-hover:text-coral transition-colors">
-                    {m.title}
-                  </h2>
-                  <p className="text-sm text-gray-500 mt-1">{m.description}</p>
-                </div>
+              <div className="flex items-center justify-between mb-2">
+                <Link
+                  href={m.href}
+                  className="text-lg font-semibold text-ocean-deep hover:text-coral transition-colors"
+                >
+                  {m.title}
+                </Link>
                 <span className="text-xs text-gray-400 uppercase tracking-wider border border-gray-200 rounded px-2 py-1">
                   {m.size}
                 </span>
               </div>
-            </Link>
+              <p className="text-sm text-gray-500">{m.description}</p>
+              {"variants" in m && m.variants && (
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-xs text-gray-400 uppercase tracking-wider">Variants:</span>
+                  {m.variants.map((v) => (
+                    <Link
+                      key={v.href}
+                      href={v.href}
+                      className="text-xs bg-blue-50 text-ocean px-2.5 py-1 rounded-full hover:bg-coral hover:text-white transition-colors"
+                    >
+                      {v.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>

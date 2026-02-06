@@ -474,3 +474,6 @@ export const getMuralsByCategory = (category: Mural["category"]) =>
 
 export const getMuralBySlug = (slug: string) =>
   murals.find((mural) => mural.slug === slug);
+
+export const getMuralsByIds = (ids: string[]) =>
+  ids.map((id) => murals.find((m) => m.id === id)).filter(Boolean) as Mural[];

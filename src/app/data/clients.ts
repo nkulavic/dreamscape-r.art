@@ -98,3 +98,6 @@ export const getFeaturedClients = () => clients.filter((client) => client.featur
 
 export const getClientsByCategory = (category: Client["category"]) =>
   clients.filter((client) => client.category === category);
+
+export const getClientsByIds = (ids: string[]) =>
+  ids.map((id) => clients.find((c) => c.id === id)).filter(Boolean) as Client[];
