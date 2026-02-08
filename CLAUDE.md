@@ -22,6 +22,8 @@ Portfolio website for muralist Rachel Dinda (DREAMSCAPER) — a Next.js 15 App R
 - **Vercel Postgres** (Neon) via **Drizzle ORM** for structured data
 - **Vercel Blob** for media storage (mural images, client logos, videos)
 - **Better Auth** for admin authentication (email/password)
+- **Groq SDK** (`groq-sdk`) for AI-assisted content generation (openai/gpt-oss-120b model)
+- **Sonner** for toast notifications in admin panel
 - **Leaflet / React-Leaflet** for interactive mural map
 - **React Icons** for iconography
 - **UUIDv7** for database primary keys (`uuidv7` package)
@@ -57,7 +59,16 @@ Content is stored in **Vercel Postgres** (Neon) via **Drizzle ORM**. Media files
 **Admin API routes** (`src/app/api/admin/`):
 - CRUD endpoints for murals, clients, experience, videos
 - Upload endpoint for Vercel Blob
+- AI generation endpoint (`/api/admin/ai/generate`) for content assistance
 - All routes require authenticated admin session
+
+**AI Content Generation** (`src/lib/groq.ts`, `src/app/api/admin/ai/generate/route.ts`):
+- **Groq SDK** (`groq-sdk`) with `openai/gpt-oss-120b` model for creative content
+- Admin panel features AI-assisted generation for mural storytelling fields
+- Individual generation: Icon-only sparkle buttons for title, description, keywords, artistNote, inspiration, process, impact
+- Bulk generation: "Generate All Content with AI" button for all storytelling fields at once
+- Uses Sonner toast notifications for error handling
+- Temperature: 0.6, max_tokens: 500, top_p: 0.9
 
 ### Component Organization
 
