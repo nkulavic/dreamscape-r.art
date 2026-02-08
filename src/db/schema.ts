@@ -1,12 +1,14 @@
 import {
   pgTable,
   text,
+  uuid,
   integer,
   boolean,
   real,
   timestamp,
   pgEnum,
 } from "drizzle-orm/pg-core";
+import { uuidv7 } from "uuidv7";
 
 // ── Enums ──────────────────────────────────────────────
 
@@ -49,7 +51,8 @@ export const videoCategoryEnum = pgEnum("video_category", [
 // ── Clients ────────────────────────────────────────────
 
 export const clients = pgTable("clients", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().$defaultFn(() => uuidv7()),
+  slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
   logoUrl: text("logo_url"),
   projectSize: text("project_size"),
@@ -62,7 +65,7 @@ export const clients = pgTable("clients", {
 // ── Murals ─────────────────────────────────────────────
 
 export const murals = pgTable("murals", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().$defaultFn(() => uuidv7()),
   slug: text("slug").notNull().unique(),
   title: text("title").notNull(),
 
@@ -96,7 +99,7 @@ export const murals = pgTable("murals", {
   videoUrl: text("video_url"),
 
   // Client reference
-  clientId: text("client_id").references(() => clients.id),
+  clientId: uuid("client_id").references(() => clients.id),
   clientDisplayName: text("client_display_name"),
 
   featured: boolean("featured").notNull().default(false),
@@ -107,7 +110,7 @@ export const murals = pgTable("murals", {
 // ── Exhibitions ────────────────────────────────────────
 
 export const exhibitions = pgTable("exhibitions", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().$defaultFn(() => uuidv7()),
   title: text("title").notNull(),
   venue: text("venue").notNull(),
   location: text("location").notNull(),
@@ -120,7 +123,7 @@ export const exhibitions = pgTable("exhibitions", {
 // ── Festivals ──────────────────────────────────────────
 
 export const festivals = pgTable("festivals", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().$defaultFn(() => uuidv7()),
   name: text("name").notNull(),
   location: text("location").notNull(),
   year: integer("year").notNull(),
@@ -132,7 +135,7 @@ export const festivals = pgTable("festivals", {
 // ── Publications ───────────────────────────────────────
 
 export const publications = pgTable("publications", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().$defaultFn(() => uuidv7()),
   outlet: text("outlet").notNull(),
   title: text("title"),
   location: text("location"),
@@ -146,7 +149,7 @@ export const publications = pgTable("publications", {
 // ── Videos ─────────────────────────────────────────────
 
 export const videos = pgTable("videos", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().$defaultFn(() => uuidv7()),
   title: text("title").notNull(),
   description: text("description").notNull(),
   srcUrl: text("src_url").notNull(),

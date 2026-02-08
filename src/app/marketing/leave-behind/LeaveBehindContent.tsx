@@ -2,9 +2,9 @@ import Image from "next/image";
 import { siteConfig, services } from "@/app/data/siteConfig";
 import {
   getFeaturedMurals,
-  getMuralsByIds,
+  getMuralsBySlugs,
   getFeaturedClients,
-  getClientsByIds,
+  getClientsBySlugs,
   getAllClients,
   getAllPublications,
   getAllFestivals,
@@ -24,10 +24,10 @@ interface Props {
 
 export async function LeaveBehindContent({ audience }: Props) {
   const featuredMurals = audience
-    ? await getMuralsByIds(audience.featuredMuralIds)
+    ? await getMuralsBySlugs(audience.featuredMuralSlugs)
     : await getFeaturedMurals();
   const featuredClients = audience
-    ? await getClientsByIds(audience.featuredClientIds)
+    ? await getClientsBySlugs(audience.featuredClientSlugs)
     : await getFeaturedClients();
   const [allClients, publications, festivals, exhibitions] = await Promise.all([
     getAllClients(),

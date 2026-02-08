@@ -54,11 +54,16 @@ async function uploadToBlob(
   const blob = await put(blobPath, file, {
     access: "public",
     contentType,
+    addRandomSuffix: false,
+    allowOverwrite: true,
   });
 
   uploadCache.set(localPath, blob.url);
   return blob.url;
 }
+
+// Map client slug → UUID for mural FK lookups
+const clientSlugToId = new Map<string, string>();
 
 async function seedClients() {
   console.log("\n📋 Seeding clients...");
@@ -72,17 +77,30 @@ async function seedClients() {
       );
     }
 
-    await db
+    const [inserted] = await db
       .insert(schema.clients)
       .values({
-        id: client.id,
+        slug: client.id, // old slug-based ID becomes the slug
         name: client.name,
         logoUrl,
         projectSize: client.projectSize || null,
         featured: client.featured,
         category: client.category,
       })
-      .onConflictDoNothing();
+      .onConflictDoNothing()
+      .returning({ id: schema.clients.id, slug: schema.clients.slug });
+
+    if (inserted) {
+      clientSlugToId.set(inserted.slug, inserted.id);
+    }
+  }
+
+  // Also load any existing clients not just inserted (for idempotent re-runs)
+  const allClients = await db
+    .select({ id: schema.clients.id, slug: schema.clients.slug })
+    .from(schema.clients);
+  for (const c of allClients) {
+    clientSlugToId.set(c.slug, c.id);
   }
 
   console.log(`  ✓ ${clientData.length} clients seeded`);
@@ -114,17 +132,19 @@ async function seedMurals() {
       galleryUrls.push(url);
     }
 
-    // Find matching client ID
-    const clientId = mural.client
+    // Find matching client UUID by looking up name → slug → UUID
+    const matchingClient = mural.client
       ? clientData.find(
           (c) => c.name.toLowerCase() === mural.client?.toLowerCase()
-        )?.id || null
+        )
+      : null;
+    const clientId = matchingClient
+      ? clientSlugToId.get(matchingClient.id) || null
       : null;
 
     await db
       .insert(schema.murals)
       .values({
-        id: mural.id,
         slug: mural.slug,
         title: mural.title,
         venue: mural.location.venue,
@@ -164,7 +184,6 @@ async function seedExhibitions() {
     await db
       .insert(schema.exhibitions)
       .values({
-        id: ex.id,
         title: ex.title,
         venue: ex.venue,
         location: ex.location,
@@ -184,7 +203,6 @@ async function seedFestivals() {
     await db
       .insert(schema.festivals)
       .values({
-        id: fest.id,
         name: fest.name,
         location: fest.location,
         year: fest.year,
@@ -203,7 +221,6 @@ async function seedPublications() {
     await db
       .insert(schema.publications)
       .values({
-        id: pub.id,
         outlet: pub.outlet,
         title: pub.title || null,
         location: pub.location || null,
@@ -239,7 +256,6 @@ async function seedVideos() {
     await db
       .insert(schema.videos)
       .values({
-        id: video.id,
         title: video.title,
         description: video.description,
         srcUrl,
@@ -290,13 +306,17 @@ async function seedAdminUser() {
   const { default: crypto } = await import("crypto");
 
   // Hash password using Better Auth's exact algorithm:
-  // @noble/hashes scrypt with N=16384, r=16, p=1, dkLen=64
-  const { scrypt } = await import("@noble/hashes/scrypt.js");
+  // @noble/hashes scryptAsync with N=16384, r=16, p=1, dkLen=64
+  // Salt is passed as hex STRING (not bytes) to match Better Auth's generateKey()
+  const { scryptAsync } = await import("@noble/hashes/scrypt.js");
   const { bytesToHex } = await import("@noble/hashes/utils.js");
 
   const saltBytes = crypto.getRandomValues(new Uint8Array(16));
   const salt = bytesToHex(saltBytes);
-  const keyBytes = scrypt("admin123", saltBytes, { N: 16384, r: 16, p: 1, dkLen: 64 });
+  const password = "admin123";
+  const keyBytes = await scryptAsync(password.normalize("NFKC"), salt, {
+    N: 16384, r: 16, p: 1, dkLen: 64, maxmem: 128 * 16384 * 16 * 2,
+  });
   const hash = bytesToHex(keyBytes);
 
   const id = crypto.randomUUID();
@@ -334,10 +354,24 @@ async function seedAdminUser() {
   console.log(`  ⚠ CHANGE THIS PASSWORD after first login!`);
 }
 
+async function clearContentTables() {
+  console.log("🗑️  Clearing content tables...");
+  // Delete in order respecting FK constraints (murals references clients)
+  await db.delete(schema.murals);
+  await db.delete(schema.clients);
+  await db.delete(schema.exhibitions);
+  await db.delete(schema.festivals);
+  await db.delete(schema.publications);
+  await db.delete(schema.videos);
+  await db.delete(schema.siteSettings);
+  console.log("  ✓ Content tables cleared");
+}
+
 async function main() {
   console.log("🌱 Starting seed...\n");
 
   try {
+    await clearContentTables();
     await seedClients();
     await seedMurals();
     await seedExhibitions();

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { uuidv7 } from "uuidv7";
 
 interface VideoData {
   id: string;
@@ -60,7 +61,7 @@ export default function VideoForm({ video }: { video?: VideoData }) {
     setSaving(true);
 
     const payload = {
-      id: isEditing ? video.id : crypto.randomUUID(),
+      id: isEditing ? video.id : uuidv7(),
       title,
       description,
       category,

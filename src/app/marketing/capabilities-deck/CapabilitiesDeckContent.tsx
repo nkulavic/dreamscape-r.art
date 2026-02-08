@@ -2,10 +2,10 @@ import Image from "next/image";
 import { siteConfig, credentials, services } from "@/app/data/siteConfig";
 import {
   getFeaturedMurals,
-  getMuralsByIds,
+  getMuralsBySlugs,
   getAllClients,
   getFeaturedClients,
-  getClientsByIds,
+  getClientsBySlugs,
   getAllPublications,
   getAllFestivals,
   getAllExhibitions,
@@ -28,10 +28,10 @@ interface Props {
 
 export async function CapabilitiesDeckContent({ audience }: Props) {
   const featuredMurals = audience
-    ? await getMuralsByIds(audience.featuredMuralIds)
+    ? await getMuralsBySlugs(audience.featuredMuralSlugs)
     : await getFeaturedMurals();
   const featuredClients = audience
-    ? await getClientsByIds(audience.featuredClientIds)
+    ? await getClientsBySlugs(audience.featuredClientSlugs)
     : await getFeaturedClients();
   const [clients, publications, festivals, exhibitions] = await Promise.all([
     getAllClients(),

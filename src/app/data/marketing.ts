@@ -30,8 +30,8 @@ export interface AudienceConfig {
   coverImage: string;
   valueProp: string;
   benefits: string[];
-  featuredMuralIds: string[];
-  featuredClientIds: string[];
+  featuredMuralSlugs: string[];
+  featuredClientSlugs: string[];
   cta: string;
   pricingNote?: string;
 }
@@ -236,14 +236,14 @@ export const audienceConfigs: Record<AudienceKey, AudienceConfig> = {
       "Create shareable social media moments",
       "Transform any commercial space into an experience",
     ],
-    featuredMuralIds: [
+    featuredMuralSlugs: [
       "molson-coors",
       "underwater-haven",
       "surfside-burger-bar",
       "rocky-road-trips",
       "zen",
     ],
-    featuredClientIds: [
+    featuredClientSlugs: [
       "molson-coors",
       "walmart",
       "margaritaville",
@@ -269,11 +269,11 @@ export const audienceConfigs: Record<AudienceKey, AudienceConfig> = {
       "Celebrate school identity and values",
       "Build community pride and engagement",
     ],
-    featuredMuralIds: [
+    featuredMuralSlugs: [
       "you-can-navigate-any-current",
       "tiger-stance",
     ],
-    featuredClientIds: [
+    featuredClientSlugs: [
       "monte-vista-schools",
       "kelikolani",
       "hayden-high",
@@ -297,14 +297,14 @@ export const audienceConfigs: Record<AudienceKey, AudienceConfig> = {
       "Create public spaces that spark conversation",
       "Build community through collaborative art-making",
     ],
-    featuredMuralIds: [
+    featuredMuralSlugs: [
       "protect-your-peace",
       "la-rumba",
       "siempre-estuvimos-aqui",
       "colfax-canvas",
       "spread-love-colorado",
     ],
-    featuredClientIds: [
+    featuredClientSlugs: [
       "girl-scouts",
       "boys-girls-club",
       "counting-coral",

@@ -230,6 +230,15 @@ export async function getMuralsByIds(ids: string[]): Promise<Mural[]> {
   return rows.map(transformMural);
 }
 
+export async function getMuralsBySlugs(slugs: string[]): Promise<Mural[]> {
+  if (slugs.length === 0) return [];
+  const rows = await db
+    .select()
+    .from(schema.murals)
+    .where(inArray(schema.murals.slug, slugs));
+  return rows.map(transformMural);
+}
+
 // ── Client queries ─────────────────────────────────────
 
 export async function getAllClients(): Promise<Client[]> {
@@ -261,6 +270,15 @@ export async function getClientsByIds(ids: string[]): Promise<Client[]> {
     .select()
     .from(schema.clients)
     .where(inArray(schema.clients.id, ids));
+  return rows.map(transformClient);
+}
+
+export async function getClientsBySlugs(slugs: string[]): Promise<Client[]> {
+  if (slugs.length === 0) return [];
+  const rows = await db
+    .select()
+    .from(schema.clients)
+    .where(inArray(schema.clients.slug, slugs));
   return rows.map(transformClient);
 }
 

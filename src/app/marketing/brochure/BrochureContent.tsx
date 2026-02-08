@@ -2,9 +2,9 @@ import Image from "next/image";
 import { siteConfig, credentials, services } from "@/app/data/siteConfig";
 import {
   getFeaturedMurals,
-  getMuralsByIds,
+  getMuralsBySlugs,
   getFeaturedClients,
-  getClientsByIds,
+  getClientsBySlugs,
   getAllPublications,
 } from "@/db/dal";
 import { PrintStyles } from "../_components/PrintStyles";
@@ -20,10 +20,10 @@ interface Props {
 
 export async function BrochureContent({ audience }: Props) {
   const featuredMurals = audience
-    ? await getMuralsByIds(audience.featuredMuralIds)
+    ? await getMuralsBySlugs(audience.featuredMuralSlugs)
     : await getFeaturedMurals();
   const featuredClients = audience
-    ? await getClientsByIds(audience.featuredClientIds)
+    ? await getClientsBySlugs(audience.featuredClientSlugs)
     : await getFeaturedClients();
   const publications = await getAllPublications();
   const coverImage = audience?.coverImage ?? "/images/murals/protect-your-peace.jpg";

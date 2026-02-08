@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { uuidv7 } from "uuidv7";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -194,7 +195,7 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
     };
 
     if (!isEdit) {
-      body.id = crypto.randomUUID();
+      body.id = uuidv7();
     }
 
     try {

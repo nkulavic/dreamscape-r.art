@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { uuidv7 } from "uuidv7";
 
 interface ClientData {
   id: string;
@@ -54,7 +55,7 @@ export default function ClientForm({ client }: { client?: ClientData }) {
     setSaving(true);
 
     const payload = {
-      id: isEditing ? client.id : crypto.randomUUID(),
+      id: isEditing ? client.id : uuidv7(),
       name,
       category,
       projectSize: projectSize || null,

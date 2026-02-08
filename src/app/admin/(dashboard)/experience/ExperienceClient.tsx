@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { uuidv7 } from "uuidv7";
 import { Plus } from "lucide-react";
 import type { Exhibition, Festival, Publication } from "@/db/dal";
 
@@ -159,7 +160,7 @@ export default function ExperienceClient({
     if (activeTab === "exhibitions") {
       payload = {
         entityType: "exhibition",
-        id: editingId || crypto.randomUUID(),
+        id: editingId || uuidv7(),
         title: exTitle,
         venue: exVenue,
         location: exLocation,
@@ -169,7 +170,7 @@ export default function ExperienceClient({
     } else if (activeTab === "festivals") {
       payload = {
         entityType: "festival",
-        id: editingId || crypto.randomUUID(),
+        id: editingId || uuidv7(),
         name: festName,
         location: festLocation,
         year: festYear,
@@ -178,7 +179,7 @@ export default function ExperienceClient({
     } else {
       payload = {
         entityType: "publication",
-        id: editingId || crypto.randomUUID(),
+        id: editingId || uuidv7(),
         outlet: pubOutlet,
         title: pubTitle || null,
         location: pubLocation || null,
