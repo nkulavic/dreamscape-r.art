@@ -38,7 +38,11 @@ async function uploadToBlob(
     return uploadCache.get(localPath)!;
   }
 
-  const fullPath = path.join(PUBLIC_DIR, localPath);
+  // If path is absolute, use it directly; otherwise join with PUBLIC_DIR
+  const fullPath = path.isAbsolute(localPath)
+    ? localPath
+    : path.join(PUBLIC_DIR, localPath);
+
   if (!fs.existsSync(fullPath)) {
     console.warn(`  ⚠ File not found: ${fullPath}`);
     return localPath; // Return original path as fallback
@@ -47,9 +51,11 @@ async function uploadToBlob(
   const file = fs.readFileSync(fullPath);
   const contentType = localPath.endsWith(".mp4")
     ? "video/mp4"
-    : localPath.endsWith(".png")
-      ? "image/png"
-      : "image/jpeg";
+    : localPath.endsWith(".mov")
+      ? "video/mp4"
+      : localPath.endsWith(".png")
+        ? "image/png"
+        : "image/jpeg";
 
   console.log(`  ↑ Uploading ${blobPath} (${(file.length / 1024 / 1024).toFixed(1)} MB)...`);
 
@@ -187,15 +193,15 @@ async function seedNewMurals() {
   for (const mural of newMurals) {
     console.log(`  → Processing: ${mural.title}`);
 
-    // Upload hero image
+    // Upload hero image (using absolute paths)
     const heroUrl = await uploadToBlob(
-      path.join(ORGANIZED_DIR, mural.heroImage),
+      path.resolve(ORGANIZED_DIR, mural.heroImage),
       `murals/${path.basename(mural.heroImage)}`
     );
 
     // Upload thumbnail
     const thumbnailUrl = await uploadToBlob(
-      path.join(ORGANIZED_DIR, mural.thumbnailImage),
+      path.resolve(ORGANIZED_DIR, mural.thumbnailImage),
       `murals/thumbs/${path.basename(mural.thumbnailImage)}`
     );
 
@@ -203,7 +209,7 @@ async function seedNewMurals() {
     const galleryUrls: string[] = [];
     for (const img of mural.galleryImages) {
       const url = await uploadToBlob(
-        path.join(ORGANIZED_DIR, img),
+        path.resolve(ORGANIZED_DIR, img),
         `murals/gallery/${path.basename(img)}`
       );
       galleryUrls.push(url);
@@ -213,7 +219,7 @@ async function seedNewMurals() {
     let videoUrl: string | null = null;
     if (mural.videoPath) {
       videoUrl = await uploadToBlob(
-        path.join(ORGANIZED_DIR, mural.videoPath),
+        path.resolve(ORGANIZED_DIR, mural.videoPath),
         `videos/${path.basename(mural.videoPath)}`
       );
     }
@@ -270,11 +276,11 @@ async function updateExistingMurals() {
   for (const update of existingMuralUpdates) {
     console.log(`  → Updating: ${update.slug}`);
 
-    // Upload new hero if provided
+    // Upload new hero if provided (using absolute paths)
     let heroUrl: string | undefined;
     if (update.heroImage) {
       heroUrl = await uploadToBlob(
-        path.join(ORGANIZED_DIR, update.heroImage),
+        path.resolve(ORGANIZED_DIR, update.heroImage),
         `murals/${path.basename(update.heroImage)}`
       );
     }
@@ -283,7 +289,7 @@ async function updateExistingMurals() {
     let thumbnailUrl: string | undefined;
     if (update.thumbnailImage) {
       thumbnailUrl = await uploadToBlob(
-        path.join(ORGANIZED_DIR, update.thumbnailImage),
+        path.resolve(ORGANIZED_DIR, update.thumbnailImage),
         `murals/thumbs/${path.basename(update.thumbnailImage)}`
       );
     }
@@ -292,7 +298,7 @@ async function updateExistingMurals() {
     const galleryUrls: string[] = [];
     for (const img of update.galleryImages) {
       const url = await uploadToBlob(
-        path.join(ORGANIZED_DIR, img),
+        path.resolve(ORGANIZED_DIR, img),
         `murals/gallery/${path.basename(img)}`
       );
       galleryUrls.push(url);
