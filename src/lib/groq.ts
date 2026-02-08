@@ -9,4 +9,4 @@ export const groq = new Groq({
 });
 
 // Best model for creative content generation
-export const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+export const DEFAULT_MODEL = "openai/gpt-oss-120b";
