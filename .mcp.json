@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "teamwork": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "tsx",
+        "/Users/nickkulavic/Projects/Teamwork-MCP-App/teamwork-mcp/src/server.ts"
+      ],
+      "env": {
+        "CLAUDE_CODE_DEFAULT_PROJECT_ID": "753246",
+        "MCP_SERVER_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
