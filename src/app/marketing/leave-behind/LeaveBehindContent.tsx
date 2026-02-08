@@ -1,9 +1,15 @@
 import Image from "next/image";
 import { siteConfig, services } from "@/app/data/siteConfig";
-import { clients } from "@/app/data/clients";
-import { publications, festivals, exhibitions } from "@/app/data/experience";
-import { getFeaturedMurals, getMuralsByIds } from "@/app/data/murals";
-import { getFeaturedClients, getClientsByIds } from "@/app/data/clients";
+import {
+  getFeaturedMurals,
+  getMuralsByIds,
+  getFeaturedClients,
+  getClientsByIds,
+  getAllClients,
+  getAllPublications,
+  getAllFestivals,
+  getAllExhibitions,
+} from "@/db/dal";
 import { PrintStyles } from "../_components/PrintStyles";
 import { SectionTitle } from "../_components/SectionTitle";
 import { CredentialBadges } from "../_components/CredentialBadges";
@@ -16,14 +22,20 @@ interface Props {
   audience?: AudienceConfig;
 }
 
-export function LeaveBehindContent({ audience }: Props) {
+export async function LeaveBehindContent({ audience }: Props) {
   const featuredMurals = audience
-    ? getMuralsByIds(audience.featuredMuralIds)
-    : getFeaturedMurals();
+    ? await getMuralsByIds(audience.featuredMuralIds)
+    : await getFeaturedMurals();
   const featuredClients = audience
-    ? getClientsByIds(audience.featuredClientIds)
-    : getFeaturedClients();
-  const totalClients = clients.length;
+    ? await getClientsByIds(audience.featuredClientIds)
+    : await getFeaturedClients();
+  const [allClients, publications, festivals, exhibitions] = await Promise.all([
+    getAllClients(),
+    getAllPublications(),
+    getAllFestivals(),
+    getAllExhibitions(),
+  ]);
+  const totalClients = allClients.length;
   const tagline = audience?.heroTagline ?? "Transforming Spaces with Vibrant, Large-Scale Murals";
 
   return (
@@ -142,7 +154,7 @@ export function LeaveBehindContent({ audience }: Props) {
 
             <SectionTitle>Notable Clients</SectionTitle>
             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 mb-2">
-              {(audience ? featuredClients : [...featuredClients, ...clients.filter((c) => !c.featured).slice(0, 10)].slice(0, 16)).map((client) => (
+              {(audience ? featuredClients : [...featuredClients, ...allClients.filter((c) => !c.featured).slice(0, 10)].slice(0, 16)).map((client) => (
                 <div key={client.id} className="text-[8px] text-gray-500 py-0.5 border-b border-dotted border-gray-200">
                   {client.name}
                   {client.projectSize && (

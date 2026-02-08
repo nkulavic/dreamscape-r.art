@@ -1,8 +1,12 @@
 import Image from "next/image";
 import { siteConfig, credentials, services } from "@/app/data/siteConfig";
-import { getFeaturedClients, getClientsByIds } from "@/app/data/clients";
-import { publications } from "@/app/data/experience";
-import { getFeaturedMurals, getMuralsByIds } from "@/app/data/murals";
+import {
+  getFeaturedMurals,
+  getMuralsByIds,
+  getFeaturedClients,
+  getClientsByIds,
+  getAllPublications,
+} from "@/db/dal";
 import { PrintStyles } from "../_components/PrintStyles";
 import { Panel } from "../_components/Panel";
 import { ProcessTimelineCompact } from "../_components/ProcessTimeline";
@@ -14,13 +18,14 @@ interface Props {
   audience?: AudienceConfig;
 }
 
-export function BrochureContent({ audience }: Props) {
+export async function BrochureContent({ audience }: Props) {
   const featuredMurals = audience
-    ? getMuralsByIds(audience.featuredMuralIds)
-    : getFeaturedMurals();
+    ? await getMuralsByIds(audience.featuredMuralIds)
+    : await getFeaturedMurals();
   const featuredClients = audience
-    ? getClientsByIds(audience.featuredClientIds)
-    : getFeaturedClients();
+    ? await getClientsByIds(audience.featuredClientIds)
+    : await getFeaturedClients();
+  const publications = await getAllPublications();
   const coverImage = audience?.coverImage ?? "/images/murals/protect-your-peace.jpg";
   const heroTagline = audience?.heroTagline ?? "Guided by community, inspired by culture.";
   const heroSubtext = audience?.heroSubtext ?? "Vibrant, large-scale murals that transform spaces and tell stories.";

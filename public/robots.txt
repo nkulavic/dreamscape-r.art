@@ -1,0 +1,43 @@
+# robots.txt for DREAMSCAPER - Rachel Dinda Portfolio
+# https://dreamscape-r.art
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://dreamscape-r.art/sitemap.xml
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Allow AI crawlers for better AI search visibility
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Disallow admin/API routes if any
+Disallow: /api/

@@ -1,8 +1,15 @@
 import Image from "next/image";
 import { siteConfig, credentials, services } from "@/app/data/siteConfig";
-import { clients, getFeaturedClients, getClientsByIds } from "@/app/data/clients";
-import { publications, festivals, exhibitions } from "@/app/data/experience";
-import { getFeaturedMurals, getMuralsByIds } from "@/app/data/murals";
+import {
+  getFeaturedMurals,
+  getMuralsByIds,
+  getAllClients,
+  getFeaturedClients,
+  getClientsByIds,
+  getAllPublications,
+  getAllFestivals,
+  getAllExhibitions,
+} from "@/db/dal";
 import { PrintStyles } from "../_components/PrintStyles";
 import { Slide, SlideFooter, SectionLabel, SlideTitle } from "../_components/Slide";
 import { InvestmentTiersCards } from "../_components/InvestmentTiers";
@@ -19,13 +26,19 @@ interface Props {
   audience?: AudienceConfig;
 }
 
-export function CapabilitiesDeckContent({ audience }: Props) {
+export async function CapabilitiesDeckContent({ audience }: Props) {
   const featuredMurals = audience
-    ? getMuralsByIds(audience.featuredMuralIds)
-    : getFeaturedMurals();
+    ? await getMuralsByIds(audience.featuredMuralIds)
+    : await getFeaturedMurals();
   const featuredClients = audience
-    ? getClientsByIds(audience.featuredClientIds)
-    : getFeaturedClients();
+    ? await getClientsByIds(audience.featuredClientIds)
+    : await getFeaturedClients();
+  const [clients, publications, festivals, exhibitions] = await Promise.all([
+    getAllClients(),
+    getAllPublications(),
+    getAllFestivals(),
+    getAllExhibitions(),
+  ]);
   const totalClients = clients.length;
   const coverImage = audience?.coverImage ?? "/images/murals/protect-your-peace.jpg";
   const heroTagline = audience?.heroTagline ?? "Guided by community, inspired by culture.";
@@ -33,10 +46,11 @@ export function CapabilitiesDeckContent({ audience }: Props) {
   const cta = audience?.cta ?? "Get a Free Consultation";
   const faqs = audience ? getFAQsForAudience(audience.key) : getFAQsForAudience("commercial");
 
-  // Case study murals
-  const molsonCoors = featuredMurals.find((m) => m.id === "molson-coors") ?? getFeaturedMurals().find((m) => m.id === "molson-coors");
-  const hawaii = featuredMurals.find((m) => m.id === "you-can-navigate-any-current") ?? getFeaturedMurals().find((m) => m.id === "you-can-navigate-any-current");
-  const colombia = featuredMurals.find((m) => m.id === "siempre-estuvimos-aqui") ?? getFeaturedMurals().find((m) => m.id === "siempre-estuvimos-aqui");
+  // Case study murals - fetch all featured murals for fallback
+  const allFeaturedMurals = await getFeaturedMurals();
+  const molsonCoors = featuredMurals.find((m) => m.id === "molson-coors") ?? allFeaturedMurals.find((m) => m.id === "molson-coors");
+  const hawaii = featuredMurals.find((m) => m.id === "you-can-navigate-any-current") ?? allFeaturedMurals.find((m) => m.id === "you-can-navigate-any-current");
+  const colombia = featuredMurals.find((m) => m.id === "siempre-estuvimos-aqui") ?? allFeaturedMurals.find((m) => m.id === "siempre-estuvimos-aqui");
 
   // Pick top 3 case studies from audience murals (or default)
   const caseStudies = audience

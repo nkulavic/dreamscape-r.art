@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { HiLocationMarker, HiX } from "react-icons/hi";
-import { murals, Mural } from "../../data/murals";
+import type { Mural } from "@/db/dal";
 
 // Dynamic import for Leaflet to avoid SSR issues
 import dynamic from "next/dynamic";
@@ -27,6 +27,7 @@ const Popup = dynamic(
 );
 
 interface MuralMapProps {
+  murals: Mural[];
   className?: string;
   height?: string;
   showAllMurals?: boolean;
@@ -34,6 +35,7 @@ interface MuralMapProps {
 }
 
 export default function MuralMap({
+  murals,
   className = "",
   height = "h-[500px]",
   showAllMurals = true,

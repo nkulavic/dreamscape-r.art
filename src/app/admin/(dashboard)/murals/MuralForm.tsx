@@ -1,0 +1,627 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Save, Loader2, Upload, X } from "lucide-react";
+
+// Raw DB row shape used by the admin form (not the DAL's transformed Mural type)
+export interface MuralRow {
+  id: string;
+  slug: string;
+  title: string;
+  venue: string;
+  city: string;
+  state: string | null;
+  country: string;
+  lat: number | null;
+  lng: number | null;
+  year: number;
+  description: string;
+  dimensionSize: string | null;
+  dimensionUnit: string | null;
+  category: "commercial" | "community" | "education" | "international";
+  tags: string[];
+  artistNote: string;
+  inspiration: string;
+  process: string | null;
+  impact: string | null;
+  heroUrl: string;
+  thumbnailUrl: string;
+  galleryUrls: string[];
+  videoUrl: string | null;
+  clientId: string | null;
+  clientDisplayName: string | null;
+  featured: boolean;
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+export default function MuralForm({ mural }: { mural?: MuralRow }) {
+  const router = useRouter();
+  const isEdit = Boolean(mural);
+
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Form state
+  const [title, setTitle] = useState(mural?.title ?? "");
+  const [slug, setSlug] = useState(mural?.slug ?? "");
+  const [venue, setVenue] = useState(mural?.venue ?? "");
+  const [city, setCity] = useState(mural?.city ?? "");
+  const [state, setState] = useState(mural?.state ?? "");
+  const [country, setCountry] = useState(mural?.country ?? "");
+  const [lat, setLat] = useState(mural?.lat?.toString() ?? "");
+  const [lng, setLng] = useState(mural?.lng?.toString() ?? "");
+  const [year, setYear] = useState(
+    mural?.year?.toString() ?? new Date().getFullYear().toString()
+  );
+  const [description, setDescription] = useState(mural?.description ?? "");
+  const [dimensionSize, setDimensionSize] = useState(
+    mural?.dimensionSize ?? ""
+  );
+  const [dimensionUnit, setDimensionUnit] = useState(
+    mural?.dimensionUnit ?? ""
+  );
+  const [category, setCategory] = useState<string>(
+    mural?.category ?? "commercial"
+  );
+  const [tagsStr, setTagsStr] = useState(mural?.tags?.join(", ") ?? "");
+  const [artistNote, setArtistNote] = useState(mural?.artistNote ?? "");
+  const [inspiration, setInspiration] = useState(mural?.inspiration ?? "");
+  const [process, setProcess] = useState(mural?.process ?? "");
+  const [impact, setImpact] = useState(mural?.impact ?? "");
+  const [heroUrl, setHeroUrl] = useState(mural?.heroUrl ?? "");
+  const [thumbnailUrl, setThumbnailUrl] = useState(mural?.thumbnailUrl ?? "");
+  const [galleryUrls, setGalleryUrls] = useState<string[]>(
+    mural?.galleryUrls ?? []
+  );
+  const [videoUrl, setVideoUrl] = useState(mural?.videoUrl ?? "");
+  const [clientDisplayName, setClientDisplayName] = useState(
+    mural?.clientDisplayName ?? ""
+  );
+  const [featured, setFeatured] = useState(mural?.featured ?? false);
+
+  // Auto-generate slug from title (only in create mode)
+  useEffect(() => {
+    if (!isEdit) {
+      setSlug(slugify(title));
+    }
+  }, [title, isEdit]);
+
+  async function uploadFile(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/admin/upload", {
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) throw new Error("Upload failed");
+    const data = await res.json();
+    return data.url;
+  }
+
+  async function handleHeroUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadFile(file);
+      setHeroUrl(url);
+      // Also set thumbnail to same image if not already set
+      if (!thumbnailUrl) setThumbnailUrl(url);
+    } catch {
+      setError("Failed to upload hero image");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const urls = await Promise.all(
+        Array.from(files).map((f) => uploadFile(f))
+      );
+      setGalleryUrls((prev) => [...prev, ...urls]);
+    } catch {
+      setError("Failed to upload gallery images");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function removeGalleryImage(index: number) {
+    setGalleryUrls((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    const tags = tagsStr
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    const body: Record<string, unknown> = {
+      slug,
+      title,
+      venue,
+      city,
+      state: state || null,
+      country,
+      lat: lat ? parseFloat(lat) : null,
+      lng: lng ? parseFloat(lng) : null,
+      year: parseInt(year, 10),
+      description,
+      dimensionSize: dimensionSize || null,
+      dimensionUnit: dimensionUnit || null,
+      category,
+      tags,
+      artistNote,
+      inspiration,
+      process: process || null,
+      impact: impact || null,
+      heroUrl,
+      thumbnailUrl: thumbnailUrl || heroUrl,
+      galleryUrls,
+      videoUrl: videoUrl || null,
+      clientDisplayName: clientDisplayName || null,
+      featured,
+    };
+
+    if (!isEdit) {
+      body.id = crypto.randomUUID();
+    }
+
+    try {
+      const url = isEdit
+        ? `/api/admin/murals/${mural!.id}`
+        : "/api/admin/murals";
+      const method = isEdit ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to save mural");
+      }
+
+      router.push("/admin/murals");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* ── Basic Info ──────────────────────────────────── */}
+      <section className="rounded-xl bg-white p-6 shadow-sm">
+        <h2 className="mb-4 font-display text-lg text-gray-900">
+          Basic Information
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <Label htmlFor="title">Title *</Label>
+            <Input
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              placeholder="Mural title"
+              className="mt-1"
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <Label htmlFor="slug">Slug *</Label>
+            <Input
+              id="slug"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value)}
+              required
+              placeholder="mural-slug"
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="year">Year *</Label>
+            <Input
+              id="year"
+              type="number"
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              required
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="category">Category *</Label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="mt-1 w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="commercial">Commercial</SelectItem>
+                <SelectItem value="community">Community</SelectItem>
+                <SelectItem value="education">Education</SelectItem>
+                <SelectItem value="international">International</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="sm:col-span-2">
+            <Label htmlFor="description">Description *</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              rows={4}
+              placeholder="Describe the mural..."
+              className="mt-1"
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <Input
+              id="tags"
+              value={tagsStr}
+              onChange={(e) => setTagsStr(e.target.value)}
+              placeholder="mural, outdoor, abstract"
+              className="mt-1"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 sm:col-span-2">
+            <input
+              id="featured"
+              type="checkbox"
+              checked={featured}
+              onChange={(e) => setFeatured(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <Label htmlFor="featured">Featured Mural</Label>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Location ────────────────────────────────────── */}
+      <section className="rounded-xl bg-white p-6 shadow-sm">
+        <h2 className="mb-4 font-display text-lg text-gray-900">Location</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <Label htmlFor="venue">Venue *</Label>
+            <Input
+              id="venue"
+              value={venue}
+              onChange={(e) => setVenue(e.target.value)}
+              required
+              placeholder="Building or venue name"
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="city">City *</Label>
+            <Input
+              id="city"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              required
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="state">State</Label>
+            <Input
+              id="state"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="country">Country *</Label>
+            <Input
+              id="country"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              required
+              className="mt-1"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="lat">Latitude</Label>
+              <Input
+                id="lat"
+                type="number"
+                step="any"
+                value={lat}
+                onChange={(e) => setLat(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label htmlFor="lng">Longitude</Label>
+              <Input
+                id="lng"
+                type="number"
+                step="any"
+                value={lng}
+                onChange={(e) => setLng(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Dimensions & Client ─────────────────────────── */}
+      <section className="rounded-xl bg-white p-6 shadow-sm">
+        <h2 className="mb-4 font-display text-lg text-gray-900">
+          Dimensions & Client
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="dimensionSize">Dimension Size</Label>
+            <Input
+              id="dimensionSize"
+              value={dimensionSize}
+              onChange={(e) => setDimensionSize(e.target.value)}
+              placeholder='e.g. 20x40'
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="dimensionUnit">Dimension Unit</Label>
+            <Input
+              id="dimensionUnit"
+              value={dimensionUnit}
+              onChange={(e) => setDimensionUnit(e.target.value)}
+              placeholder="e.g. feet"
+              className="mt-1"
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <Label htmlFor="clientDisplayName">Client Display Name</Label>
+            <Input
+              id="clientDisplayName"
+              value={clientDisplayName}
+              onChange={(e) => setClientDisplayName(e.target.value)}
+              placeholder="Client name shown on site"
+              className="mt-1"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Artist Details ──────────────────────────────── */}
+      <section className="rounded-xl bg-white p-6 shadow-sm">
+        <h2 className="mb-4 font-display text-lg text-gray-900">
+          Artist Details
+        </h2>
+        <div className="grid gap-4">
+          <div>
+            <Label htmlFor="artistNote">Artist Note *</Label>
+            <Textarea
+              id="artistNote"
+              value={artistNote}
+              onChange={(e) => setArtistNote(e.target.value)}
+              required
+              rows={3}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="inspiration">Inspiration *</Label>
+            <Textarea
+              id="inspiration"
+              value={inspiration}
+              onChange={(e) => setInspiration(e.target.value)}
+              required
+              rows={3}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="process">Process</Label>
+            <Textarea
+              id="process"
+              value={process}
+              onChange={(e) => setProcess(e.target.value)}
+              rows={3}
+              className="mt-1"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="impact">Impact</Label>
+            <Textarea
+              id="impact"
+              value={impact}
+              onChange={(e) => setImpact(e.target.value)}
+              rows={3}
+              className="mt-1"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Media ───────────────────────────────────────── */}
+      <section className="rounded-xl bg-white p-6 shadow-sm">
+        <h2 className="mb-4 font-display text-lg text-gray-900">Media</h2>
+        <div className="grid gap-6">
+          {/* Hero Image */}
+          <div>
+            <Label>Hero Image *</Label>
+            <div className="mt-2 flex items-start gap-4">
+              {heroUrl && (
+                <div className="relative h-32 w-48 shrink-0 overflow-hidden rounded-lg border">
+                  <Image
+                    src={heroUrl}
+                    alt="Hero preview"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-gray-50">
+                  <Upload className="h-4 w-4" />
+                  {heroUrl ? "Replace" : "Upload Hero Image"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleHeroUpload}
+                    className="hidden"
+                  />
+                </label>
+                {heroUrl && (
+                  <p className="mt-2 max-w-xs truncate text-xs text-gray-500">
+                    {heroUrl}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Thumbnail URL */}
+          <div>
+            <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
+            <Input
+              id="thumbnailUrl"
+              value={thumbnailUrl}
+              onChange={(e) => setThumbnailUrl(e.target.value)}
+              placeholder="Auto-set from hero image if empty"
+              className="mt-1"
+            />
+          </div>
+
+          {/* Gallery Images */}
+          <div>
+            <Label>Gallery Images</Label>
+            {galleryUrls.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-3">
+                {galleryUrls.map((url, i) => (
+                  <div
+                    key={i}
+                    className="group relative h-24 w-32 overflow-hidden rounded-lg border"
+                  >
+                    <Image
+                      src={url}
+                      alt={`Gallery ${i + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryImage(i)}
+                      className="absolute right-1 top-1 rounded-full bg-black/60 p-0.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-gray-50">
+              <Upload className="h-4 w-4" />
+              Add Gallery Images
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleGalleryUpload}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* Video URL */}
+          <div>
+            <Label htmlFor="videoUrl">Video URL</Label>
+            <Input
+              id="videoUrl"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://..."
+              className="mt-1"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Actions ─────────────────────────────────────── */}
+      <div className="flex items-center gap-3">
+        <Button type="submit" disabled={saving || uploading}>
+          {saving ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4" />
+          )}
+          {saving ? "Saving..." : isEdit ? "Update Mural" : "Create Mural"}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push("/admin/murals")}
+        >
+          Cancel
+        </Button>
+        {uploading && (
+          <span className="flex items-center gap-2 text-sm text-gray-500">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Uploading...
+          </span>
+        )}
+      </div>
+    </form>
+  );
+}
