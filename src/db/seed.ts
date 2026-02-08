@@ -19,6 +19,8 @@ import {
 } from "../app/data/experience";
 import { videos as videoData } from "../app/data/videos";
 import { siteConfig, credentials, services } from "../app/data/siteConfig";
+import { newMurals } from "../app/data/newMurals";
+import { existingMuralUpdates } from "../app/data/existingMuralUpdates";
 
 const sql = neon(process.env.DATABASE_URL_UNPOOLED!);
 const db = drizzle(sql, { schema });
@@ -175,6 +177,157 @@ async function seedMurals() {
   }
 
   console.log(`  ✓ ${muralData.length} murals seeded`);
+}
+
+async function seedNewMurals() {
+  console.log("\n🎨 Seeding new murals from organized catalog...");
+
+  const ORGANIZED_DIR = path.resolve(process.cwd(), "_mural-images-raw/organized");
+
+  for (const mural of newMurals) {
+    console.log(`  → Processing: ${mural.title}`);
+
+    // Upload hero image
+    const heroUrl = await uploadToBlob(
+      path.join(ORGANIZED_DIR, mural.heroImage),
+      `murals/${path.basename(mural.heroImage)}`
+    );
+
+    // Upload thumbnail
+    const thumbnailUrl = await uploadToBlob(
+      path.join(ORGANIZED_DIR, mural.thumbnailImage),
+      `murals/thumbs/${path.basename(mural.thumbnailImage)}`
+    );
+
+    // Upload gallery images
+    const galleryUrls: string[] = [];
+    for (const img of mural.galleryImages) {
+      const url = await uploadToBlob(
+        path.join(ORGANIZED_DIR, img),
+        `murals/gallery/${path.basename(img)}`
+      );
+      galleryUrls.push(url);
+    }
+
+    // Upload video if present
+    let videoUrl: string | null = null;
+    if (mural.videoPath) {
+      videoUrl = await uploadToBlob(
+        path.join(ORGANIZED_DIR, mural.videoPath),
+        `videos/${path.basename(mural.videoPath)}`
+      );
+    }
+
+    // Find matching client UUID if clientDisplayName provided
+    let clientId: string | null = null;
+    if (mural.clientDisplayName) {
+      const matchingClient = clientData.find(
+        (c) => c.name.toLowerCase() === mural.clientDisplayName?.toLowerCase()
+      );
+      clientId = matchingClient ? clientSlugToId.get(matchingClient.id) || null : null;
+    }
+
+    await db
+      .insert(schema.murals)
+      .values({
+        slug: mural.slug,
+        title: mural.title,
+        venue: mural.venue,
+        city: mural.city,
+        state: mural.state || null,
+        country: mural.country,
+        lat: mural.lat || null,
+        lng: mural.lng || null,
+        year: mural.year,
+        description: mural.description,
+        dimensionSize: mural.dimensionSize || null,
+        dimensionUnit: mural.dimensionUnit || null,
+        category: mural.category,
+        tags: mural.tags,
+        artistNote: mural.artistNote,
+        inspiration: mural.inspiration,
+        process: mural.process || null,
+        impact: mural.impact || null,
+        heroUrl,
+        thumbnailUrl,
+        galleryUrls,
+        videoUrl,
+        clientId,
+        clientDisplayName: mural.clientDisplayName || null,
+        featured: mural.featured,
+      })
+      .onConflictDoNothing();
+  }
+
+  console.log(`  ✓ ${newMurals.length} new murals seeded`);
+}
+
+async function updateExistingMurals() {
+  console.log("\n🖼️  Updating existing murals with new photos...");
+
+  const ORGANIZED_DIR = path.resolve(process.cwd(), "_mural-images-raw/organized");
+
+  for (const update of existingMuralUpdates) {
+    console.log(`  → Updating: ${update.slug}`);
+
+    // Upload new hero if provided
+    let heroUrl: string | undefined;
+    if (update.heroImage) {
+      heroUrl = await uploadToBlob(
+        path.join(ORGANIZED_DIR, update.heroImage),
+        `murals/${path.basename(update.heroImage)}`
+      );
+    }
+
+    // Upload new thumbnail if provided
+    let thumbnailUrl: string | undefined;
+    if (update.thumbnailImage) {
+      thumbnailUrl = await uploadToBlob(
+        path.join(ORGANIZED_DIR, update.thumbnailImage),
+        `murals/thumbs/${path.basename(update.thumbnailImage)}`
+      );
+    }
+
+    // Upload all gallery images
+    const galleryUrls: string[] = [];
+    for (const img of update.galleryImages) {
+      const url = await uploadToBlob(
+        path.join(ORGANIZED_DIR, img),
+        `murals/gallery/${path.basename(img)}`
+      );
+      galleryUrls.push(url);
+    }
+
+    // Get existing mural to merge gallery images
+    const [existing] = await db
+      .select()
+      .from(schema.murals)
+      .where(eq(schema.murals.slug, update.slug))
+      .limit(1);
+
+    if (existing) {
+      // Merge new gallery images with existing ones (avoid duplicates)
+      const mergedGallery = [
+        ...(existing.galleryUrls || []),
+        ...galleryUrls,
+      ].filter((url, index, self) => self.indexOf(url) === index);
+
+      // Update mural
+      await db
+        .update(schema.murals)
+        .set({
+          ...(heroUrl && { heroUrl }),
+          ...(thumbnailUrl && { thumbnailUrl }),
+          galleryUrls: mergedGallery,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.murals.slug, update.slug));
+    } else {
+      console.warn(`  ⚠ Mural not found: ${update.slug}`);
+    }
+  }
+
+  console.log(`  ✓ ${existingMuralUpdates.length} murals updated`);
 }
 
 async function seedExhibitions() {
@@ -374,6 +527,8 @@ async function main() {
     await clearContentTables();
     await seedClients();
     await seedMurals();
+    await seedNewMurals();
+    await updateExistingMurals();
     await seedExhibitions();
     await seedFestivals();
     await seedPublications();
