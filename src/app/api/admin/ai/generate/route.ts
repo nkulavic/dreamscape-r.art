@@ -21,6 +21,7 @@ interface GenerateRequest {
     year?: number;
     category?: string;
     existingContent?: string;
+    userInput?: string;
   };
 }
 
@@ -34,19 +35,19 @@ const SYSTEM_PROMPT = `You are an expert art writer helping a professional mural
 Keep responses focused and avoid unnecessary preamble.`;
 
 const PROMPTS = {
-  description: (ctx: GenerateRequest["context"]) => `Write a compelling 2-3 sentence description for a mural titled "${ctx.title}" located at ${ctx.venue} in ${ctx.city}, ${ctx.country}. Category: ${ctx.category}. Focus on visual elements and the story the mural tells. Write in third person.`,
+  description: (ctx: GenerateRequest["context"]) => `Write a compelling 2-3 sentence description for a mural titled "${ctx.title}" located at ${ctx.venue} in ${ctx.city}, ${ctx.country}. Category: ${ctx.category}. Focus on visual elements and the story the mural tells. Write in third person.${ctx.userInput ? `\n\nAdditional context from the artist: ${ctx.userInput}` : ""}`,
 
-  artistNote: (ctx: GenerateRequest["context"]) => `Write a personal artist statement (2-3 sentences) in first person about creating the mural "${ctx.title}" at ${ctx.venue}. Explain what this piece means to you as the artist. Be authentic and heartfelt.`,
+  artistNote: (ctx: GenerateRequest["context"]) => `Write a personal artist statement (2-3 sentences) in first person about creating the mural "${ctx.title}" at ${ctx.venue}. Explain what this piece means to you as the artist. Be authentic and heartfelt.${ctx.userInput ? `\n\nArtist's thoughts: ${ctx.userInput}` : ""}`,
 
-  inspiration: (ctx: GenerateRequest["context"]) => `Write 2-3 sentences in first person explaining what inspired the mural "${ctx.title}". What themes, experiences, or ideas drove the creative vision? Connect it to broader artistic or social themes.`,
+  inspiration: (ctx: GenerateRequest["context"]) => `Write 2-3 sentences in first person explaining what inspired the mural "${ctx.title}". What themes, experiences, or ideas drove the creative vision? Connect it to broader artistic or social themes.${ctx.userInput ? `\n\nInspiration notes: ${ctx.userInput}` : ""}`,
 
-  process: (ctx: GenerateRequest["context"]) => `Write 2-3 sentences in first person about the process of creating "${ctx.title}" at ${ctx.venue}. Mention interesting challenges, techniques, timeline, or collaboration aspects.`,
+  process: (ctx: GenerateRequest["context"]) => `Write 2-3 sentences in first person about the process of creating "${ctx.title}" at ${ctx.venue}. Mention interesting challenges, techniques, timeline, or collaboration aspects.${ctx.userInput ? `\n\nProcess details: ${ctx.userInput}` : ""}`,
 
-  impact: (ctx: GenerateRequest["context"]) => `Write 2-3 sentences about the impact of the mural "${ctx.title}" on the community or viewers. How has it been received? What conversations has it sparked? Write in first person or third person as appropriate.`,
+  impact: (ctx: GenerateRequest["context"]) => `Write 2-3 sentences about the impact of the mural "${ctx.title}" on the community or viewers. How has it been received? What conversations has it sparked? Write in first person or third person as appropriate.${ctx.userInput ? `\n\nImpact observations: ${ctx.userInput}` : ""}`,
 
-  keywords: (ctx: GenerateRequest["context"]) => `Generate 6-8 relevant SEO keywords (tags) for a ${ctx.category} mural titled "${ctx.title}" in ${ctx.city}, ${ctx.country}. Return ONLY a comma-separated list of single words or short phrases. Examples: ocean, conservation, woman, empowerment, community, portrait, nature, urban art, public art, etc.`,
+  keywords: (ctx: GenerateRequest["context"]) => `Generate 6-8 relevant SEO keywords (tags) for a ${ctx.category} mural titled "${ctx.title}" in ${ctx.city}, ${ctx.country}. ${ctx.userInput ? `Focus on these themes: ${ctx.userInput}. ` : ""}Return ONLY a comma-separated list of single words or short phrases. Examples: ocean, conservation, woman, empowerment, community, portrait, nature, urban art, public art, etc.`,
 
-  title: (ctx: GenerateRequest["context"]) => `Suggest 3 compelling, poetic titles for a ${ctx.category} mural at ${ctx.venue} in ${ctx.city}. ${ctx.existingContent ? `Current working title: "${ctx.existingContent}". ` : ""}Return ONLY 3 title options, one per line, without numbering or explanation. Titles should be 2-5 words, evocative and memorable.`,
+  title: (ctx: GenerateRequest["context"]) => `Suggest 3 compelling, poetic titles for a ${ctx.category} mural at ${ctx.venue} in ${ctx.city}. ${ctx.existingContent ? `Current working title: "${ctx.existingContent}". ` : ""}${ctx.userInput ? `Theme/mood: ${ctx.userInput}. ` : ""}Return ONLY 3 title options, one per line, without numbering or explanation. Titles should be 2-5 words, evocative and memorable.`,
 };
 
 export async function POST(request: Request) {
