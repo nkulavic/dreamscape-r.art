@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { groq, DEFAULT_MODEL } from "@/lib/groq";
 
 export const runtime = "nodejs";
@@ -52,13 +50,7 @@ const PROMPTS = {
 };
 
 export async function POST(request: Request) {
-  // Check authentication
-  const session = await auth.api.getSession({ headers: await headers() });
-
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+  // Authentication is handled by middleware
   try {
     const body: GenerateRequest = await request.json();
     const { type, context } = body;
