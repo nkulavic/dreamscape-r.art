@@ -107,13 +107,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ content: generatedText });
   } catch (error) {
     console.error("AI generation error:", error);
-    if (error instanceof Error) {
-      console.error("Error details:", error.message, error.stack);
-    }
+
+    // Log full error details for debugging
+    const errorDetails = {
+      message: error instanceof Error ? error.message : String(error),
+      name: error instanceof Error ? error.name : 'Unknown',
+      stack: error instanceof Error ? error.stack : undefined,
+      raw: JSON.stringify(error, null, 2),
+    };
+
+    console.error("Full error details:", errorDetails);
+
     return NextResponse.json(
       {
         error: "Failed to generate content",
-        details: error instanceof Error ? error.message : "Unknown error",
+        details: errorDetails.message,
+        debug: process.env.NODE_ENV === 'development' ? errorDetails : undefined,
       },
       { status: 500 }
     );
