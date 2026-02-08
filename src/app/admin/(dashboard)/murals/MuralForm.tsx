@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Save, Loader2, Upload, X } from "lucide-react";
+import AIGenerateButton from "./AIGenerateButton";
 
 // Raw DB row shape used by the admin form (not the DAL's transformed Mural type)
 export interface MuralRow {
@@ -238,7 +239,26 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <Label htmlFor="title">Title *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="title">Title *</Label>
+              <AIGenerateButton
+                type="title"
+                context={{
+                  venue,
+                  city,
+                  country,
+                  year: year ? parseInt(year) : undefined,
+                  category,
+                  existingContent: title,
+                }}
+                onGenerated={(content) => {
+                  if (Array.isArray(content) && content.length > 0) {
+                    setTitle(content[0]);
+                  }
+                }}
+                disabled={!venue || !city}
+              />
+            </div>
             <Input
               id="title"
               value={title}
@@ -289,7 +309,26 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
           </div>
 
           <div className="sm:col-span-2">
-            <Label htmlFor="description">Description *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Description *</Label>
+              <AIGenerateButton
+                type="description"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: year ? parseInt(year) : undefined,
+                  category,
+                }}
+                onGenerated={(content) => {
+                  if (typeof content === "string") {
+                    setDescription(content);
+                  }
+                }}
+                disabled={!title || !venue}
+              />
+            </div>
             <Textarea
               id="description"
               value={description}
@@ -302,7 +341,26 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
           </div>
 
           <div className="sm:col-span-2">
-            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <AIGenerateButton
+                type="keywords"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: year ? parseInt(year) : undefined,
+                  category,
+                }}
+                onGenerated={(content) => {
+                  if (Array.isArray(content)) {
+                    setTagsStr(content.join(", "));
+                  }
+                }}
+                disabled={!title}
+              />
+            </div>
             <Input
               id="tags"
               value={tagsStr}
@@ -448,7 +506,26 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
         </h2>
         <div className="grid gap-4">
           <div>
-            <Label htmlFor="artistNote">Artist Note *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="artistNote">Artist Note *</Label>
+              <AIGenerateButton
+                type="artistNote"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: year ? parseInt(year) : undefined,
+                  category,
+                }}
+                onGenerated={(content) => {
+                  if (typeof content === "string") {
+                    setArtistNote(content);
+                  }
+                }}
+                disabled={!title || !venue}
+              />
+            </div>
             <Textarea
               id="artistNote"
               value={artistNote}
@@ -460,7 +537,26 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
           </div>
 
           <div>
-            <Label htmlFor="inspiration">Inspiration *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="inspiration">Inspiration *</Label>
+              <AIGenerateButton
+                type="inspiration"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: year ? parseInt(year) : undefined,
+                  category,
+                }}
+                onGenerated={(content) => {
+                  if (typeof content === "string") {
+                    setInspiration(content);
+                  }
+                }}
+                disabled={!title || !venue}
+              />
+            </div>
             <Textarea
               id="inspiration"
               value={inspiration}
@@ -472,7 +568,26 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
           </div>
 
           <div>
-            <Label htmlFor="process">Process</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="process">Process</Label>
+              <AIGenerateButton
+                type="process"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: year ? parseInt(year) : undefined,
+                  category,
+                }}
+                onGenerated={(content) => {
+                  if (typeof content === "string") {
+                    setProcess(content);
+                  }
+                }}
+                disabled={!title || !venue}
+              />
+            </div>
             <Textarea
               id="process"
               value={process}
@@ -483,7 +598,26 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
           </div>
 
           <div>
-            <Label htmlFor="impact">Impact</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="impact">Impact</Label>
+              <AIGenerateButton
+                type="impact"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: year ? parseInt(year) : undefined,
+                  category,
+                }}
+                onGenerated={(content) => {
+                  if (typeof content === "string") {
+                    setImpact(content);
+                  }
+                }}
+                disabled={!title || !venue}
+              />
+            </div>
             <Textarea
               id="impact"
               value={impact}
