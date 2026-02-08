@@ -90,6 +90,20 @@ All media is served from **Vercel Blob** (`*.public.blob.vercel-storage.com`). I
 
 Vercel with auto-deploy from GitHub master branch. Security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy) configured in `vercel.json`. Redirect: `/home` → `/`.
 
+### Manual Deploy Trigger
+
+To trigger a production deployment manually (bypassing git push):
+
+```bash
+curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_OfYPlw7jJasdxfm26PbiPXMRFZIz/Iavom6qSdp
+```
+
+Or use the Vercel CLI:
+
+```bash
+vercel --prod --yes
+```
+
 ## Pending Work
 
 ### Website Cleanup & Optimization
