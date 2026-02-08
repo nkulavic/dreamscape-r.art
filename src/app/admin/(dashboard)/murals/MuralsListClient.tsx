@@ -3,9 +3,10 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import type { Mural } from "@/db/schema";
+import * as schema from "@/db/schema";
 import MuralActions from "./MuralActions";
 
+type Mural = typeof schema.murals.$inferSelect;
 type SortField = "title" | "category" | "city" | "year" | "featured";
 type SortDirection = "asc" | "desc";
 
