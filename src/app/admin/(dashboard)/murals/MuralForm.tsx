@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Save, Loader2, Upload, X } from "lucide-react";
 import AIGenerateButton from "./AIGenerateButton";
+import AIGenerateAllButton from "./AIGenerateAllButton";
 
 // Raw DB row shape used by the admin form (not the DAL's transformed Mural type)
 export interface MuralRow {
@@ -501,9 +502,30 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
 
       {/* ── Artist Details ──────────────────────────────── */}
       <section className="rounded-xl bg-white p-6 shadow-sm">
-        <h2 className="mb-4 font-display text-lg text-gray-900">
-          Artist Details
-        </h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-display text-lg text-gray-900">
+            Artist Details
+          </h2>
+          <AIGenerateAllButton
+            context={{
+              title,
+              venue,
+              city,
+              country,
+              year: year ? parseInt(year) : undefined,
+              category,
+            }}
+            onGenerated={(results) => {
+              if (results.description) setDescription(results.description);
+              if (results.artistNote) setArtistNote(results.artistNote);
+              if (results.inspiration) setInspiration(results.inspiration);
+              if (results.process) setProcess(results.process);
+              if (results.impact) setImpact(results.impact);
+              if (results.keywords) setTagsStr(results.keywords.join(", "));
+            }}
+            disabled={!title || !venue}
+          />
+        </div>
         <div className="grid gap-4">
           <div>
             <div className="flex items-center justify-between">

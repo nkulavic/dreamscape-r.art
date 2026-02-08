@@ -24,7 +24,6 @@ interface AIGenerateButtonProps {
   };
   onGenerated: (content: string | string[]) => void;
   disabled?: boolean;
-  size?: "sm" | "default" | "lg" | "icon";
 }
 
 export default function AIGenerateButton({
@@ -32,7 +31,6 @@ export default function AIGenerateButton({
   context,
   onGenerated,
   disabled,
-  size = "sm",
 }: AIGenerateButtonProps) {
   const [generating, setGenerating] = useState(false);
 
@@ -82,20 +80,15 @@ export default function AIGenerateButton({
       type="button"
       onClick={handleGenerate}
       disabled={disabled || generating}
-      size={size}
+      size="icon"
       variant="outline"
-      className="gap-2"
+      className="h-8 w-8 cursor-pointer"
+      title={generating ? "Generating..." : "Generate with AI"}
     >
       {generating ? (
-        <>
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          Generating...
-        </>
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
       ) : (
-        <>
-          <Sparkles className="h-3.5 w-3.5" />
-          Generate with AI
-        </>
+        <Sparkles className="h-3.5 w-3.5" />
       )}
     </Button>
   );
