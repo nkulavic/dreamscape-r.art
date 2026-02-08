@@ -17,19 +17,20 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      const { error: signInError } = await signIn.email({
+      const result = await signIn.email({
         email,
         password,
         callbackURL: "/admin",
       });
 
-      if (signInError) {
-        setError(signInError.message || "Invalid email or password.");
+      if (result.error) {
+        setError(result.error.message || "Invalid email or password.");
       } else {
         router.push("/admin");
       }
-    } catch {
-      setError("Something went wrong. Please try again.");
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
