@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface AIGenerateButtonProps {
   type:
@@ -36,12 +37,12 @@ export default function AIGenerateButton({
 
   async function handleGenerate() {
     if (!context.title && type !== "title") {
-      alert("Please enter a title first");
+      toast.error("Please enter a title first");
       return;
     }
 
     if (!context.venue && type !== "title") {
-      alert("Please enter a venue first");
+      toast.error("Please enter a venue first");
       return;
     }
 
@@ -69,7 +70,7 @@ export default function AIGenerateButton({
       }
     } catch (error) {
       console.error("AI generation error:", error);
-      alert("Failed to generate content. Please try again.");
+      toast.error("Failed to generate content. Please try again.");
     } finally {
       setGenerating(false);
     }

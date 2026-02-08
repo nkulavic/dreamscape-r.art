@@ -52,17 +52,14 @@ const PROMPTS = {
 };
 
 export async function POST(request: Request) {
+  // Check authentication
+  const session = await auth.api.getSession({ headers: await headers() });
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    // Check authentication
-    const headersList = await headers();
-    const session = await auth.api.getSession({ headers: headersList });
-
-    if (!session) {
-      console.error("No session found");
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    console.log("Session found:", session.user.email);
     const body: GenerateRequest = await request.json();
     const { type, context } = body;
 

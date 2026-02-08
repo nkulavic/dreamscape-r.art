@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface AIGenerateAllButtonProps {
   context: {
@@ -47,11 +48,12 @@ export default function AIGenerateAllButton({
 
   async function handleGenerateAll() {
     if (!context.title || !context.venue) {
-      alert("Please enter a title and venue first");
+      toast.error("Please enter a title and venue first");
       return;
     }
 
     setGenerating(true);
+    toast.loading("Generating all content...");
     try {
       // Generate all content types in parallel
       const [
@@ -79,9 +81,13 @@ export default function AIGenerateAllButton({
         impact: impactData.content,
         keywords: keywordsData.keywords || [],
       });
+
+      toast.dismiss();
+      toast.success("All content generated successfully!");
     } catch (error) {
       console.error("AI generation error:", error);
-      alert("Failed to generate content. Please try again.");
+      toast.dismiss();
+      toast.error("Failed to generate content. Please try again.");
     } finally {
       setGenerating(false);
     }
