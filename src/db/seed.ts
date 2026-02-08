@@ -3,6 +3,7 @@ config({ path: ".env.local" });
 
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { eq } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import * as fs from "fs";
 import * as path from "path";
@@ -286,10 +287,27 @@ async function seedSiteSettings() {
 async function seedAdminUser() {
   console.log("\n👤 Seeding admin user...");
 
-  // Use Better Auth's API to create an admin user
-  // We'll use a simple hash for the password
   const { default: crypto } = await import("crypto");
+
+  // Hash password using Better Auth's exact algorithm:
+  // @noble/hashes scrypt with N=16384, r=16, p=1, dkLen=64
+  const { scrypt } = await import("@noble/hashes/scrypt.js");
+  const { bytesToHex } = await import("@noble/hashes/utils.js");
+
+  const saltBytes = crypto.getRandomValues(new Uint8Array(16));
+  const salt = bytesToHex(saltBytes);
+  const keyBytes = scrypt("admin123", saltBytes, { N: 16384, r: 16, p: 1, dkLen: 64 });
+  const hash = bytesToHex(keyBytes);
+
   const id = crypto.randomUUID();
+
+  // Delete existing admin user + account to allow re-seeding with correct hash
+  await db.delete(schema.account).where(
+    eq(schema.account.providerId, "credential")
+  );
+  await db.delete(schema.user).where(
+    eq(schema.user.email, "admin@dreamscape-r.art")
+  );
 
   await db
     .insert(schema.user)
@@ -299,17 +317,9 @@ async function seedAdminUser() {
       email: "admin@dreamscape-r.art",
       emailVerified: true,
       role: "admin",
-    })
-    .onConflictDoNothing();
+    });
 
-  // Create account with password
   const accountId = crypto.randomUUID();
-  // Better Auth uses scrypt for passwords - we'll set a temp one
-  // The admin should change it on first login
-  const { scryptSync, randomBytes } = await import("crypto");
-  const salt = randomBytes(16).toString("hex");
-  const hash = scryptSync("admin123", salt, 64).toString("hex");
-
   await db
     .insert(schema.account)
     .values({
@@ -318,8 +328,7 @@ async function seedAdminUser() {
       providerId: "credential",
       userId: id,
       password: `${salt}:${hash}`,
-    })
-    .onConflictDoNothing();
+    });
 
   console.log(`  ✓ Admin user created (email: admin@dreamscape-r.art, password: admin123)`);
   console.log(`  ⚠ CHANGE THIS PASSWORD after first login!`);

@@ -6,8 +6,10 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/admin") &&
     !request.nextUrl.pathname.startsWith("/admin/login")
   ) {
-    // Check for Better Auth session cookie
-    const sessionCookie = request.cookies.get("better-auth.session_token");
+    // Check for Better Auth session cookie (prefixed with __Secure- on HTTPS)
+    const sessionCookie =
+      request.cookies.get("__Secure-better-auth.session_token") ||
+      request.cookies.get("better-auth.session_token");
 
     if (!sessionCookie) {
       const loginUrl = new URL("/admin/login", request.url);
