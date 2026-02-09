@@ -12,7 +12,8 @@ const getBaseURL = () => {
 export const auth = betterAuth({
   baseURL: getBaseURL(),
   trustedOrigins: [
-    "https://dreamscape-rart.vercel.app",
+    "https://dreamscaper.art",
+    "https://www.dreamscaper.art",
     "https://*.vercel.app",
   ],
   database: drizzleAdapter(db, {
