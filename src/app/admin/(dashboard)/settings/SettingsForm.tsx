@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import AIGenerateSEOButton from "./AIGenerateSEOButton";
 
 interface SettingsFormProps {
   settings: Record<string, string>;
@@ -27,9 +28,9 @@ const SOCIAL_FIELDS = [
 ];
 
 const SEO_FIELDS = [
-  { key: "seo.defaultTitle", label: "Default Site Title" },
-  { key: "seo.defaultDescription", label: "Default Meta Description", multiline: true },
-  { key: "seo.defaultKeywords", label: "Default Keywords (comma-separated)" },
+  { key: "seo.defaultTitle", label: "Default Site Title", aiType: "seo-title" as const },
+  { key: "seo.defaultDescription", label: "Default Meta Description", multiline: true, aiType: "seo-description" as const },
+  { key: "seo.defaultKeywords", label: "Default Keywords (comma-separated)", aiType: "seo-keywords" as const },
   { key: "seo.ogImage", label: "Default OG Image URL" },
   { key: "seo.twitterHandle", label: "Twitter Handle (e.g., @dreamscape_r)" },
 ];
@@ -80,12 +81,21 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     }
   }
 
-  function renderField(field: { key: string; label: string; multiline?: boolean }) {
+  function renderField(field: { key: string; label: string; multiline?: boolean; aiType?: "seo-title" | "seo-description" | "seo-keywords" }) {
     return (
       <div key={field.key}>
-        <label className="block text-sm font-medium text-gray-700">
-          {field.label}
-        </label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-gray-700">
+            {field.label}
+          </label>
+          {field.aiType && (
+            <AIGenerateSEOButton
+              type={field.aiType}
+              currentValue={values[field.key] || ""}
+              onGenerated={(content) => handleChange(field.key, content)}
+            />
+          )}
+        </div>
         {field.multiline ? (
           <textarea
             value={values[field.key] || ""}

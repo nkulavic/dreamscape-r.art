@@ -12,7 +12,10 @@ interface GenerateRequest {
     | "process"
     | "impact"
     | "keywords"
-    | "title";
+    | "title"
+    | "seo-title"
+    | "seo-description"
+    | "seo-keywords";
   context: {
     title?: string;
     venue?: string;
@@ -22,6 +25,8 @@ interface GenerateRequest {
     category?: string;
     existingContent?: string;
     userInput?: string;
+    systemPrompt?: string;
+    userPrompt?: string;
   };
 }
 
@@ -48,6 +53,12 @@ const PROMPTS = {
   keywords: (ctx: GenerateRequest["context"]) => `Generate 6-8 relevant SEO keywords (tags) for a ${ctx.category} mural titled "${ctx.title}" in ${ctx.city}, ${ctx.country}. ${ctx.userInput ? `Focus on these themes: ${ctx.userInput}. ` : ""}Return ONLY a comma-separated list of single words or short phrases. Examples: ocean, conservation, woman, empowerment, community, portrait, nature, urban art, public art, etc.`,
 
   title: (ctx: GenerateRequest["context"]) => `Suggest 3 compelling, poetic titles for a ${ctx.category} mural at ${ctx.venue} in ${ctx.city}. ${ctx.existingContent ? `Current working title: "${ctx.existingContent}". ` : ""}${ctx.userInput ? `Theme/mood: ${ctx.userInput}. ` : ""}Return ONLY 3 title options, one per line, without numbering or explanation. Titles should be 2-5 words, evocative and memorable.`,
+
+  "seo-title": (ctx: GenerateRequest["context"]) => `Generate a compelling, SEO-optimized meta title for a professional muralist's portfolio website (DREAMSCAPER by Rachel Dinda). The title should be under 60 characters and include key terms that potential clients would search for. ${ctx.existingContent ? `Current title: "${ctx.existingContent}". ` : ""}Focus on: professional muralist, large-scale art, public art, commissions.`,
+
+  "seo-description": (ctx: GenerateRequest["context"]) => `Write an SEO-optimized meta description for a professional muralist's portfolio website (DREAMSCAPER by Rachel Dinda). Must be under 160 characters and include a clear call-to-action. ${ctx.existingContent ? `Current description: "${ctx.existingContent}". ` : ""}Highlight expertise, types of work (commercial, community, public art), and encourage potential clients to commission work.`,
+
+  "seo-keywords": (ctx: GenerateRequest["context"]) => `Generate 10-15 high-traffic SEO keywords for a professional muralist's portfolio website. ${ctx.existingContent ? `Current keywords: "${ctx.existingContent}". ` : ""}Include: service keywords (mural artist, muralist, public art), location keywords (Denver, Colorado), style keywords (large-scale, street art, outdoor art), and client intent keywords (mural commission, hire muralist). Return ONLY a comma-separated list.`,
 };
 
 export async function POST(request: Request) {
