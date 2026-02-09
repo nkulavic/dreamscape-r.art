@@ -26,6 +26,14 @@ const SOCIAL_FIELDS = [
   { key: "social.pinterest", label: "Pinterest" },
 ];
 
+const SEO_FIELDS = [
+  { key: "seo.defaultTitle", label: "Default Site Title" },
+  { key: "seo.defaultDescription", label: "Default Meta Description", multiline: true },
+  { key: "seo.defaultKeywords", label: "Default Keywords (comma-separated)" },
+  { key: "seo.ogImage", label: "Default OG Image URL" },
+  { key: "seo.twitterHandle", label: "Twitter Handle (e.g., @dreamscape_r)" },
+];
+
 export default function SettingsForm({ settings }: SettingsFormProps) {
   const [values, setValues] = useState<Record<string, string>>({ ...settings });
   const [saving, setSaving] = useState(false);
@@ -41,7 +49,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     setSaving(true);
     setSaved(false);
 
-    const allKeys = [...BASIC_FIELDS, ...CONTACT_FIELDS, ...SOCIAL_FIELDS].map(
+    const allKeys = [...BASIC_FIELDS, ...CONTACT_FIELDS, ...SOCIAL_FIELDS, ...SEO_FIELDS].map(
       (f) => f.key
     );
 
@@ -72,18 +80,27 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
     }
   }
 
-  function renderField(field: { key: string; label: string }) {
+  function renderField(field: { key: string; label: string; multiline?: boolean }) {
     return (
       <div key={field.key}>
         <label className="block text-sm font-medium text-gray-700">
           {field.label}
         </label>
-        <input
-          type="text"
-          value={values[field.key] || ""}
-          onChange={(e) => handleChange(field.key, e.target.value)}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-500 focus:outline-none"
-        />
+        {field.multiline ? (
+          <textarea
+            value={values[field.key] || ""}
+            onChange={(e) => handleChange(field.key, e.target.value)}
+            rows={3}
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-500 focus:outline-none"
+          />
+        ) : (
+          <input
+            type="text"
+            value={values[field.key] || ""}
+            onChange={(e) => handleChange(field.key, e.target.value)}
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-500 focus:outline-none"
+          />
+        )}
       </div>
     );
   }
@@ -107,6 +124,17 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Social</h2>
         <div className="grid grid-cols-2 gap-4">
           {SOCIAL_FIELDS.map(renderField)}
+        </div>
+      </div>
+
+      {/* SEO */}
+      <div>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">SEO (Search Engine Optimization)</h2>
+        <p className="mb-4 text-sm text-gray-600">
+          Default SEO settings for the site. Individual content pages may override these with their own metadata.
+        </p>
+        <div className="space-y-4">
+          {SEO_FIELDS.map(renderField)}
         </div>
       </div>
 

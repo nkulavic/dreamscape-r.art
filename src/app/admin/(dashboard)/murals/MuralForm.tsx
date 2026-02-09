@@ -740,6 +740,84 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
         </div>
       </section>
 
+      {/* ── SEO Preview ────────────────────────────────────── */}
+      <section className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-6">
+        <h2 className="mb-4 font-display text-lg text-gray-900">
+          SEO Preview
+        </h2>
+        <p className="text-sm text-gray-600 mb-4">
+          This shows how your mural will appear in search engines and social media. SEO is automatically generated from the title, description, tags, and images above.
+        </p>
+
+        {/* Meta Title */}
+        <div>
+          <Label className="text-xs text-gray-500 uppercase tracking-wide">Meta Title</Label>
+          <p className="mt-1 text-sm font-medium text-gray-900">
+            {title ? `${title} | DREAMSCAPER` : "Untitled Mural | DREAMSCAPER"}
+          </p>
+        </div>
+
+        {/* Meta Description */}
+        <div>
+          <Label className="text-xs text-gray-500 uppercase tracking-wide">Meta Description</Label>
+          <p className="mt-1 text-sm text-gray-700 line-clamp-2">
+            {description || "No description provided"}
+          </p>
+        </div>
+
+        {/* Keywords */}
+        <div>
+          <Label className="text-xs text-gray-500 uppercase tracking-wide">Keywords</Label>
+          <p className="mt-1 text-sm text-gray-700">
+            {(() => {
+              const keywords = [
+                ...tagsStr.split(',').map(t => t.trim()).filter(Boolean),
+                category ? `${category} mural` : '',
+                city ? `${city} mural` : '',
+                state || country,
+                'Rachel Dinda',
+                'DREAMSCAPER',
+              ].filter(Boolean);
+              return keywords.length > 0 ? keywords.join(', ') : 'No keywords';
+            })()}
+          </p>
+        </div>
+
+        {/* Open Graph Image */}
+        <div>
+          <Label className="text-xs text-gray-500 uppercase tracking-wide">Open Graph Image (Social Media)</Label>
+          {heroUrl ? (
+            <div className="mt-2 relative h-32 w-64 overflow-hidden rounded-lg border border-gray-300">
+              <Image
+                src={heroUrl}
+                alt="OG Image Preview"
+                fill
+                className="object-cover"
+                sizes="256px"
+              />
+            </div>
+          ) : (
+            <p className="mt-1 text-sm text-gray-500 italic">No hero image selected</p>
+          )}
+        </div>
+
+        {/* Search Preview */}
+        <div className="mt-6 pt-6 border-t border-gray-300">
+          <Label className="text-xs text-gray-500 uppercase tracking-wide">Google Search Preview</Label>
+          <div className="mt-2 p-4 bg-white rounded border border-gray-200">
+            <p className="text-blue-600 text-lg hover:underline cursor-pointer">
+              {title || "Untitled Mural"} | DREAMSCAPER
+            </p>
+            <p className="text-green-700 text-xs mt-1">
+              https://dreamscaper.art/portfolio/{slug || 'mural-slug'}
+            </p>
+            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+              {description || "No description provided"}
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── Actions ─────────────────────────────────────── */}
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={saving || uploading}>
