@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
@@ -25,8 +26,10 @@ const staggerContainer = {
   },
 };
 
+const ROTATION_INTERVAL = 12000; // 12 seconds
+
 export default function Home({
-  featuredMurals,
+  featuredMurals: initialMurals,
   featuredClients,
   featuredVideos,
 }: {
@@ -34,6 +37,32 @@ export default function Home({
   featuredClients: Client[];
   featuredVideos: Video[];
 }) {
+  const [featuredMurals, setFeaturedMurals] = useState<Mural[]>(initialMurals);
+  const [isRotating, setIsRotating] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      setIsRotating(true);
+
+      try {
+        const response = await fetch("/api/featured/murals");
+        if (response.ok) {
+          const newMurals = await response.json();
+
+          // Fade out, then update
+          setTimeout(() => {
+            setFeaturedMurals(newMurals);
+            setIsRotating(false);
+          }, 500);
+        }
+      } catch (error) {
+        console.error("Failed to fetch new featured murals:", error);
+        setIsRotating(false);
+      }
+    }, ROTATION_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, []);
   return (
     <>
       <Header variant="transparent" />
@@ -75,50 +104,49 @@ export default function Home({
               </motion.h2>
             </motion.div>
 
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            >
-              {featuredMurals.map((mural) => (
-                <motion.div
-                  key={mural.id}
-                  variants={fadeInUp}
-                  className="group"
-                >
-                  <Link href={`/portfolio/${mural.slug}`}>
-                    <div className="card overflow-hidden">
-                      <div className="aspect-[4/3] relative image-zoom bg-gray-200">
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ocean-deep/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                          style={{
-                            backgroundImage: `url(${mural.images.hero})`,
-                            backgroundColor: "#e5e7eb",
-                          }}
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                          <span className="text-accent-light text-sm font-heading uppercase tracking-wide">
-                            {mural.category}
-                          </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <AnimatePresence mode="wait">
+                {featuredMurals.map((mural, index) => (
+                  <motion.div
+                    key={`${mural.id}-${index}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: isRotating ? 0 : 1, y: isRotating ? -20 : 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="group"
+                  >
+                    <Link href={`/portfolio/${mural.slug}`}>
+                      <div className="card overflow-hidden">
+                        <div className="aspect-[4/3] relative image-zoom bg-gray-200">
+                          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ocean-deep/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          <div
+                            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                            style={{
+                              backgroundImage: `url(${mural.images.hero})`,
+                              backgroundColor: "#e5e7eb",
+                            }}
+                          />
+                          <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                            <span className="text-accent-light text-sm font-heading uppercase tracking-wide">
+                              {mural.category}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-6">
+                          <h3 className="font-heading font-bold text-xl text-gray-800 mb-2">
+                            {mural.title}
+                          </h3>
+                          <p className="text-gray-600">
+                            {mural.location.venue ? `${mural.location.venue}, ` : ""}
+                            {mural.location.city}, {mural.location.state || mural.location.country}
+                          </p>
                         </div>
                       </div>
-                      <div className="p-6">
-                        <h3 className="font-heading font-bold text-xl text-gray-800 mb-2">
-                          {mural.title}
-                        </h3>
-                        <p className="text-gray-600">
-                          {mural.location.venue ? `${mural.location.venue}, ` : ""}
-                          {mural.location.city}, {mural.location.state || mural.location.country}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}

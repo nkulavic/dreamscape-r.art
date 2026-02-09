@@ -18,13 +18,13 @@ export default async function HomePage() {
     getFeaturedVideos(),
   ]);
 
-  // Randomize featured content and show 3 random items
-  const randomMurals = shuffle(murals).slice(0, 3);
+  // Initial random murals (client will rotate them automatically)
+  const initialMurals = shuffle(murals).slice(0, 3);
   const randomVideos = shuffle(videos).slice(0, 3);
 
   return (
     <Home
-      featuredMurals={randomMurals}
+      featuredMurals={initialMurals}
       featuredClients={clients}
       featuredVideos={randomVideos}
     />
