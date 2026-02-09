@@ -63,7 +63,8 @@ export default function Home({
 
   // Set up independent rotation timers for each mural position
   useEffect(() => {
-    if (allFeaturedMurals.length === 0) return;
+    // Don't rotate if there are 3 or fewer featured murals total
+    if (allFeaturedMurals.length === 0 || allFeaturedMurals.length <= 3) return;
 
     const intervals = ROTATION_INTERVALS.map((interval, index) => {
       return setInterval(() => {
