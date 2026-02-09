@@ -31,6 +31,11 @@ export interface Mural {
   };
   video?: string;
   client?: string;
+  seo?: {
+    title?: string;
+    description?: string;
+    keywords?: string;
+  };
   featured: boolean;
 }
 
@@ -115,6 +120,14 @@ function transformMural(row: typeof schema.murals.$inferSelect): Mural {
     },
     video: row.videoUrl || undefined,
     client: row.clientDisplayName || undefined,
+    seo:
+      row.seoTitle || row.seoDescription || row.seoKeywords
+        ? {
+            title: row.seoTitle || undefined,
+            description: row.seoDescription || undefined,
+            keywords: row.seoKeywords || undefined,
+          }
+        : undefined,
     featured: row.featured,
   };
 }

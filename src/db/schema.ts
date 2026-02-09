@@ -102,6 +102,11 @@ export const murals = pgTable("murals", {
   clientId: uuid("client_id").references(() => clients.id),
   clientDisplayName: text("client_display_name"),
 
+  // SEO overrides (optional - falls back to auto-generated from title/description/tags)
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  seoKeywords: text("seo_keywords"),
+
   featured: boolean("featured").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

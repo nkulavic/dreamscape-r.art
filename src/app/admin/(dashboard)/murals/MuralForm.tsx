@@ -47,6 +47,9 @@ export interface MuralRow {
   videoUrl: string | null;
   clientId: string | null;
   clientDisplayName: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  seoKeywords: string | null;
   featured: boolean;
 }
 
@@ -103,6 +106,9 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
   const [clientDisplayName, setClientDisplayName] = useState(
     mural?.clientDisplayName ?? ""
   );
+  const [seoTitle, setSeoTitle] = useState(mural?.seoTitle ?? "");
+  const [seoDescription, setSeoDescription] = useState(mural?.seoDescription ?? "");
+  const [seoKeywords, setSeoKeywords] = useState(mural?.seoKeywords ?? "");
   const [featured, setFeatured] = useState(mural?.featured ?? false);
 
   // Auto-generate slug from title (only in create mode)
@@ -194,6 +200,9 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
       galleryUrls,
       videoUrl: videoUrl || null,
       clientDisplayName: clientDisplayName || null,
+      seoTitle: seoTitle || null,
+      seoDescription: seoDescription || null,
+      seoKeywords: seoKeywords || null,
       featured,
     };
 
@@ -740,79 +749,147 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
         </div>
       </section>
 
-      {/* ── SEO Preview ────────────────────────────────────── */}
-      <section className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-6">
-        <h2 className="mb-4 font-display text-lg text-gray-900">
-          SEO Preview
-        </h2>
-        <p className="text-sm text-gray-600 mb-4">
-          This shows how your mural will appear in search engines and social media. SEO is automatically generated from the title, description, tags, and images above.
-        </p>
-
-        {/* Meta Title */}
+      {/* ── SEO Optimization ────────────────────────────────────── */}
+      <section className="space-y-4 rounded-xl border border-gray-200 bg-white p-6">
         <div>
-          <Label className="text-xs text-gray-500 uppercase tracking-wide">Meta Title</Label>
-          <p className="mt-1 text-sm font-medium text-gray-900">
-            {title ? `${title} | DREAMSCAPER` : "Untitled Mural | DREAMSCAPER"}
+          <h2 className="font-display text-lg text-gray-900">
+            SEO Optimization
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Customize how this mural appears in search engines. Leave blank to use auto-generated values from title, description, and tags.
           </p>
         </div>
 
-        {/* Meta Description */}
-        <div>
-          <Label className="text-xs text-gray-500 uppercase tracking-wide">Meta Description</Label>
-          <p className="mt-1 text-sm text-gray-700 line-clamp-2">
-            {description || "No description provided"}
-          </p>
-        </div>
-
-        {/* Keywords */}
-        <div>
-          <Label className="text-xs text-gray-500 uppercase tracking-wide">Keywords</Label>
-          <p className="mt-1 text-sm text-gray-700">
-            {(() => {
-              const keywords = [
-                ...tagsStr.split(',').map(t => t.trim()).filter(Boolean),
-                category ? `${category} mural` : '',
-                city ? `${city} mural` : '',
-                state || country,
-                'Rachel Dinda',
-                'DREAMSCAPER',
-              ].filter(Boolean);
-              return keywords.length > 0 ? keywords.join(', ') : 'No keywords';
-            })()}
-          </p>
-        </div>
-
-        {/* Open Graph Image */}
-        <div>
-          <Label className="text-xs text-gray-500 uppercase tracking-wide">Open Graph Image (Social Media)</Label>
-          {heroUrl ? (
-            <div className="mt-2 relative h-32 w-64 overflow-hidden rounded-lg border border-gray-300">
-              <Image
-                src={heroUrl}
-                alt="OG Image Preview"
-                fill
-                className="object-cover"
-                sizes="256px"
+        <div className="space-y-4">
+          {/* SEO Title */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="seoTitle">
+                Meta Title <span className="text-xs text-gray-500">(optional - max 60 chars)</span>
+              </Label>
+              <AIGenerateButton
+                type="title"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: parseInt(year, 10),
+                  category,
+                  existingContent: seoTitle || title,
+                }}
+                onGenerated={(content) => {
+                  if (Array.isArray(content) && content.length > 0) {
+                    setSeoTitle(content[0]);
+                  } else if (typeof content === "string") {
+                    setSeoTitle(content);
+                  }
+                }}
               />
             </div>
-          ) : (
-            <p className="mt-1 text-sm text-gray-500 italic">No hero image selected</p>
-          )}
+            <Input
+              id="seoTitle"
+              value={seoTitle}
+              onChange={(e) => setSeoTitle(e.target.value)}
+              placeholder={`Auto: ${title ? `${title} | DREAMSCAPER` : "Generated from title"}`}
+              maxLength={60}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {seoTitle.length}/60 characters
+              {!seoTitle && " (using auto-generated)"}
+            </p>
+          </div>
+
+          {/* SEO Description */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="seoDescription">
+                Meta Description <span className="text-xs text-gray-500">(optional - max 160 chars)</span>
+              </Label>
+              <AIGenerateButton
+                type="description"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  year: parseInt(year, 10),
+                  category,
+                  existingContent: seoDescription || description,
+                }}
+                onGenerated={(content) => {
+                  if (typeof content === "string") {
+                    setSeoDescription(content);
+                  }
+                }}
+              />
+            </div>
+            <Textarea
+              id="seoDescription"
+              value={seoDescription}
+              onChange={(e) => setSeoDescription(e.target.value)}
+              placeholder={description ? `Auto: ${description.substring(0, 60)}...` : "Generated from description"}
+              rows={3}
+              maxLength={160}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {seoDescription.length}/160 characters
+              {!seoDescription && " (using auto-generated)"}
+            </p>
+          </div>
+
+          {/* SEO Keywords */}
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="seoKeywords">
+                SEO Keywords <span className="text-xs text-gray-500">(optional - comma-separated)</span>
+              </Label>
+              <AIGenerateButton
+                type="keywords"
+                context={{
+                  title,
+                  venue,
+                  city,
+                  country,
+                  category,
+                  existingContent: seoKeywords || tagsStr,
+                }}
+                onGenerated={(content) => {
+                  if (Array.isArray(content)) {
+                    setSeoKeywords(content.join(", "));
+                  } else if (typeof content === "string") {
+                    setSeoKeywords(content);
+                  }
+                }}
+              />
+            </div>
+            <Textarea
+              id="seoKeywords"
+              value={seoKeywords}
+              onChange={(e) => setSeoKeywords(e.target.value)}
+              placeholder={tagsStr ? `Auto: ${tagsStr}, ${category} mural, ${city}...` : "Generated from tags and location"}
+              rows={2}
+            />
+            {!seoKeywords && (
+              <p className="text-xs text-gray-500 mt-1">
+                Using auto-generated keywords from tags and location
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Search Preview */}
         <div className="mt-6 pt-6 border-t border-gray-300">
-          <Label className="text-xs text-gray-500 uppercase tracking-wide">Google Search Preview</Label>
-          <div className="mt-2 p-4 bg-white rounded border border-gray-200">
+          <Label className="text-xs text-gray-500 uppercase tracking-wide mb-2 block">Google Search Preview</Label>
+          <div className="p-4 bg-gray-50 rounded border border-gray-200">
             <p className="text-blue-600 text-lg hover:underline cursor-pointer">
-              {title || "Untitled Mural"} | DREAMSCAPER
+              {seoTitle || (title ? `${title} | DREAMSCAPER` : "Untitled Mural | DREAMSCAPER")}
             </p>
             <p className="text-green-700 text-xs mt-1">
               https://dreamscaper.art/portfolio/{slug || 'mural-slug'}
             </p>
             <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-              {description || "No description provided"}
+              {seoDescription || description || "No description provided"}
             </p>
           </div>
         </div>

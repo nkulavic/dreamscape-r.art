@@ -19,23 +19,26 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
-  const title = `${mural.title} | DREAMSCAPER`;
-  const description = mural.description;
+  // Use SEO overrides if available, otherwise auto-generate
+  const title = mural.seo?.title || `${mural.title} | DREAMSCAPER`;
+  const description = mural.seo?.description || mural.description;
   const imageUrl = mural.images.hero;
   const url = `https://dreamscaper.art/portfolio/${slug}`;
 
-  // Generate keywords from tags and location
-  const keywords = [
-    ...mural.tags,
-    mural.category + " mural",
-    mural.location.city + " mural",
-    mural.location.state || mural.location.country,
-    "Rachel Dinda",
-    "DREAMSCAPER",
-    "mural art",
-    "street art",
-    mural.location.venue,
-  ].filter(Boolean);
+  // Use custom keywords or generate from tags and location
+  const keywords = mural.seo?.keywords
+    ? mural.seo.keywords.split(",").map((k) => k.trim()).filter(Boolean)
+    : [
+        ...mural.tags,
+        mural.category + " mural",
+        mural.location.city + " mural",
+        mural.location.state || mural.location.country,
+        "Rachel Dinda",
+        "DREAMSCAPER",
+        "mural art",
+        "street art",
+        mural.location.venue,
+      ].filter(Boolean);
 
   return {
     title,
