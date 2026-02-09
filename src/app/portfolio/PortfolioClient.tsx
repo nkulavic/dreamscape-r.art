@@ -130,11 +130,11 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                           </div>
                         </div>
 
-                        <div className="p-6">
-                          <h3 className="font-heading font-bold text-xl text-gray-800 mb-2 group-hover:text-accent transition-colors">
+                        <div className="p-6 min-h-[120px] flex flex-col">
+                          <h3 className="font-heading font-bold text-xl text-gray-800 mb-2 group-hover:text-accent transition-colors line-clamp-2">
                             {mural.title}
                           </h3>
-                          <p className="text-gray-600 text-sm">
+                          <p className="text-gray-600 text-sm line-clamp-2">
                             {mural.location.venue
                               ? `${mural.location.venue}, `
                               : ""}

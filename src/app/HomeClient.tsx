@@ -186,11 +186,11 @@ export default function Home({
                               </span>
                             </div>
                           </div>
-                          <div className="p-6">
-                            <h3 className="font-heading font-bold text-xl text-gray-800 mb-2">
+                          <div className="p-6 min-h-[120px] flex flex-col">
+                            <h3 className="font-heading font-bold text-xl text-gray-800 mb-2 line-clamp-2">
                               {mural.title}
                             </h3>
-                            <p className="text-gray-600">
+                            <p className="text-gray-600 text-sm line-clamp-2">
                               {mural.location.venue ? `${mural.location.venue}, ` : ""}
                               {mural.location.city}, {mural.location.state || mural.location.country}
                             </p>
