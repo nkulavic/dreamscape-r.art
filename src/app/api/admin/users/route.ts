@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 // List all users
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) {
+  if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -19,7 +19,7 @@ export async function GET() {
 // Create new user using Better Auth
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) {
+  if (!session || session.user.role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
