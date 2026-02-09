@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { put } from "@vercel/blob";
+import { blobToProxyUrl } from "@/lib/media";
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -18,5 +19,8 @@ export async function POST(request: Request) {
 
   const blob = await put(file.name, file, { access: "public" });
 
-  return NextResponse.json({ url: blob.url });
+  // Convert blob URL to proxy URL using our custom domain
+  const proxyUrl = blobToProxyUrl(blob.url);
+
+  return NextResponse.json({ url: proxyUrl });
 }
