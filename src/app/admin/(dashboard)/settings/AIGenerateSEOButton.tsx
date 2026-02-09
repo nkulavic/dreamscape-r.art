@@ -93,7 +93,7 @@ export default function AIGenerateSEOButton({
           disabled={generating}
           size="sm"
           variant="outline"
-          className="h-7 gap-1.5"
+          className="h-7 gap-1.5 cursor-pointer"
           title="Generate with AI"
         >
           <Sparkles className="h-3.5 w-3.5" />
