@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { list } from "@vercel/blob";
+import { blobToProxyUrl } from "@/lib/media";
 
 export async function GET(request: Request) {
   try {
@@ -11,14 +12,14 @@ export async function GET(request: Request) {
       limit: 1000,
     });
 
-    // Group by folder and sort
+    // Group by folder and sort, convert blob URLs to proxy URLs
     const groupedBlobs = blobs.reduce((acc, blob) => {
       const folder = blob.pathname.split("/")[0] || "root";
       if (!acc[folder]) {
         acc[folder] = [];
       }
       acc[folder].push({
-        url: blob.url,
+        url: blobToProxyUrl(blob.url),
         pathname: blob.pathname,
         size: blob.size,
         uploadedAt: blob.uploadedAt,
