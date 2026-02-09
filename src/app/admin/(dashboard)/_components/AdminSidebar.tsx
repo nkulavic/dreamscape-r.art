@@ -10,15 +10,18 @@ import {
   Video,
   Settings,
   LogOut,
+  UserCog,
+  Building2,
 } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/murals", label: "Murals", icon: Image },
-  { href: "/admin/clients", label: "Clients", icon: Users },
+  { href: "/admin/clients", label: "Clients", icon: Building2 },
   { href: "/admin/experience", label: "Experience", icon: Award },
   { href: "/admin/videos", label: "Videos", icon: Video },
+  { href: "/admin/users", label: "Users", icon: UserCog },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
