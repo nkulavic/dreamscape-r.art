@@ -61,9 +61,8 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  alternates: {
-    canonical: BASE_URL,
-  },
+  // Individual pages set their own canonical via alternates.canonical
+  // Do NOT set a root canonical here — it would override child page canonicals
   openGraph: {
     title: "DREAMSCAPER | Rachel Dinda - Professional Muralist",
     description:
@@ -117,7 +116,6 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <head>
         <JsonLd />
-        <link rel="canonical" href={BASE_URL} />
         <meta name="geo.region" content="US-CO" />
         <meta name="geo.placename" content="Denver" />
         <meta name="geo.position" content="39.7392;-104.9903" />

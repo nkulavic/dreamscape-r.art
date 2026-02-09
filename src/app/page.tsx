@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { getFeaturedMurals, getFeaturedClients, getFeaturedVideos } from "@/db/dal";
 import Home from "./HomeClient";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://dreamscaper.art",
+  },
+};
 
 // Fisher-Yates shuffle algorithm for randomizing arrays
 function shuffle<T>(array: T[]): T[] {
