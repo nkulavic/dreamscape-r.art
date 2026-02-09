@@ -122,10 +122,16 @@ export default function AIGenerateSEOButton({
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={generating}
+            className="cursor-pointer"
           >
             Cancel
           </Button>
-          <Button type="button" onClick={handleGenerate} disabled={generating}>
+          <Button
+            type="button"
+            onClick={handleGenerate}
+            disabled={generating}
+            className="cursor-pointer"
+          >
             {generating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
