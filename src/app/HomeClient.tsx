@@ -66,7 +66,6 @@ export default function Home({
   const [featuredMurals, setFeaturedMurals] = useState<Mural[]>(initialMurals);
   const [muralSets, setMuralSets] = useState<Mural[][]>([]);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
-  const [isRotating, setIsRotating] = useState(false);
   const [allFeaturedMurals, setAllFeaturedMurals] = useState<Mural[]>([]);
 
   // Fetch all featured murals and create initial sets
@@ -97,25 +96,18 @@ export default function Home({
     if (allFeaturedMurals.length <= 3 || muralSets.length === 0) return;
 
     const interval = setInterval(() => {
-      setIsRotating(true);
+      const nextIndex = currentSetIndex + 1;
 
-      // Move to next set after fade out
-      setTimeout(() => {
-        const nextIndex = currentSetIndex + 1;
-
-        // If we've shown all sets, re-shuffle and start over
-        if (nextIndex >= muralSets.length) {
-          const newSets = createMuralSets(allFeaturedMurals);
-          setMuralSets(newSets);
-          setCurrentSetIndex(0);
-          setFeaturedMurals(newSets[0]);
-        } else {
-          setCurrentSetIndex(nextIndex);
-          setFeaturedMurals(muralSets[nextIndex]);
-        }
-
-        setIsRotating(false);
-      }, 800); // Wait for fade out animation
+      // If we've shown all sets, re-shuffle and start over
+      if (nextIndex >= muralSets.length) {
+        const newSets = createMuralSets(allFeaturedMurals);
+        setMuralSets(newSets);
+        setCurrentSetIndex(0);
+        setFeaturedMurals(newSets[0]);
+      } else {
+        setCurrentSetIndex(nextIndex);
+        setFeaturedMurals(muralSets[nextIndex]);
+      }
     }, ROTATION_INTERVAL);
 
     return () => clearInterval(interval);
@@ -163,49 +155,51 @@ export default function Home({
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredMurals.map((mural, index) => (
-                <motion.div
-                  key={mural.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{
-                    opacity: isRotating ? 0 : 1,
-                    y: isRotating ? -20 : 0
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    delay: isRotating ? index * 0.15 : (index * 0.15) + 0.3,
-                    ease: "easeInOut"
-                  }}
-                  className="group"
-                >
-                  <Link href={`/portfolio/${mural.slug}`}>
-                    <div className="card overflow-hidden">
-                      <div className="aspect-[4/3] relative image-zoom bg-gray-200">
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ocean-deep/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <div
-                          className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                          style={{
-                            backgroundImage: `url(${mural.images.hero})`,
-                            backgroundColor: "#e5e7eb",
-                          }}
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                          <span className="text-accent-light text-sm font-heading uppercase tracking-wide">
-                            {mural.category}
-                          </span>
+                <div key={`position-${index}`} className="relative">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={mural.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{
+                        duration: 0.7,
+                        delay: index * 0.15,
+                        ease: "easeInOut"
+                      }}
+                      className="group"
+                    >
+                      <Link href={`/portfolio/${mural.slug}`}>
+                        <div className="card overflow-hidden">
+                          <div className="aspect-[4/3] relative image-zoom bg-gray-200">
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ocean-deep/80 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div
+                              className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                              style={{
+                                backgroundImage: `url(${mural.images.hero})`,
+                                backgroundColor: "#e5e7eb",
+                              }}
+                            />
+                            <div className="absolute bottom-0 left-0 right-0 p-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                              <span className="text-accent-light text-sm font-heading uppercase tracking-wide">
+                                {mural.category}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="p-6">
+                            <h3 className="font-heading font-bold text-xl text-gray-800 mb-2">
+                              {mural.title}
+                            </h3>
+                            <p className="text-gray-600">
+                              {mural.location.venue ? `${mural.location.venue}, ` : ""}
+                              {mural.location.city}, {mural.location.state || mural.location.country}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="p-6">
-                        <h3 className="font-heading font-bold text-xl text-gray-800 mb-2">
-                          {mural.title}
-                        </h3>
-                        <p className="text-gray-600">
-                          {mural.location.venue ? `${mural.location.venue}, ` : ""}
-                          {mural.location.city}, {mural.location.state || mural.location.country}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
+                      </Link>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               ))}
             </div>
 
