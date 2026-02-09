@@ -26,7 +26,8 @@ const staggerContainer = {
   },
 };
 
-const ROTATION_INTERVAL = 8000; // 8 seconds
+// Each mural position rotates at a different interval for organic feel
+const ROTATION_INTERVALS = [7000, 9000, 11000]; // 7s, 9s, 11s
 
 export default function Home({
   featuredMurals: initialMurals,
@@ -38,30 +39,40 @@ export default function Home({
   featuredVideos: Video[];
 }) {
   const [featuredMurals, setFeaturedMurals] = useState<Mural[]>(initialMurals);
-  const [isRotating, setIsRotating] = useState(false);
+  const [rotatingIndex, setRotatingIndex] = useState<number | null>(null);
 
+  // Set up independent rotation timers for each mural position
   useEffect(() => {
-    const interval = setInterval(async () => {
-      setIsRotating(true);
+    const intervals = ROTATION_INTERVALS.map((interval, index) => {
+      return setInterval(async () => {
+        setRotatingIndex(index);
 
-      try {
-        const response = await fetch("/api/featured/murals");
-        if (response.ok) {
-          const newMurals = await response.json();
+        try {
+          const response = await fetch("/api/featured/murals");
+          if (response.ok) {
+            const allMurals = await response.json();
 
-          // Fade out, then update
-          setTimeout(() => {
-            setFeaturedMurals(newMurals);
-            setIsRotating(false);
-          }, 500);
+            // Pick a random mural from the response
+            const randomMural = allMurals[Math.floor(Math.random() * allMurals.length)];
+
+            // Fade out, then update just this position
+            setTimeout(() => {
+              setFeaturedMurals(prev => {
+                const updated = [...prev];
+                updated[index] = randomMural;
+                return updated;
+              });
+              setRotatingIndex(null);
+            }, 500);
+          }
+        } catch (error) {
+          console.error(`Failed to fetch new mural for position ${index}:`, error);
+          setRotatingIndex(null);
         }
-      } catch (error) {
-        console.error("Failed to fetch new featured murals:", error);
-        setIsRotating(false);
-      }
-    }, ROTATION_INTERVAL);
+      }, interval);
+    });
 
-    return () => clearInterval(interval);
+    return () => intervals.forEach(clearInterval);
   }, []);
   return (
     <>
@@ -105,14 +116,17 @@ export default function Home({
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <AnimatePresence mode="wait">
-                {featuredMurals.map((mural, index) => (
+              {featuredMurals.map((mural, index) => (
+                <AnimatePresence mode="wait" key={`position-${index}`}>
                   <motion.div
-                    key={`${mural.id}-${index}`}
+                    key={mural.id}
                     initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isRotating ? 0 : 1, y: isRotating ? -20 : 0 }}
+                    animate={{
+                      opacity: rotatingIndex === index ? 0 : 1,
+                      y: rotatingIndex === index ? -20 : 0
+                    }}
                     exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    transition={{ duration: 0.5 }}
                     className="group"
                   >
                     <Link href={`/portfolio/${mural.slug}`}>
@@ -144,8 +158,8 @@ export default function Home({
                       </div>
                     </Link>
                   </motion.div>
-                ))}
-              </AnimatePresence>
+                </AnimatePresence>
+              ))}
             </div>
 
             <motion.div
