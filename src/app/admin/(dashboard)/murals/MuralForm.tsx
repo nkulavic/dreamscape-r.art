@@ -18,6 +18,7 @@ import {
 import { Save, Loader2, Upload, X } from "lucide-react";
 import AIGenerateButton from "./AIGenerateButton";
 import AIGenerateAllButton from "./AIGenerateAllButton";
+import MediaPicker from "../components/MediaPicker";
 
 // Raw DB row shape used by the admin form (not the DAL's transformed Mural type)
 export interface MuralRow {
@@ -658,54 +659,41 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
           {/* Hero Image */}
           <div>
             <Label>Hero Image *</Label>
-            <div className="mt-2 flex items-start gap-4">
-              {heroUrl && (
-                <div className="relative h-32 w-48 shrink-0 overflow-hidden rounded-lg border">
-                  <Image
-                    src={heroUrl}
-                    alt="Hero preview"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <div>
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-gray-50">
-                  <Upload className="h-4 w-4" />
-                  {heroUrl ? "Replace" : "Upload Hero Image"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleHeroUpload}
-                    className="hidden"
-                  />
-                </label>
-                {heroUrl && (
-                  <p className="mt-2 max-w-xs truncate text-xs text-gray-500">
-                    {heroUrl}
-                  </p>
-                )}
-              </div>
+            <div className="mt-2">
+              <MediaPicker
+                value={heroUrl}
+                onChange={(url) => {
+                  setHeroUrl(url);
+                  // Auto-set thumbnail if not already set
+                  if (!thumbnailUrl) setThumbnailUrl(url);
+                }}
+                label="Choose Hero Image"
+                folder="murals"
+              />
             </div>
           </div>
 
-          {/* Thumbnail URL */}
+          {/* Thumbnail Image */}
           <div>
-            <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
-            <Input
-              id="thumbnailUrl"
-              value={thumbnailUrl}
-              onChange={(e) => setThumbnailUrl(e.target.value)}
-              placeholder="Auto-set from hero image if empty"
-              className="mt-1"
-            />
+            <Label>Thumbnail Image</Label>
+            <p className="text-xs text-gray-500 mb-2">
+              Defaults to hero image if not set
+            </p>
+            <div className="mt-2">
+              <MediaPicker
+                value={thumbnailUrl}
+                onChange={setThumbnailUrl}
+                label="Choose Thumbnail"
+                folder="murals"
+              />
+            </div>
           </div>
 
           {/* Gallery Images */}
           <div>
             <Label>Gallery Images</Label>
             {galleryUrls.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-3">
+              <div className="mt-2 flex flex-wrap gap-3 mb-4">
                 {galleryUrls.map((url, i) => (
                   <div
                     key={i}
@@ -728,17 +716,14 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
                 ))}
               </div>
             )}
-            <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm font-medium shadow-xs transition-colors hover:bg-gray-50">
-              <Upload className="h-4 w-4" />
-              Add Gallery Images
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleGalleryUpload}
-                className="hidden"
+            <div className="mt-2">
+              <MediaPicker
+                value=""
+                onChange={(url) => setGalleryUrls([...galleryUrls, url])}
+                label="Add Gallery Image"
+                folder="murals"
               />
-            </label>
+            </div>
           </div>
 
           {/* Video URL */}
