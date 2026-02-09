@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import * as schema from "@/db/schema";
 import MuralActions from "./MuralActions";
@@ -64,6 +65,9 @@ export default function MuralsListClient({ murals }: MuralsListClientProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50">
+            <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+              Thumbnail
+            </th>
             <th
               onClick={() => handleSort("title")}
               className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
@@ -108,7 +112,7 @@ export default function MuralsListClient({ murals }: MuralsListClientProps) {
           {sortedMurals.length === 0 && (
             <tr>
               <td
-                colSpan={6}
+                colSpan={7}
                 className="px-6 py-12 text-center text-sm text-gray-500"
               >
                 No murals found. Create your first mural to get started.
@@ -117,6 +121,17 @@ export default function MuralsListClient({ murals }: MuralsListClientProps) {
           )}
           {sortedMurals.map((mural) => (
             <tr key={mural.id} className="hover:bg-gray-50">
+              <td className="px-6 py-4">
+                <div className="relative h-16 w-16 overflow-hidden rounded-lg">
+                  <Image
+                    src={mural.thumbnailUrl}
+                    alt={mural.title}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                  />
+                </div>
+              </td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">
                 {mural.title}
               </td>
