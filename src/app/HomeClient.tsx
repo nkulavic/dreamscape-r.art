@@ -26,7 +26,7 @@ const staggerContainer = {
   },
 };
 
-const ROTATION_INTERVAL = 12000; // 12 seconds
+const ROTATION_INTERVAL = 8000; // 8 seconds
 
 export default function Home({
   featuredMurals: initialMurals,
