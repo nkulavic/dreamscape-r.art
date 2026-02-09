@@ -11,14 +11,23 @@ function shuffle<T>(array: T[]): T[] {
   return shuffled;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const murals = await getFeaturedMurals();
-    const randomMurals = shuffle(murals).slice(0, 3);
+    const { searchParams } = new URL(request.url);
+    const all = searchParams.get("all");
 
+    const murals = await getFeaturedMurals();
+
+    // If 'all' param is present, return all featured murals
+    if (all === "true") {
+      return NextResponse.json(murals);
+    }
+
+    // Otherwise return 3 random ones
+    const randomMurals = shuffle(murals).slice(0, 3);
     return NextResponse.json(randomMurals);
   } catch (error) {
-    console.error("Error fetching random featured murals:", error);
+    console.error("Error fetching featured murals:", error);
     return NextResponse.json(
       { error: "Failed to fetch featured murals" },
       { status: 500 }

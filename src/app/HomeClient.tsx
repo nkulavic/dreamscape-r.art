@@ -40,40 +40,67 @@ export default function Home({
 }) {
   const [featuredMurals, setFeaturedMurals] = useState<Mural[]>(initialMurals);
   const [rotatingIndex, setRotatingIndex] = useState<number | null>(null);
+  const [allFeaturedMurals, setAllFeaturedMurals] = useState<Mural[]>([]);
+  const [usedMuralIds, setUsedMuralIds] = useState<Set<string>>(
+    new Set(initialMurals.map(m => m.id))
+  );
+
+  // Fetch all featured murals once on mount
+  useEffect(() => {
+    async function fetchAllMurals() {
+      try {
+        const response = await fetch("/api/featured/murals?all=true");
+        if (response.ok) {
+          const murals = await response.json();
+          setAllFeaturedMurals(murals);
+        }
+      } catch (error) {
+        console.error("Failed to fetch all featured murals:", error);
+      }
+    }
+    fetchAllMurals();
+  }, []);
 
   // Set up independent rotation timers for each mural position
   useEffect(() => {
+    if (allFeaturedMurals.length === 0) return;
+
     const intervals = ROTATION_INTERVALS.map((interval, index) => {
-      return setInterval(async () => {
+      return setInterval(() => {
         setRotatingIndex(index);
 
-        try {
-          const response = await fetch("/api/featured/murals");
-          if (response.ok) {
-            const allMurals = await response.json();
+        // Get murals that aren't currently displayed
+        const currentIds = featuredMurals.map(m => m.id);
+        const availableMurals = allFeaturedMurals.filter(
+          mural => !currentIds.includes(mural.id)
+        );
 
-            // Pick a random mural from the response
-            const randomMural = allMurals[Math.floor(Math.random() * allMurals.length)];
-
-            // Fade out, then update just this position
-            setTimeout(() => {
-              setFeaturedMurals(prev => {
-                const updated = [...prev];
-                updated[index] = randomMural;
-                return updated;
-              });
-              setRotatingIndex(null);
-            }, 500);
-          }
-        } catch (error) {
-          console.error(`Failed to fetch new mural for position ${index}:`, error);
-          setRotatingIndex(null);
+        if (availableMurals.length === 0) {
+          // If all murals have been used, reset the pool
+          setUsedMuralIds(new Set(currentIds));
+          return;
         }
+
+        // Pick a random mural from available ones
+        const randomMural = availableMurals[
+          Math.floor(Math.random() * availableMurals.length)
+        ];
+
+        // Fade out, then update just this position
+        setTimeout(() => {
+          setFeaturedMurals(prev => {
+            const updated = [...prev];
+            updated[index] = randomMural;
+            return updated;
+          });
+          setUsedMuralIds(prev => new Set([...prev, randomMural.id]));
+          setRotatingIndex(null);
+        }, 500);
       }, interval);
     });
 
     return () => intervals.forEach(clearInterval);
-  }, []);
+  }, [allFeaturedMurals, featuredMurals]);
   return (
     <>
       <Header variant="transparent" />
