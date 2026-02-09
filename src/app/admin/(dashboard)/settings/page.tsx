@@ -13,7 +13,7 @@ export default async function SettingsPage() {
         Configure site-wide settings.
       </p>
 
-      <div className="mt-8">
+      <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <SettingsForm settings={settings} />
       </div>
     </div>

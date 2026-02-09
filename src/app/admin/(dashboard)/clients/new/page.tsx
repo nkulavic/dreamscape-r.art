@@ -10,7 +10,7 @@ export default function NewClientPage() {
         Create a new client entry.
       </p>
 
-      <div className="mt-8">
+      <div className="mt-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <ClientForm />
       </div>
     </div>
