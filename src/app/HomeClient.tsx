@@ -27,7 +27,7 @@ const staggerContainer = {
 };
 
 // Each mural position rotates at a different interval for organic feel
-const ROTATION_INTERVALS = [7000, 9000, 11000]; // 7s, 9s, 11s
+const ROTATION_INTERVALS = [12000, 16000, 20000]; // 12s, 16s, 20s
 
 export default function Home({
   featuredMurals: initialMurals,
