@@ -82,13 +82,13 @@ async function migrateBlobUrls() {
     const updates: any = {};
     let hasChanges = false;
 
-    if (video.src?.includes("blob.vercel-storage.com")) {
-      updates.src = blobToProxyUrl(video.src);
+    if (video.srcUrl?.includes("blob.vercel-storage.com")) {
+      updates.srcUrl = blobToProxyUrl(video.srcUrl);
       hasChanges = true;
     }
 
-    if (video.poster?.includes("blob.vercel-storage.com")) {
-      updates.poster = blobToProxyUrl(video.poster);
+    if (video.posterUrl?.includes("blob.vercel-storage.com")) {
+      updates.posterUrl = blobToProxyUrl(video.posterUrl);
       hasChanges = true;
     }
 
