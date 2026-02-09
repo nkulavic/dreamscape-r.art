@@ -4,7 +4,7 @@ import "./globals.css";
 import ThemeSelector from "./components/ui/ThemeSelector";
 import JsonLd from "./components/seo/JsonLd";
 
-const BASE_URL = "https://dreamscape-r.art";
+const BASE_URL = "https://dreamscaper.art";
 
 const bebasNeue = Bebas_Neue({
   variable: "--font-display",

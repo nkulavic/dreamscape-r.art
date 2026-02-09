@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Portfolio website for muralist Rachel Dinda (DREAMSCAPER) — a Next.js 15 App Router site deployed on Vercel at dreamscape-r.art. Showcases large-scale mural artwork with parallax effects and storytelling.
+Portfolio website for muralist Rachel Dinda (DREAMSCAPER) — a Next.js 15 App Router site deployed on Vercel at dreamscaper.art. Showcases large-scale mural artwork with parallax effects and storytelling.
 
 ## Commands
 

@@ -12,7 +12,7 @@ Copy/paste directly into Canva templates.
 **Title:** Professional Muralist
 **Location:** Denver, Colorado (Available Nationwide & Internationally)
 **Email:** R.dreamscapes@gmail.com
-**Website:** dreamscape-r.art
+**Website:** dreamscaper.art
 **Instagram:** @dreamscape_r
 **Facebook:** /Dreamscapesbydesign
 **TikTok:** @dreamscapes_design
@@ -86,7 +86,7 @@ Copy/paste directly into Canva templates.
 
 **Contact Lines:**
 - Email: R.dreamscapes@gmail.com
-- Web: dreamscape-r.art
+- Web: dreamscaper.art
 - Instagram: @dreamscape_r
 - Based: Denver, CO | Available nationwide
 
@@ -102,7 +102,7 @@ Copy/paste directly into Canva templates.
 *Layout Note: Full-bleed hero mural image. Recommended images: "Protect Your Peace" (colorful ocean woman) or "Coors Factory Mural" (shows scale). DREAMSCAPER logo bottom-left in white. Website bottom-right.*
 
 **Logo:** DREAMSCAPER
-**Website:** dreamscape-r.art
+**Website:** dreamscaper.art
 
 ### Back
 
@@ -122,7 +122,7 @@ From 7,500 sq ft corporate installations to intimate community murals, DREAMSCAP
 Rachel Dinda
 Professional Muralist
 R.dreamscapes@gmail.com
-dreamscape-r.art
+dreamscaper.art
 @dreamscape_r
 Denver, CO | Available nationwide & internationally
 
@@ -214,7 +214,7 @@ FOX31 Denver | KRDO News 13 | Canvas Rebel | Voyage Denver | Denver Public Libra
 ### Footer CTA
 **Left:** Ready to transform your space?
 **Right:** [Button] Get a Free Consultation
-**Below button:** dreamscape-r.art | @dreamscape_r
+**Below button:** dreamscaper.art | @dreamscape_r
 
 *Layout Note: Full-width ocean blue gradient footer. CTA button in orange.*
 
@@ -229,7 +229,7 @@ FOX31 Denver | KRDO News 13 | Canvas Rebel | Voyage Denver | Denver Public Libra
 **Subtitle:** Professional Muralist
 **Tagline:** Guided by community, inspired by culture.
 **Body:** Vibrant, large-scale murals that transform spaces and tell stories.
-**Footer:** dreamscape-r.art
+**Footer:** dreamscaper.art
 
 *Layout Note: Ocean blue gradient background. Logo large and centered. Orange accent bar under logo. Tagline in gold (#fcbf49). Body in light blue.*
 
@@ -243,12 +243,12 @@ Professional Muralist
 Email: R.dreamscapes@gmail.com
 Based in: Denver, Colorado
 Available nationwide & internationally
-Portfolio: dreamscape-r.art
+Portfolio: dreamscaper.art
 
 **Credential Badges:** OSHA Lift Certified | Locally Insured | 10+ Years Professional
 
 #### Panel: Back Flap (leftmost)
-**QR Code** linking to dreamscape-r.art/portfolio
+**QR Code** linking to dreamscaper.art/portfolio
 
 **Social Links:**
 Follow the Journey
@@ -335,7 +335,7 @@ FOX31 Denver | KRDO News | Canvas Rebel | Voyage Denver | Museo Del Presente (It
 **Subtitle:** Professional Mural Services
 **Tagline:** Guided by community, inspired by culture.
 **Body:** Vibrant, large-scale murals that transform spaces, tell stories, and create lasting impact.
-**Footer:** Rachel Dinda | Denver, Colorado | dreamscape-r.art
+**Footer:** Rachel Dinda | Denver, Colorado | dreamscaper.art
 
 *Layout Note: Ocean blue gradient. Logo very large. Orange accent bar.*
 
@@ -494,7 +494,7 @@ This project demonstrates international experience, cultural sensitivity, and th
 Rachel Dinda
 Professional Muralist
 R.dreamscapes@gmail.com
-dreamscape-r.art | @dreamscape_r
+dreamscaper.art | @dreamscape_r
 
 **Credential Badges:** OSHA Certified | Insured | 10+ Years | Nationwide & International
 

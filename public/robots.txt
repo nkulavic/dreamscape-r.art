@@ -1,11 +1,11 @@
 # robots.txt for DREAMSCAPER - Rachel Dinda Portfolio
-# https://dreamscape-r.art
+# https://dreamscaper.art
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://dreamscape-r.art/sitemap.xml
+Sitemap: https://dreamscaper.art/sitemap.xml
 
 # Allow all major search engines
 User-agent: Googlebot

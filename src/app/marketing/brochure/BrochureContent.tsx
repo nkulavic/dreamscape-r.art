@@ -61,7 +61,7 @@ export async function BrochureContent({ audience }: Props) {
             <p><strong className="text-gray-800">{siteConfig.artistName}</strong><br />{siteConfig.title}</p>
             <p><strong className="text-gray-800">Email</strong><br />{siteConfig.email}</p>
             <p><strong className="text-gray-800">Based in</strong><br />{siteConfig.location}<br />Available nationwide & internationally</p>
-            <p><strong className="text-gray-800">Portfolio</strong><br />dreamscape-r.art</p>
+            <p><strong className="text-gray-800">Portfolio</strong><br />dreamscaper.art</p>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {[credentials.osha, credentials.insured, credentials.experience].map((c) => (
@@ -93,7 +93,7 @@ export async function BrochureContent({ audience }: Props) {
             {heroSubtext}
           </p>
           <span className="absolute bottom-[0.4in] text-[9px] text-blue-300 tracking-[2px] z-10">
-            dreamscape-r.art
+            dreamscaper.art
           </span>
         </Panel>
       </div>

@@ -43,7 +43,7 @@ export default function BusinessCardPage() {
               <div className="w-full h-px bg-gradient-to-r from-coral to-transparent mb-2" />
               <div className="text-[7.5px] text-gray-500 leading-loose">
                 <span className="inline-block w-10 text-ocean-deep font-semibold">Email</span> {siteConfig.email}<br />
-                <span className="inline-block w-10 text-ocean-deep font-semibold">Web</span> dreamscape-r.art<br />
+                <span className="inline-block w-10 text-ocean-deep font-semibold">Web</span> dreamscaper.art<br />
                 <span className="inline-block w-10 text-ocean-deep font-semibold">IG</span> @dreamscape_r<br />
                 <span className="inline-block w-10 text-ocean-deep font-semibold">Based</span> {siteConfig.location} &bull; Available nationwide
               </div>
@@ -81,7 +81,7 @@ export default function BusinessCardPage() {
             </div>
             <div className="bg-gradient-to-br from-ocean-deep to-ocean-light flex justify-between items-center px-5 py-2.5">
               <span className="font-display text-[18px] text-white tracking-[5px]">{siteConfig.name}</span>
-              <span className="text-[8px] text-blue-300 tracking-[2px] uppercase">dreamscape-r.art</span>
+              <span className="text-[8px] text-blue-300 tracking-[2px] uppercase">dreamscaper.art</span>
             </div>
           </div>
 
@@ -129,7 +129,7 @@ export default function BusinessCardPage() {
                 <strong className="text-ocean-deep">Email</strong><br />
                 {siteConfig.email}<br /><br />
                 <strong className="text-ocean-deep">Portfolio</strong><br />
-                dreamscape-r.art<br /><br />
+                dreamscaper.art<br /><br />
                 <strong className="text-ocean-deep">Instagram</strong><br />
                 @dreamscape_r<br /><br />
                 <strong className="text-ocean-deep">Based in</strong><br />

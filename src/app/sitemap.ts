@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { getAllMurals } from "@/db/dal";
 
-const BASE_URL = "https://dreamscape-r.art";
+const BASE_URL = "https://dreamscaper.art";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const murals = await getAllMurals();

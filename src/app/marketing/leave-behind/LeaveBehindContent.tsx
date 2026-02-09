@@ -213,7 +213,7 @@ export async function LeaveBehindContent({ audience }: Props) {
               {audience?.cta ?? "Get a Free Consultation"}
             </span>
             <span className="block text-[8px] text-blue-300 mt-0.5 tracking-wider">
-              dreamscape-r.art &bull; @dreamscape_r
+              dreamscaper.art &bull; @dreamscape_r
             </span>
           </div>
         </div>

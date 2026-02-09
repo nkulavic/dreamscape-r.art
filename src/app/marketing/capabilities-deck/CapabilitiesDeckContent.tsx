@@ -84,7 +84,7 @@ export async function CapabilitiesDeckContent({ audience }: Props) {
             {heroSubtext}
           </p>
           <div className="absolute bottom-[0.5in] text-[10px] text-blue-300 tracking-[2px] z-10">
-            {siteConfig.artistName} &nbsp;&bull;&nbsp; {siteConfig.location} &nbsp;&bull;&nbsp; dreamscape-r.art
+            {siteConfig.artistName} &nbsp;&bull;&nbsp; {siteConfig.location} &nbsp;&bull;&nbsp; dreamscaper.art
           </div>
         </Slide>
 
@@ -436,7 +436,7 @@ export async function CapabilitiesDeckContent({ audience }: Props) {
             <div className="text-[18px] font-bold mb-1.5">{siteConfig.artistName}</div>
             <div className="text-[11px] text-blue-300 tracking-[2px] uppercase mb-4">{siteConfig.title}</div>
             <div className="text-[14px] text-coral-light font-semibold mb-1">{siteConfig.email}</div>
-            <div className="text-[11px] text-blue-300 tracking-wider">dreamscape-r.art &nbsp;&bull;&nbsp; @dreamscape_r</div>
+            <div className="text-[11px] text-blue-300 tracking-wider">dreamscaper.art &nbsp;&bull;&nbsp; @dreamscape_r</div>
             {audience && (
               <div className="mt-4 bg-coral text-white text-[12px] font-bold px-6 py-2.5 rounded uppercase tracking-wider">
                 {cta}

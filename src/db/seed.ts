@@ -485,7 +485,7 @@ async function seedAdminUser() {
     eq(schema.account.providerId, "credential")
   );
   await db.delete(schema.user).where(
-    eq(schema.user.email, "admin@dreamscape-r.art")
+    eq(schema.user.email, "admin@dreamscaper.art")
   );
 
   await db
@@ -493,7 +493,7 @@ async function seedAdminUser() {
     .values({
       id,
       name: "Admin",
-      email: "admin@dreamscape-r.art",
+      email: "admin@dreamscaper.art",
       emailVerified: true,
       role: "admin",
     });
@@ -509,7 +509,7 @@ async function seedAdminUser() {
       password: `${salt}:${hash}`,
     });
 
-  console.log(`  ✓ Admin user created (email: admin@dreamscape-r.art, password: admin123)`);
+  console.log(`  ✓ Admin user created (email: admin@dreamscaper.art, password: admin123)`);
   console.log(`  ⚠ CHANGE THIS PASSWORD after first login!`);
 }
 

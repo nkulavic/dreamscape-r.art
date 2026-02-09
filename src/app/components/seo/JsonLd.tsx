@@ -1,6 +1,6 @@
 import { siteConfig } from "../../data/siteConfig";
 
-const BASE_URL = "https://dreamscape-r.art";
+const BASE_URL = "https://dreamscaper.art";
 
 // Person schema for Rachel Dinda
 const personSchema = {
