@@ -460,48 +460,38 @@ async function seedSiteSettings() {
 }
 
 async function seedAdminUser() {
-  console.log("\n👤 Seeding admin user...");
+  console.log("\n👤 Seeding admin users...");
 
   const { default: crypto } = await import("crypto");
-
-  // Hash password using Better Auth's exact algorithm:
-  // @noble/hashes scryptAsync with N=16384, r=16, p=1, dkLen=64
-  // Salt is passed as hex STRING (not bytes) to match Better Auth's generateKey()
   const { scryptAsync } = await import("@noble/hashes/scrypt.js");
   const { bytesToHex } = await import("@noble/hashes/utils.js");
 
-  const saltBytes = crypto.getRandomValues(new Uint8Array(16));
-  const salt = bytesToHex(saltBytes);
-  const password = "admin123";
-  const keyBytes = await scryptAsync(password.normalize("NFKC"), salt, {
-    N: 16384, r: 16, p: 1, dkLen: 64, maxmem: 128 * 16384 * 16 * 2,
-  });
-  const hash = bytesToHex(keyBytes);
-
-  const id = crypto.randomUUID();
-
-  // Delete existing admin user + account to allow re-seeding with correct hash
+  // Delete existing admin users + accounts to allow re-seeding
   await db.delete(schema.account).where(
     eq(schema.account.providerId, "credential")
   );
-  await db.delete(schema.user).where(
-    eq(schema.user.email, "admin@dreamscaper.art")
-  );
+  await db.delete(schema.user);
 
-  await db
-    .insert(schema.user)
-    .values({
+  // Helper function to create admin user
+  async function createAdmin(email: string, name: string, password: string) {
+    const saltBytes = crypto.getRandomValues(new Uint8Array(16));
+    const salt = bytesToHex(saltBytes);
+    const keyBytes = await scryptAsync(password.normalize("NFKC"), salt, {
+      N: 16384, r: 16, p: 1, dkLen: 64, maxmem: 128 * 16384 * 16 * 2,
+    });
+    const hash = bytesToHex(keyBytes);
+    const id = crypto.randomUUID();
+
+    await db.insert(schema.user).values({
       id,
-      name: "Admin",
-      email: "admin@dreamscaper.art",
+      name,
+      email,
       emailVerified: true,
       role: "admin",
     });
 
-  const accountId = crypto.randomUUID();
-  await db
-    .insert(schema.account)
-    .values({
+    const accountId = crypto.randomUUID();
+    await db.insert(schema.account).values({
       id: accountId,
       accountId: id,
       providerId: "credential",
@@ -509,8 +499,14 @@ async function seedAdminUser() {
       password: `${salt}:${hash}`,
     });
 
-  console.log(`  ✓ Admin user created (email: admin@dreamscaper.art, password: admin123)`);
-  console.log(`  ⚠ CHANGE THIS PASSWORD after first login!`);
+    console.log(`  ✓ Admin user created (email: ${email})`);
+  }
+
+  // Create both admin users
+  await createAdmin("admin@dreamscaper.art", "Admin", "admin123");
+  await createAdmin("rachel@dreamscaper.art", "Rachel Dinda", "Hawaii143!");
+
+  console.log(`  ⚠ Remember to change default passwords after first login!`);
 }
 
 async function clearContentTables() {
