@@ -2,11 +2,12 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { HiArrowLeft, HiLocationMarker, HiCalendar, HiTag, HiPlay } from "react-icons/hi";
+import { HiArrowLeft, HiLocationMarker, HiCalendar, HiTag, HiPlay, HiPhotograph } from "react-icons/hi";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import ParallaxHero from "../../components/ui/ParallaxHero";
 import VideoPlayer from "../../components/ui/VideoPlayer";
+import MuralImageCarousel from "../../components/ui/MuralImageCarousel";
 import type { Mural } from "@/db/dal";
 
 const fadeInUp = {
@@ -154,6 +155,22 @@ export default function MuralDetailClient({
                       poster={mural.images.hero}
                       title={mural.title}
                       className="aspect-video"
+                    />
+                  </motion.div>
+                )}
+
+                {/* Gallery */}
+                {mural.images.gallery.length > 0 && (
+                  <motion.div variants={fadeInUp} className="mt-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <HiPhotograph className="w-5 h-5 text-accent" />
+                      <h2 className="font-heading font-bold text-xl text-gray-800">
+                        Gallery
+                      </h2>
+                    </div>
+                    <MuralImageCarousel
+                      images={mural.images.gallery}
+                      title={mural.title}
                     />
                   </motion.div>
                 )}
