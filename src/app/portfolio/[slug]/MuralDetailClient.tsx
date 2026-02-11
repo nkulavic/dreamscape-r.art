@@ -91,6 +91,22 @@ export default function MuralDetailClient({
                   </p>
                 </motion.div>
 
+                {/* Gallery */}
+                {mural.images.gallery.length > 0 && (
+                  <motion.div variants={fadeInUp} className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <HiPhotograph className="w-5 h-5 text-accent" />
+                      <h2 className="font-heading font-bold text-xl text-gray-800">
+                        Gallery
+                      </h2>
+                    </div>
+                    <MuralImageCarousel
+                      images={mural.images.gallery}
+                      title={mural.title}
+                    />
+                  </motion.div>
+                )}
+
                 {/* Artist's Note */}
                 <motion.div
                   variants={fadeInUp}
@@ -159,21 +175,6 @@ export default function MuralDetailClient({
                   </motion.div>
                 )}
 
-                {/* Gallery */}
-                {mural.images.gallery.length > 0 && (
-                  <motion.div variants={fadeInUp} className="mt-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <HiPhotograph className="w-5 h-5 text-accent" />
-                      <h2 className="font-heading font-bold text-xl text-gray-800">
-                        Gallery
-                      </h2>
-                    </div>
-                    <MuralImageCarousel
-                      images={mural.images.gallery}
-                      title={mural.title}
-                    />
-                  </motion.div>
-                )}
               </motion.div>
 
               {/* Sidebar */}
