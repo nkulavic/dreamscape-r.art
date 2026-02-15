@@ -50,6 +50,7 @@ export interface MuralRow {
   seoTitle: string | null;
   seoDescription: string | null;
   seoKeywords: string | null;
+  status: "draft" | "published" | "archived";
   featured: boolean;
 }
 
@@ -109,6 +110,7 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
   const [seoTitle, setSeoTitle] = useState(mural?.seoTitle ?? "");
   const [seoDescription, setSeoDescription] = useState(mural?.seoDescription ?? "");
   const [seoKeywords, setSeoKeywords] = useState(mural?.seoKeywords ?? "");
+  const [status, setStatus] = useState<string>(mural?.status ?? "draft");
   const [featured, setFeatured] = useState(mural?.featured ?? false);
 
   // Auto-generate slug from title (only in create mode)
@@ -203,6 +205,7 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
       seoTitle: seoTitle || null,
       seoDescription: seoDescription || null,
       seoKeywords: seoKeywords || null,
+      status,
       featured,
     };
 
@@ -381,7 +384,21 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
             />
           </div>
 
-          <div className="flex items-center gap-2 sm:col-span-2">
+          <div>
+            <Label htmlFor="status">Status</Label>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2">
             <input
               id="featured"
               type="checkbox"

@@ -12,6 +12,12 @@ import { uuidv7 } from "uuidv7";
 
 // ── Enums ──────────────────────────────────────────────
 
+export const muralStatusEnum = pgEnum("mural_status", [
+  "draft",
+  "published",
+  "archived",
+]);
+
 export const muralCategoryEnum = pgEnum("mural_category", [
   "commercial",
   "community",
@@ -107,6 +113,7 @@ export const murals = pgTable("murals", {
   seoDescription: text("seo_description"),
   seoKeywords: text("seo_keywords"),
 
+  status: muralStatusEnum("status").notNull().default("draft"),
   featured: boolean("featured").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

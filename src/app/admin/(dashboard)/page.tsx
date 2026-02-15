@@ -1,9 +1,9 @@
-import { getAllMurals, getAllClients, getAllVideos } from "@/db/dal";
+import { getAllMuralsAdmin, getAllClients, getAllVideos } from "@/db/dal";
 import { Image, Users, Video, Award } from "lucide-react";
 
 export default async function AdminDashboard() {
   const [murals, clients, videos] = await Promise.all([
-    getAllMurals(),
+    getAllMuralsAdmin(),
     getAllClients(),
     getAllVideos(),
   ]);

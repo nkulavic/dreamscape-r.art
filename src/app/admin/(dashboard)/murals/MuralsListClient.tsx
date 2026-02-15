@@ -8,7 +8,7 @@ import * as schema from "@/db/schema";
 import MuralActions from "./MuralActions";
 
 type Mural = typeof schema.murals.$inferSelect;
-type SortField = "title" | "category" | "city" | "year" | "featured";
+type SortField = "title" | "category" | "city" | "year" | "status" | "featured";
 type SortDirection = "asc" | "desc";
 
 interface MuralsListClientProps {
@@ -97,6 +97,13 @@ export default function MuralsListClient({ murals }: MuralsListClientProps) {
               <SortIcon field="year" />
             </th>
             <th
+              onClick={() => handleSort("status")}
+              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
+            >
+              Status
+              <SortIcon field="status" />
+            </th>
+            <th
               onClick={() => handleSort("featured")}
               className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
             >
@@ -112,7 +119,7 @@ export default function MuralsListClient({ murals }: MuralsListClientProps) {
           {sortedMurals.length === 0 && (
             <tr>
               <td
-                colSpan={7}
+                colSpan={8}
                 className="px-6 py-12 text-center text-sm text-gray-500"
               >
                 No murals found. Create your first mural to get started.
@@ -140,6 +147,21 @@ export default function MuralsListClient({ murals }: MuralsListClientProps) {
               </td>
               <td className="px-6 py-4 text-sm text-gray-600">{mural.city}</td>
               <td className="px-6 py-4 text-sm text-gray-600">{mural.year}</td>
+              <td className="px-6 py-4 text-sm">
+                {mural.status === "published" ? (
+                  <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                    Published
+                  </span>
+                ) : mural.status === "draft" ? (
+                  <span className="inline-flex rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
+                    Draft
+                  </span>
+                ) : (
+                  <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+                    Archived
+                  </span>
+                )}
+              </td>
               <td className="px-6 py-4 text-sm text-gray-600">
                 {mural.featured ? (
                   <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">

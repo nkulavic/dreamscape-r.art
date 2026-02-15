@@ -36,6 +36,7 @@ export interface Mural {
     description?: string;
     keywords?: string;
   };
+  status: "draft" | "published" | "archived";
   featured: boolean;
 }
 
@@ -128,6 +129,7 @@ function transformMural(row: typeof schema.murals.$inferSelect): Mural {
             keywords: row.seoKeywords || undefined,
           }
         : undefined,
+    status: row.status,
     featured: row.featured,
   };
 }
@@ -197,7 +199,18 @@ function transformVideo(row: typeof schema.videos.$inferSelect): Video {
 
 // ── Mural queries ──────────────────────────────────────
 
+/** Public: only published murals */
 export async function getAllMurals(): Promise<Mural[]> {
+  const rows = await db
+    .select()
+    .from(schema.murals)
+    .where(eq(schema.murals.status, "published"))
+    .orderBy(desc(schema.murals.year));
+  return rows.map(transformMural);
+}
+
+/** Admin: all murals regardless of status */
+export async function getAllMuralsAdmin(): Promise<Mural[]> {
   const rows = await db
     .select()
     .from(schema.murals)
@@ -209,7 +222,7 @@ export async function getFeaturedMurals(): Promise<Mural[]> {
   const rows = await db
     .select()
     .from(schema.murals)
-    .where(eq(schema.murals.featured, true))
+    .where(and(eq(schema.murals.featured, true), eq(schema.murals.status, "published")))
     .orderBy(desc(schema.murals.year));
   return rows.map(transformMural);
 }
@@ -220,12 +233,22 @@ export async function getMuralsByCategory(
   const rows = await db
     .select()
     .from(schema.murals)
-    .where(eq(schema.murals.category, category))
+    .where(and(eq(schema.murals.category, category), eq(schema.murals.status, "published")))
     .orderBy(desc(schema.murals.year));
   return rows.map(transformMural);
 }
 
 export async function getMuralBySlug(slug: string): Promise<Mural | null> {
+  const rows = await db
+    .select()
+    .from(schema.murals)
+    .where(and(eq(schema.murals.slug, slug), eq(schema.murals.status, "published")))
+    .limit(1);
+  return rows[0] ? transformMural(rows[0]) : null;
+}
+
+/** Admin: get mural by slug regardless of status */
+export async function getMuralBySlugAdmin(slug: string): Promise<Mural | null> {
   const rows = await db
     .select()
     .from(schema.murals)
