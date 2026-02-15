@@ -12,6 +12,7 @@ import {
   LogOut,
   UserCog,
   Building2,
+  FileText,
 } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 
@@ -21,6 +22,7 @@ const navItems = [
   { href: "/admin/clients", label: "Clients", icon: Building2 },
   { href: "/admin/experience", label: "Experience", icon: Award },
   { href: "/admin/videos", label: "Videos", icon: Video },
+  { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/users", label: "Users", icon: UserCog },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

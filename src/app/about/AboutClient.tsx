@@ -25,12 +25,41 @@ const staggerContainer = {
 
 const stats = [
   { value: "10+", label: "Years Experience" },
-  { value: "50+", label: "Murals Completed" },
+  { value: "100+", label: "Murals Completed" },
   { value: "15+", label: "States & Countries" },
   { value: "7,500", label: "Largest Sq Ft Project" },
 ];
 
-export default function AboutClient() {
+interface Testimonial {
+  name: string;
+  org: string;
+  rating: number;
+  text: string;
+}
+
+interface AboutClientProps {
+  bio: string;
+  artistStatement: string;
+  missionStatement: string;
+  testimonials: Testimonial[];
+}
+
+export default function AboutClient({
+  bio,
+  artistStatement,
+  missionStatement,
+  testimonials,
+}: AboutClientProps) {
+  // Split bio into paragraphs for rendering
+  const bioParagraphs = bio
+    ? bio.split("\n\n").filter((p) => p.trim())
+    : [];
+
+  // Split artist statement into paragraphs
+  const statementParagraphs = artistStatement
+    ? artistStatement.split("\n\n").filter((p) => p.trim())
+    : [];
+
   return (
     <>
       <Header variant="transparent" />
@@ -45,7 +74,7 @@ export default function AboutClient() {
           overlayIntensity="medium"
         />
 
-        {/* Intro Section */}
+        {/* Intro Section — Bio */}
         <section className="py-24 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -67,28 +96,39 @@ export default function AboutClient() {
                 >
                   TRANSFORMING SPACES INTO STORIES
                 </motion.h2>
-                <motion.p
-                  variants={fadeInUp}
-                  className="text-body-lg text-gray-600 mb-6"
-                >
-                  For over a decade, Rachel Dinda has been transforming blank
-                  walls into vibrant narratives that speak to communities,
-                  inspire change, and celebrate the human spirit. Based in
-                  Denver, Colorado, her work spans from intimate local murals to
-                  massive commercial installations across the United States and
-                  internationally.
-                </motion.p>
-                <motion.p
-                  variants={fadeInUp}
-                  className="text-body-lg text-gray-600 mb-8"
-                >
-                  What sets Rachel apart is her deep commitment to collaboration.
-                  Every mural begins with listening&mdash;understanding the space,
-                  the people who inhabit it, and the story they want to tell.
-                  This community-centered approach has led to partnerships with
-                  organizations ranging from local schools to Fortune 500
-                  companies.
-                </motion.p>
+                {bioParagraphs.length > 0 ? (
+                  bioParagraphs.map((paragraph, i) => (
+                    <motion.p
+                      key={i}
+                      variants={fadeInUp}
+                      className="text-body-lg text-gray-600 mb-6"
+                    >
+                      {paragraph}
+                    </motion.p>
+                  ))
+                ) : (
+                  <>
+                    <motion.p
+                      variants={fadeInUp}
+                      className="text-body-lg text-gray-600 mb-6"
+                    >
+                      For over a decade, Rachel Dinda has been transforming blank
+                      walls into vibrant narratives that speak to communities,
+                      inspire change, and celebrate the human spirit. Based in
+                      Denver, Colorado, her work spans from intimate local murals to
+                      massive commercial installations across the United States and
+                      internationally.
+                    </motion.p>
+                    <motion.p
+                      variants={fadeInUp}
+                      className="text-body-lg text-gray-600 mb-6"
+                    >
+                      What sets Rachel apart is her deep commitment to collaboration.
+                      Every mural begins with listening&mdash;understanding the space,
+                      the people who inhabit it, and the story they want to tell.
+                    </motion.p>
+                  </>
+                )}
                 <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
                   {credentials.certifications.map((cert) => (
                     <span
@@ -150,7 +190,7 @@ export default function AboutClient() {
           </div>
         </section>
 
-        {/* Journey Section */}
+        {/* Artist Statement Section */}
         <section className="py-24 bg-cream">
           <div className="max-w-4xl mx-auto px-6">
             <motion.div
@@ -164,7 +204,7 @@ export default function AboutClient() {
                 variants={fadeInUp}
                 className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
               >
-                The Journey
+                Artist Statement
               </motion.p>
               <motion.h2
                 variants={fadeInUp}
@@ -181,44 +221,43 @@ export default function AboutClient() {
               variants={staggerContainer}
               className="space-y-8"
             >
-              <motion.p
-                variants={fadeInUp}
-                className="text-body-lg text-gray-600 leading-relaxed"
-              >
-                Rachel&apos;s artistic journey didn&apos;t follow a traditional path.
-                With a background in nursing (RN, BSN), she brings a unique
-                perspective to her art&mdash;one grounded in empathy, service, and
-                a deep understanding of how environments affect well-being. This
-                healthcare background informs her approach to creating spaces
-                that heal, inspire, and uplift communities.
-              </motion.p>
-
-              <motion.p
-                variants={fadeInUp}
-                className="text-body-lg text-gray-600 leading-relaxed"
-              >
-                What began as a creative outlet evolved into a calling. Rachel
-                discovered that murals offered something canvas art couldn&apos;t: the
-                ability to transform shared spaces and create lasting impact on
-                entire communities. A single mural can change how people feel
-                about their neighborhood, their workplace, their school.
-              </motion.p>
-
-              <motion.p
-                variants={fadeInUp}
-                className="text-body-lg text-gray-600 leading-relaxed"
-              >
-                Today, Rachel&apos;s work can be found across Colorado and beyond&mdash;from
-                the vibrant streets of Denver to the historic walls of Bristol,
-                UK, from community centers in Colombia to corporate headquarters
-                of Fortune 500 companies. Each project, regardless of scale,
-                receives the same dedication to craft, community, and storytelling.
-              </motion.p>
+              {statementParagraphs.length > 0 ? (
+                statementParagraphs.map((paragraph, i) => (
+                  <motion.p
+                    key={i}
+                    variants={fadeInUp}
+                    className="text-body-lg text-gray-600 leading-relaxed"
+                  >
+                    {paragraph}
+                  </motion.p>
+                ))
+              ) : (
+                <>
+                  <motion.p
+                    variants={fadeInUp}
+                    className="text-body-lg text-gray-600 leading-relaxed"
+                  >
+                    Rachel&apos;s artistic journey didn&apos;t follow a traditional path.
+                    With a background in nursing (RN, BSN), she brings a unique
+                    perspective to her art&mdash;one grounded in empathy, service, and
+                    a deep understanding of how environments affect well-being.
+                  </motion.p>
+                  <motion.p
+                    variants={fadeInUp}
+                    className="text-body-lg text-gray-600 leading-relaxed"
+                  >
+                    What began as a creative outlet evolved into a calling. Rachel
+                    discovered that murals offered something canvas art couldn&apos;t: the
+                    ability to transform shared spaces and create lasting impact on
+                    entire communities.
+                  </motion.p>
+                </>
+              )}
             </motion.div>
           </div>
         </section>
 
-        {/* Parallax Quote */}
+        {/* Mission Statement / Parallax Quote */}
         <ParallaxSection
           imageUrl="/images/murals/ursula-brewery.jpg"
           height="h-80 md:h-96"
@@ -229,12 +268,30 @@ export default function AboutClient() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="text-center text-white px-6"
+            className="text-center text-white px-6 max-w-4xl mx-auto"
           >
-            <p className="font-display text-3xl md:text-5xl mb-4">
-              &ldquo;EVERY WALL HAS A STORY WAITING TO BE TOLD&rdquo;
-            </p>
-            <p className="font-heading text-lg text-white/80">— Rachel Dinda</p>
+            {missionStatement ? (
+              <>
+                <p className="font-heading text-accent text-sm tracking-widest uppercase mb-4">
+                  Mission
+                </p>
+                <p className="font-display text-2xl md:text-4xl mb-4">
+                  &ldquo;{missionStatement}&rdquo;
+                </p>
+                <p className="font-heading text-lg text-white/80">
+                  — Rachel Dinda
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-display text-3xl md:text-5xl mb-4">
+                  &ldquo;EVERY WALL HAS A STORY WAITING TO BE TOLD&rdquo;
+                </p>
+                <p className="font-heading text-lg text-white/80">
+                  — Rachel Dinda
+                </p>
+              </>
+            )}
           </motion.div>
         </ParallaxSection>
 
@@ -302,6 +359,74 @@ export default function AboutClient() {
             </motion.div>
           </div>
         </section>
+
+        {/* Testimonials Section */}
+        {testimonials.length > 0 && (
+          <section className="py-24 bg-cream">
+            <div className="max-w-4xl mx-auto px-6">
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={staggerContainer}
+                className="text-center mb-16"
+              >
+                <motion.p
+                  variants={fadeInUp}
+                  className="font-heading text-accent text-sm tracking-widest uppercase mb-4"
+                >
+                  Testimonials
+                </motion.p>
+                <motion.h2
+                  variants={fadeInUp}
+                  className="font-display text-h2 text-gray-800"
+                >
+                  WHAT CLIENTS SAY
+                </motion.h2>
+              </motion.div>
+
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={staggerContainer}
+                className="space-y-8"
+              >
+                {testimonials.map((t, i) => (
+                  <motion.div
+                    key={i}
+                    variants={fadeInUp}
+                    className="bg-white rounded-2xl p-8 shadow-md"
+                  >
+                    <div className="flex items-center gap-1 mb-4">
+                      {Array.from({ length: 5 }).map((_, s) => (
+                        <span
+                          key={s}
+                          className={`text-lg ${
+                            s < t.rating ? "text-accent" : "text-gray-300"
+                          }`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-body-lg text-gray-600 leading-relaxed italic mb-6">
+                      &ldquo;{t.text}&rdquo;
+                    </p>
+                    <div>
+                      <p className="font-heading font-bold text-gray-800">
+                        {t.name}
+                      </p>
+                      {t.org && (
+                        <p className="text-sm text-gray-500">{t.org}</p>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </div>
+          </section>
+        )}
 
         {/* CTA Section */}
         <section className="py-24 bg-ocean-deep text-white">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSiteSettings } from "@/db/dal";
 import AboutClient from "./AboutClient";
 
 export const metadata: Metadata = {
@@ -42,49 +43,65 @@ export const metadata: Metadata = {
   },
 };
 
-const profileJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ProfilePage",
-  mainEntity: {
-    "@type": "Person",
-    "@id": "https://dreamscaper.art/#person",
-    name: "Rachel Dinda",
-    alternateName: "DREAMSCAPER",
-    jobTitle: "Professional Muralist",
-    description:
-      "Large-scale mural artist with 10+ years experience creating vibrant, community-driven public art across the United States and internationally.",
-    url: "https://dreamscaper.art",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Denver",
-      addressRegion: "CO",
-      addressCountry: "US",
-    },
-    sameAs: [
-      "https://www.instagram.com/dreamscape_r",
-      "https://www.facebook.com/dreamscaper.art",
-      "https://www.youtube.com/@dreamscape_r",
-      "https://www.linkedin.com/in/rachel-dinda",
-    ],
-    knowsAbout: [
-      "Mural Art",
-      "Street Art",
-      "Public Art",
-      "Large Scale Painting",
-      "Community Art",
-      "Commercial Art",
-    ],
-  },
-};
+export default async function AboutPage() {
+  const settings = await getSiteSettings();
 
-export default function AboutPage() {
+  // Parse testimonials from JSON string
+  let testimonials: { name: string; org: string; rating: number; text: string }[] = [];
+  try {
+    testimonials = settings.testimonials ? JSON.parse(settings.testimonials) : [];
+  } catch {
+    testimonials = [];
+  }
+
+  const profileJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    mainEntity: {
+      "@type": "Person",
+      "@id": "https://dreamscaper.art/#person",
+      name: "Rachel Dinda",
+      alternateName: "DREAMSCAPER",
+      jobTitle: "Professional Muralist",
+      description:
+        settings.artist_bio ||
+        "Large-scale mural artist with 10+ years experience creating vibrant, community-driven public art across the United States and internationally.",
+      url: "https://dreamscaper.art",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Denver",
+        addressRegion: "CO",
+        addressCountry: "US",
+      },
+      sameAs: [
+        "https://www.instagram.com/dreamscape_r",
+        "https://www.facebook.com/dreamscaper.art",
+        "https://www.youtube.com/@dreamscape_r",
+        "https://www.linkedin.com/in/rachel-dinda",
+      ],
+      knowsAbout: [
+        "Mural Art",
+        "Street Art",
+        "Public Art",
+        "Large Scale Painting",
+        "Community Art",
+        "Commercial Art",
+      ],
+    },
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(profileJsonLd) }}
       />
-      <AboutClient />
+      <AboutClient
+        bio={settings.artist_bio || ""}
+        artistStatement={settings.artist_statement || ""}
+        missionStatement={settings.mission_statement || ""}
+        testimonials={testimonials}
+      />
     </>
   );
 }
