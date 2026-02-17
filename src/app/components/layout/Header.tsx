@@ -3,19 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaInstagram, FaFacebook, FaYoutube } from "react-icons/fa";
 import { HiMenu, HiX } from "react-icons/hi";
 
 const navLinks = [
   { label: "Portfolio", href: "/portfolio" },
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
-];
-
-const socialLinks = [
-  { icon: FaInstagram, href: "https://instagram.com/dreamscape_r", label: "Instagram" },
-  { icon: FaFacebook, href: "https://facebook.com/Dreamscapesbydesign", label: "Facebook" },
-  { icon: FaYoutube, href: "https://youtube.com/@dreamscaper", label: "YouTube" },
 ];
 
 interface HeaderProps {
@@ -62,35 +55,19 @@ export default function Header({ variant = "transparent" }: HeaderProps) {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`font-heading text-sm tracking-wide uppercase ${textColor} hover:text-accent transition-colors duration-200`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Desktop Social & CTA */}
-            <div className="hidden lg:flex items-center gap-6">
-              <div className="flex items-center gap-4">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={social.label}
-                    className={`${textColor} hover:text-accent transition-colors duration-200`}
+            {/* Desktop Navigation & CTA */}
+            <div className="hidden lg:flex items-center gap-8">
+              <nav className="flex items-center gap-8">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`font-heading text-sm tracking-wide uppercase ${textColor} hover:text-accent transition-colors duration-200`}
                   >
-                    <social.icon className="w-5 h-5" />
-                  </a>
+                    {link.label}
+                  </Link>
                 ))}
-              </div>
+              </nav>
               <Link
                 href="/contact"
                 className="btn-primary text-sm py-2.5 px-5"
@@ -168,20 +145,6 @@ export default function Header({ variant = "transparent" }: HeaderProps) {
                   </Link>
                 </div>
 
-                <div className="mt-8 flex justify-center gap-6">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={social.label}
-                      className="text-gray-600 hover:text-accent transition-colors"
-                    >
-                      <social.icon className="w-6 h-6" />
-                    </a>
-                  ))}
-                </div>
               </div>
             </motion.div>
           </motion.div>
