@@ -250,12 +250,13 @@ export default function MuralDetailClient({
                     <p className="text-sm text-gray-500 mb-3">Tags</p>
                     <div className="flex flex-wrap gap-2">
                       {mural.tags.map((tag) => (
-                        <span
+                        <Link
                           key={tag}
-                          className="px-3 py-1 bg-white rounded-full text-sm text-gray-600"
+                          href={`/portfolio?tag=${encodeURIComponent(tag)}`}
+                          className="px-3 py-1 bg-white rounded-full text-sm text-gray-600 hover:bg-accent hover:text-white transition-colors"
                         >
                           {tag}
-                        </span>
+                        </Link>
                       ))}
                     </div>
                   </div>

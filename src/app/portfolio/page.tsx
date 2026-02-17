@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getAllMurals } from "@/db/dal";
 import PortfolioClient from "./PortfolioClient";
@@ -46,5 +47,9 @@ export const metadata: Metadata = {
 
 export default async function PortfolioPage() {
   const murals = await getAllMurals();
-  return <PortfolioClient murals={murals} />;
+  return (
+    <Suspense>
+      <PortfolioClient murals={murals} />
+    </Suspense>
+  );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Header from "../components/layout/Header";
@@ -34,12 +35,24 @@ const staggerContainer = {
 };
 
 export default function PortfolioClient({ murals }: { murals: Mural[] }) {
+  const searchParams = useSearchParams();
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
 
-  const filteredMurals =
-    activeFilter === "all"
-      ? murals
-      : murals.filter((mural) => mural.category === activeFilter);
+  // Read tag from URL on mount
+  useEffect(() => {
+    const tag = searchParams.get("tag");
+    if (tag) {
+      setActiveTag(tag);
+      setActiveFilter("all");
+    }
+  }, [searchParams]);
+
+  const filteredMurals = murals.filter((mural) => {
+    const matchesCategory = activeFilter === "all" || mural.category === activeFilter;
+    const matchesTag = !activeTag || mural.tags.some((t) => t.toLowerCase() === activeTag.toLowerCase());
+    return matchesCategory && matchesTag;
+  });
 
   return (
     <>
@@ -68,9 +81,12 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
               {categories.map((category) => (
                 <button
                   key={category.value}
-                  onClick={() => setActiveFilter(category.value)}
+                  onClick={() => {
+                    setActiveFilter(category.value);
+                    setActiveTag(null);
+                  }}
                   className={`px-6 py-3 rounded-full font-heading text-sm tracking-wide uppercase transition-all duration-300 ${
-                    activeFilter === category.value
+                    activeFilter === category.value && !activeTag
                       ? "bg-accent text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
@@ -78,7 +94,26 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                   {category.label}
                 </button>
               ))}
+              {activeTag && (
+                <button
+                  onClick={() => setActiveTag(null)}
+                  className="px-6 py-3 rounded-full font-heading text-sm tracking-wide uppercase bg-accent text-white transition-all duration-300 inline-flex items-center gap-2"
+                >
+                  Tag: {activeTag}
+                  <span className="text-white/70 hover:text-white">&times;</span>
+                </button>
+              )}
             </motion.div>
+
+            {/* Result Count */}
+            <motion.p
+              key={`count-${activeFilter}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-gray-500 font-heading text-sm tracking-wide mb-8"
+            >
+              {filteredMurals.length} {filteredMurals.length === 1 ? "Project" : "Projects"}
+            </motion.p>
 
             {/* Murals Grid */}
             <AnimatePresence mode="wait">

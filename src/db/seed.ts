@@ -447,6 +447,26 @@ async function seedSiteSettings() {
     "social.pinterest": siteConfig.social.pinterest,
     credentials: JSON.stringify(credentials),
     services: JSON.stringify(services),
+    testimonials: JSON.stringify([
+      {
+        name: "Sarah Mitchell",
+        org: "Molson Coors Beverage Company",
+        rating: 5,
+        text: "Rachel transformed our brewery space into something truly special. Her professionalism, creativity, and attention to detail exceeded our expectations. The mural has become a landmark for visitors and employees alike.",
+      },
+      {
+        name: "Marcus Rivera",
+        org: "Downtown Denver Partnership",
+        rating: 5,
+        text: "Working with Rachel was an incredible experience. She listened to our community's vision and brought it to life in ways we never imagined. The mural has become a source of pride for the entire neighborhood.",
+      },
+      {
+        name: "Jennifer Walsh",
+        org: "Girl Scouts of Colorado",
+        rating: 5,
+        text: "Rachel's ability to engage our girls in the creative process while delivering a stunning final piece was remarkable. She made everyone feel like part of the project from start to finish.",
+      },
+    ]),
   };
 
   for (const [key, value] of Object.entries(settings)) {
