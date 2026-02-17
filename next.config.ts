@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Minimize build resource usage
+  experimental: {
+    workerThreads: false,
+    cpus: 1,
+  },
   // Vercel handles Next.js hosting natively - no need for static export
   images: {
     // Allow images from external sources during development
