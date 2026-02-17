@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { HiArrowLeft, HiLocationMarker, HiCalendar, HiTag, HiPlay, HiPhotograph } from "react-icons/hi";
+import { HiArrowLeft, HiArrowRight, HiLocationMarker, HiCalendar, HiTag, HiPlay, HiPhotograph } from "react-icons/hi";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import ParallaxHero from "../../components/ui/ParallaxHero";
@@ -25,12 +25,21 @@ const staggerContainer = {
   },
 };
 
+interface MuralNav {
+  slug: string;
+  title: string;
+}
+
 export default function MuralDetailClient({
   mural,
   relatedMurals,
+  prevMural,
+  nextMural,
 }: {
   mural: Mural;
   relatedMurals: Mural[];
+  prevMural: MuralNav;
+  nextMural: MuralNav;
 }) {
   const locationString = [
     mural.location.venue,
@@ -322,9 +331,56 @@ export default function MuralDetailClient({
                   </motion.div>
                 ))}
               </div>
+
+              {/* View All Work */}
+              <div className="text-center mt-10">
+                <Link
+                  href="/portfolio"
+                  className="inline-flex items-center gap-2 font-heading text-sm tracking-wide uppercase text-gray-600 hover:text-accent transition-colors"
+                >
+                  View All Work
+                  <HiArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
             </div>
           </section>
         )}
+
+        {/* Prev / Next Navigation */}
+        <section className="py-0 bg-white border-t border-gray-100">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-2">
+              <Link
+                href={`/portfolio/${prevMural.slug}`}
+                className="group flex items-center gap-4 px-6 py-8 hover:bg-gray-50 transition-colors border-r border-gray-100"
+              >
+                <HiArrowLeft className="w-5 h-5 text-gray-400 group-hover:text-accent transition-colors shrink-0" />
+                <div className="min-w-0">
+                  <p className="font-heading text-xs tracking-widest uppercase text-gray-400 mb-1">
+                    Previous
+                  </p>
+                  <p className="font-heading font-bold text-gray-800 group-hover:text-accent transition-colors truncate">
+                    {prevMural.title}
+                  </p>
+                </div>
+              </Link>
+              <Link
+                href={`/portfolio/${nextMural.slug}`}
+                className="group flex items-center justify-end gap-4 px-6 py-8 hover:bg-gray-50 transition-colors text-right"
+              >
+                <div className="min-w-0">
+                  <p className="font-heading text-xs tracking-widest uppercase text-gray-400 mb-1">
+                    Next
+                  </p>
+                  <p className="font-heading font-bold text-gray-800 group-hover:text-accent transition-colors truncate">
+                    {nextMural.title}
+                  </p>
+                </div>
+                <HiArrowRight className="w-5 h-5 text-gray-400 group-hover:text-accent transition-colors shrink-0" />
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

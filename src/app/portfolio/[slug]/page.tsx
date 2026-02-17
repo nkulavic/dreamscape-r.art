@@ -88,17 +88,30 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function MuralDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const mural = await getMuralBySlug(slug);
+  const [mural, allMurals] = await Promise.all([
+    getMuralBySlug(slug),
+    getAllMurals(),
+  ]);
 
   if (!mural) notFound();
 
   const related = await getMuralsByCategory(mural.category);
   const relatedMurals = related.filter((m) => m.id !== mural.id).slice(0, 3);
 
+  // Compute prev/next for sequential browsing
+  const currentIndex = allMurals.findIndex((m) => m.slug === slug);
+  const prevMural = currentIndex > 0 ? allMurals[currentIndex - 1] : allMurals[allMurals.length - 1];
+  const nextMural = currentIndex < allMurals.length - 1 ? allMurals[currentIndex + 1] : allMurals[0];
+
   return (
     <>
       <MuralJsonLd mural={mural} />
-      <MuralDetailClient mural={mural} relatedMurals={relatedMurals} />
+      <MuralDetailClient
+        mural={mural}
+        relatedMurals={relatedMurals}
+        prevMural={{ slug: prevMural.slug, title: prevMural.title }}
+        nextMural={{ slug: nextMural.slug, title: nextMural.title }}
+      />
     </>
   );
 }
