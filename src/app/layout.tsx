@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat, Inter } from "next/font/google";
 import "./globals.css";
-import ThemeSelector from "./components/ui/ThemeSelector";
+import { getSiteTheme } from "@/db/dal";
+import { themeToCSS, buildGoogleFontLinks } from "@/lib/theme";
 import JsonLd from "./components/seo/JsonLd";
 
 const BASE_URL = "https://dreamscaper.art";
@@ -107,11 +108,15 @@ export const metadata: Metadata = {
   category: "Art & Design",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const theme = await getSiteTheme();
+  const fontLinks = theme ? buildGoogleFontLinks(theme) : null;
+  const themeCSS = theme ? themeToCSS(theme) : null;
+
   return (
     <html lang="en" className="scroll-smooth">
       <head>
@@ -120,12 +125,17 @@ export default function RootLayout({
         <meta name="geo.placename" content="Denver" />
         <meta name="geo.position" content="39.7392;-104.9903" />
         <meta name="ICBM" content="39.7392, -104.9903" />
+        {fontLinks?.map((href) => (
+          <link key={href} rel="stylesheet" href={href} />
+        ))}
+        {themeCSS && (
+          <style dangerouslySetInnerHTML={{ __html: themeCSS }} />
+        )}
       </head>
       <body
         className={`${bebasNeue.variable} ${montserrat.variable} ${inter.variable} antialiased bg-white text-gray-800`}
       >
         {children}
-        <ThemeSelector />
       </body>
     </html>
   );
