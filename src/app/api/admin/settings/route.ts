@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/db";
@@ -49,6 +50,12 @@ export async function PUT(request: Request) {
         .returning();
       results.push(created);
     }
+  }
+
+  // Revalidate all pages so the layout re-renders with the new theme
+  const hasThemeChange = entries.some((e) => e.key === "site_theme");
+  if (hasThemeChange) {
+    revalidatePath("/", "layout");
   }
 
   return NextResponse.json(
