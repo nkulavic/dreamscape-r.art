@@ -13,6 +13,7 @@ import {
   UserCog,
   Building2,
   FileText,
+  Palette,
 } from "lucide-react";
 import { signOut } from "@/lib/auth-client";
 
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/admin/experience", label: "Experience", icon: Award },
   { href: "/admin/videos", label: "Videos", icon: Video },
   { href: "/admin/content", label: "Content", icon: FileText },
+  { href: "/admin/theme", label: "Theme", icon: Palette },
   { href: "/admin/users", label: "Users", icon: UserCog },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];

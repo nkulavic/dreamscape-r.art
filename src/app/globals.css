@@ -389,14 +389,14 @@ h1, h2, h3, h4, h5, h6 {
 /* Card Styles */
 .card {
   background: var(--color-white);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
+  border-radius: var(--theme-card-radius, var(--radius-xl));
+  box-shadow: var(--theme-card-shadow, var(--shadow-md));
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
 .card:hover {
-  transform: translateY(-8px);
+  transform: translateY(calc(-1 * var(--theme-card-hover-lift, 8px)));
   box-shadow: var(--shadow-2xl);
 }
 
@@ -409,13 +409,13 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary {
   background: var(--color-coral);
   color: white;
-  padding: 1rem 2.5rem;
-  border-radius: var(--radius-full);
+  padding: var(--theme-button-padding-y, 1rem) var(--theme-button-padding-x, 2.5rem);
+  border-radius: var(--theme-button-radius, var(--radius-full));
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--theme-button-font-size, 0.9rem);
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+  text-transform: var(--theme-button-text-transform, uppercase);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
@@ -435,14 +435,14 @@ h1, h2, h3, h4, h5, h6 {
 .btn-secondary {
   background: transparent;
   color: var(--color-white);
-  padding: 1rem 2.5rem;
+  padding: var(--theme-button-padding-y, 1rem) var(--theme-button-padding-x, 2.5rem);
   border: 2px solid var(--color-white);
-  border-radius: var(--radius-full);
+  border-radius: var(--theme-button-radius, var(--radius-full));
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--theme-button-font-size, 0.9rem);
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+  text-transform: var(--theme-button-text-transform, uppercase);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
@@ -460,14 +460,14 @@ h1, h2, h3, h4, h5, h6 {
 .btn-outline {
   background: transparent;
   color: var(--color-coral);
-  padding: 1rem 2.5rem;
+  padding: var(--theme-button-padding-y, 1rem) var(--theme-button-padding-x, 2.5rem);
   border: 2px solid var(--color-coral);
-  border-radius: var(--radius-full);
+  border-radius: var(--theme-button-radius, var(--radius-full));
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--theme-button-font-size, 0.9rem);
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+  text-transform: var(--theme-button-text-transform, uppercase);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;

@@ -1,6 +1,8 @@
 import { db } from ".";
 import { eq, desc, inArray, and } from "drizzle-orm";
 import * as schema from "./schema";
+import type { SiteTheme } from "@/lib/theme";
+import { DEFAULT_THEME } from "@/lib/theme";
 
 // ── Types (matching old interfaces for backward compatibility) ──
 
@@ -409,4 +411,18 @@ export async function getSiteSetting(key: string): Promise<string | null> {
     .where(eq(schema.siteSettings.key, key))
     .limit(1);
   return rows[0]?.value ?? null;
+}
+
+// ── Theme ─────────────────────────────────────────────
+
+export async function getSiteTheme(): Promise<SiteTheme | null> {
+  const raw = await getSiteSetting("site_theme");
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<SiteTheme>;
+    // Merge with defaults so new fields always have values
+    return { ...DEFAULT_THEME, ...parsed };
+  } catch {
+    return null;
+  }
 }
