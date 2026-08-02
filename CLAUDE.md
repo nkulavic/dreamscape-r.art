@@ -88,6 +88,19 @@ ParallaxHero and ParallaxSection use Framer Motion's `useScroll` + `useTransform
 
 All media is served from **Vercel Blob** (`*.public.blob.vercel-storage.com`). Images are uploaded via the admin panel and stored with deterministic paths. Next.js `<Image>` with `remotePatterns` configured for blob storage, squarespace-cdn.com, and myportfolio.com.
 
+### Media Uploads
+
+Uploads go **directly from the browser to Vercel Blob** using client uploads (`upload()` from `@vercel/blob/client`). `/api/admin/upload` only issues a short-lived, session-authenticated token via `handleUpload()` — the file never passes through a serverless function, so the **4.5 MB Vercel request body limit does not apply**.
+
+- Policy limits live in `src/lib/upload.ts`: **images 50 MB**, **videos 500 MB**, with allow-listed content types. They're checked client-side for instant feedback and baked into the upload token so they can't be bypassed.
+- `src/lib/upload-client.ts` exposes `uploadMedia(file, { folder, kind, onProgress })`, which validates, uploads (multipart above 10 MB), and returns the proxied `/media/...` URL.
+- Blobs get a random filename suffix, so re-uploading the same filename never collides.
+- Folders: `murals/`, `logos/`, `videos/`, `posters/`.
+
+### Admin Tables
+
+All admin list views share `src/app/admin/(dashboard)/_components/SortableTable.tsx` — `useTableSort()` plus `<SortableHeader>` / `<StaticHeader>`. Sorting is type-aware (numbers, dates, booleans, natural string order), blanks sink to the bottom, headers expose `aria-sort`, and the chosen column is remembered per table in `localStorage`.
+
 ### Authentication & Admin
 
 - **Better Auth** with email/password provider and admin role

@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uuidv7 } from "uuidv7";
+import { toast } from "sonner";
+import { uploadMedia } from "@/lib/upload-client";
+import { UPLOAD_LIMITS, uploadHint, type UploadKind } from "@/lib/upload";
+import UploadProgress from "@/app/admin/(dashboard)/_components/UploadProgress";
 
 interface VideoData {
   id: string;
@@ -28,31 +32,32 @@ export default function VideoForm({ video }: { video?: VideoData }) {
   const [featured, setFeatured] = useState(video?.featured ?? false);
   const [srcUrl, setSrcUrl] = useState(video?.srcUrl ?? "");
   const [posterUrl, setPosterUrl] = useState(video?.posterUrl ?? "");
-  const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [uploadingPoster, setUploadingPoster] = useState(false);
+  const [videoProgress, setVideoProgress] = useState<number | null>(null);
+  const [posterProgress, setPosterProgress] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const uploadingVideo = videoProgress !== null;
+  const uploadingPoster = posterProgress !== null;
 
   async function handleFileUpload(
     file: File,
+    kind: UploadKind,
     setUrl: (url: string) => void,
-    setUploading: (val: boolean) => void
+    setProgress: (value: number | null) => void
   ) {
-    setUploading(true);
+    setProgress(0);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
+      const url = await uploadMedia(file, {
+        folder: kind === "video" ? "videos" : "posters",
+        kind,
+        onProgress: setProgress,
       });
-      const data = await res.json();
-      if (data.url) {
-        setUrl(data.url);
-      }
-    } catch {
-      alert("Upload failed.");
+      setUrl(url);
+      toast.success(kind === "video" ? "Video uploaded" : "Poster uploaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed.");
     } finally {
-      setUploading(false);
+      setProgress(null);
     }
   }
 
@@ -181,17 +186,17 @@ export default function VideoForm({ video }: { video?: VideoData }) {
         </label>
         <input
           type="file"
-          accept="video/*"
+          accept={UPLOAD_LIMITS.video.accept}
           onChange={(e) => {
             const file = e.target.files?.[0];
-            if (file) handleFileUpload(file, setSrcUrl, setUploadingVideo);
+            e.target.value = "";
+            if (file) handleFileUpload(file, "video", setSrcUrl, setVideoProgress);
           }}
           disabled={uploadingVideo}
           className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200"
         />
-        {uploadingVideo && (
-          <p className="mt-1 text-sm text-gray-500">Uploading video...</p>
-        )}
+        <p className="mt-1 text-xs text-gray-500">{uploadHint("video")}</p>
+        <UploadProgress percentage={videoProgress} label="Uploading video" />
         {srcUrl && (
           <p className="mt-1 break-all text-xs text-gray-400">{srcUrl}</p>
         )}
@@ -204,17 +209,17 @@ export default function VideoForm({ video }: { video?: VideoData }) {
         </label>
         <input
           type="file"
-          accept="image/*"
+          accept={UPLOAD_LIMITS.image.accept}
           onChange={(e) => {
             const file = e.target.files?.[0];
-            if (file) handleFileUpload(file, setPosterUrl, setUploadingPoster);
+            e.target.value = "";
+            if (file) handleFileUpload(file, "image", setPosterUrl, setPosterProgress);
           }}
           disabled={uploadingPoster}
           className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200"
         />
-        {uploadingPoster && (
-          <p className="mt-1 text-sm text-gray-500">Uploading poster...</p>
-        )}
+        <p className="mt-1 text-xs text-gray-500">{uploadHint("image")}</p>
+        <UploadProgress percentage={posterProgress} label="Uploading poster" />
         {posterUrl && (
           <div className="mt-2">
             <img
@@ -231,7 +236,7 @@ export default function VideoForm({ video }: { video?: VideoData }) {
       <div className="flex items-center gap-3 pt-4">
         <button
           type="submit"
-          disabled={saving || !srcUrl}
+          disabled={saving || !srcUrl || uploadingVideo || uploadingPoster}
           className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
         >
           {saving ? "Saving..." : isEditing ? "Update Video" : "Create Video"}

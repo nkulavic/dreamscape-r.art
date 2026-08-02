@@ -1,105 +1,45 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import type { Client } from "@/db/dal";
 import DeleteClientButton from "./DeleteClientButton";
+import {
+  SortableHeader,
+  StaticHeader,
+  useTableSort,
+} from "../_components/SortableTable";
 
 type SortField = "name" | "category" | "projectSize" | "featured";
-type SortDirection = "asc" | "desc";
 
 interface ClientsListClientProps {
   clients: Client[];
 }
 
-export default function ClientsListClient({
-  clients,
-}: ClientsListClientProps) {
-  const [sortField, setSortField] = useState<SortField>("name");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  const sortedClients = useMemo(() => {
-    return [...clients].sort((a, b) => {
-      let aValue: any = a[sortField];
-      let bValue: any = b[sortField];
-
-      // Handle null/undefined values
-      if (aValue === null || aValue === undefined) aValue = "";
-      if (bValue === null || bValue === undefined) bValue = "";
-
-      // String comparison
-      if (typeof aValue === "string") {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
-      }
-
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [clients, sortField, sortDirection]);
-
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) {
-      return <ArrowUpDown className="ml-1 inline h-3.5 w-3.5 text-gray-400" />;
-    }
-    return sortDirection === "asc" ? (
-      <ArrowUp className="ml-1 inline h-3.5 w-3.5 text-gray-700" />
-    ) : (
-      <ArrowDown className="ml-1 inline h-3.5 w-3.5 text-gray-700" />
-    );
-  };
+export default function ClientsListClient({ clients }: ClientsListClientProps) {
+  const sort = useTableSort<Client, SortField>(clients, {
+    initialField: "name",
+    storageKey: "clients",
+  });
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-xl bg-white shadow-sm">
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50">
-            <th
-              onClick={() => handleSort("name")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Name
-              <SortIcon field="name" />
-            </th>
-            <th
-              onClick={() => handleSort("category")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Category
-              <SortIcon field="category" />
-            </th>
-            <th
-              onClick={() => handleSort("projectSize")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Project Size
-              <SortIcon field="projectSize" />
-            </th>
-            <th
-              onClick={() => handleSort("featured")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Featured
-              <SortIcon field="featured" />
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Actions
-            </th>
+            <SortableHeader field="name" label="Name" sort={sort} />
+            <SortableHeader field="category" label="Category" sort={sort} />
+            <SortableHeader field="projectSize" label="Project Size" sort={sort} />
+            <SortableHeader
+              field="featured"
+              label="Featured"
+              sort={sort}
+              firstDirection="desc"
+            />
+            <StaticHeader label="Actions" align="right" />
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {sortedClients.length === 0 && (
+          {sort.sortedRows.length === 0 && (
             <tr>
               <td
                 colSpan={5}
@@ -109,7 +49,7 @@ export default function ClientsListClient({
               </td>
             </tr>
           )}
-          {sortedClients.map((client) => (
+          {sort.sortedRows.map((client) => (
             <tr key={client.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 text-sm font-medium text-gray-900">
                 {client.name}
