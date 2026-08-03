@@ -424,6 +424,65 @@ export async function getSocialLinks(): Promise<SocialLinks> {
   return resolved;
 }
 
+export interface SeoDefaults {
+  title: string;
+  description: string;
+  keywords: string[];
+  ogImage: string;
+  twitterHandle: string;
+}
+
+/** Fallbacks used when the matching admin field is blank. */
+const SEO_FALLBACKS: SeoDefaults = {
+  title: `${siteConfig.name} | ${siteConfig.artistName} - ${siteConfig.title}`,
+  description:
+    "Large-scale mural art by Rachel Dinda. Transforming spaces with vibrant, community-driven murals across the US and internationally. Commission your next mural project.",
+  keywords: [
+    "muralist",
+    "mural artist",
+    "large scale art",
+    "street art",
+    "public art",
+    "commercial murals",
+    "community art",
+    "Denver muralist",
+    "Colorado muralist",
+    "Rachel Dinda",
+    "DREAMSCAPER",
+    "wall murals",
+    "building murals",
+    "outdoor art",
+    "urban art",
+    "mural commission",
+  ],
+  ogImage: "/images/murals/protect-your-peace.jpg",
+  twitterHandle: "@dreamscape_r",
+};
+
+/**
+ * Site-wide SEO defaults as edited in the admin, falling back to the values
+ * above. Like the social links, these fields existed in Settings long before
+ * anything read them.
+ */
+export async function getSeoDefaults(): Promise<SeoDefaults> {
+  const settings = await getSiteSettings();
+
+  const keywords = settings["seo.defaultKeywords"]
+    ?.split(",")
+    .map((keyword) => keyword.trim())
+    .filter(Boolean);
+
+  return {
+    title: settings["seo.defaultTitle"]?.trim() || SEO_FALLBACKS.title,
+    description:
+      settings["seo.defaultDescription"]?.trim() || SEO_FALLBACKS.description,
+    keywords: keywords?.length ? keywords : SEO_FALLBACKS.keywords,
+    ogImage: settings["seo.ogImage"]?.trim() || SEO_FALLBACKS.ogImage,
+    twitterHandle:
+      settings["seo.twitterHandle"]?.trim() || SEO_FALLBACKS.twitterHandle,
+  };
+}
+
 export async function getSiteSetting(key: string): Promise<string | null> {
   const rows = await db
     .select()
