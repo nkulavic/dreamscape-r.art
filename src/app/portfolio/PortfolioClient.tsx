@@ -4,6 +4,7 @@ import { useEffect, useState, useId, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiChevronDown } from "react-icons/hi";
 import Link from "next/link";
+import Image from "next/image";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import ParallaxHero from "../components/ui/ParallaxHero";
@@ -25,6 +26,10 @@ const locationOf = (mural: Mural) =>
   [mural.location.city, mural.location.state || mural.location.country]
     .filter(Boolean)
     .join(", ");
+
+/** Descriptive alt text — these images are the content, not decoration. */
+const muralAlt = (mural: Mural) =>
+  `${mural.title} — ${mural.category} mural by Rachel Dinda in ${locationOf(mural)}`;
 
 const SORT_OPTIONS: SortOption<Mural>[] = [
   { value: "newest", label: "Newest first", getValue: (m) => m.year, direction: "desc" },
@@ -412,7 +417,7 @@ export default function PortfolioClient({
                 variants={staggerContainer}
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
               >
-                {visibleMurals.map((mural) => (
+                {visibleMurals.map((mural, index) => (
                   <motion.div
                     key={mural.id}
                     variants={fadeInUp}
@@ -425,13 +430,15 @@ export default function PortfolioClient({
                           {/* Hover Overlay */}
                           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-ocean-deep/90 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                          {/* Image */}
-                          <div
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                            style={{
-                              backgroundImage: `url(${mural.images.hero})`,
-                              backgroundColor: "#e5e7eb",
-                            }}
+                          {/* Image — next/image so it ships as AVIF/WebP at the
+                              size actually needed, and search engines can read it */}
+                          <Image
+                            src={mural.images.hero}
+                            alt={muralAlt(mural)}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            priority={index < 3}
                           />
 
                           {/* Hover Content */}
