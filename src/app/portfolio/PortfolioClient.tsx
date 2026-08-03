@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useId, useMemo } from "react";
+import { useState, useId, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiChevronDown } from "react-icons/hi";
@@ -44,6 +44,23 @@ const SORT_OPTIONS: SortOption<Mural>[] = [
 
 const DEFAULT_SORT = SORT_OPTIONS[0].value;
 
+/** "any" matches murals carrying at least one selected tag; "all" requires every one. */
+type TagMode = "any" | "all";
+
+function parseTags(raw: string | null): string[] {
+  if (!raw) return [];
+  const seen = new Set<string>();
+  return raw
+    .split(",")
+    .map((tag) => tag.trim())
+    .filter((tag) => {
+      const lower = tag.toLowerCase();
+      if (!tag || seen.has(lower)) return false;
+      seen.add(lower);
+      return true;
+    });
+}
+
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
@@ -63,37 +80,65 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Read once on mount — from here on this component owns the state and writes
+  // it back to the URL, so a filtered view stays shareable.
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
-  const [activeTag, setActiveTag] = useState<string | null>(null);
-  const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
+  const [activeTags, setActiveTags] = useState<string[]>(() =>
+    parseTags(searchParams.get("tag"))
+  );
+  const [tagMode, setTagMode] = useState<TagMode>(() =>
+    searchParams.get("match") === "all" ? "all" : "any"
+  );
+  const [sortValue, setSortValue] = useState<string>(() => {
+    const sort = searchParams.get("sort");
+    return sort && SORT_OPTIONS.some((option) => option.value === sort)
+      ? sort
+      : DEFAULT_SORT;
+  });
   const [showTags, setShowTags] = useState(false);
   const tagPanelId = useId();
 
-  // Read tag and sort from the URL so a filtered view can be shared or bookmarked.
-  useEffect(() => {
-    const tag = searchParams.get("tag");
-    if (tag) {
-      setActiveTag(tag);
-      setActiveFilter("all");
-    }
+  function syncUrl(next: { tags?: string[]; mode?: TagMode; sort?: string }) {
+    const tags = next.tags ?? activeTags;
+    const mode = next.mode ?? tagMode;
+    const sort = next.sort ?? sortValue;
 
-    const sort = searchParams.get("sort");
-    if (sort && SORT_OPTIONS.some((option) => option.value === sort)) {
-      setSortValue(sort);
-    }
-  }, [searchParams]);
+    const params = new URLSearchParams();
+    if (tags.length > 0) params.set("tag", tags.join(","));
+    // Only meaningful with more than one tag.
+    if (mode === "all" && tags.length > 1) params.set("match", "all");
+    if (sort !== DEFAULT_SORT) params.set("sort", sort);
+
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
 
   function handleSortChange(value: string) {
     setSortValue(value);
+    syncUrl({ sort: value });
+  }
 
-    const params = new URLSearchParams(searchParams.toString());
-    if (value === DEFAULT_SORT) {
-      params.delete("sort");
-    } else {
-      params.set("sort", value);
-    }
-    const query = params.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  /** Adds or removes a tag from the selection. */
+  function toggleTag(tag: string) {
+    const lower = tag.toLowerCase();
+    const isActive = activeTags.some((t) => t.toLowerCase() === lower);
+    const next = isActive
+      ? activeTags.filter((t) => t.toLowerCase() !== lower)
+      : [...activeTags, tag];
+
+    setActiveTags(next);
+    syncUrl({ tags: next });
+  }
+
+  function clearTags() {
+    setActiveTags([]);
+    syncUrl({ tags: [] });
+  }
+
+  function handleModeChange(mode: TagMode) {
+    setTagMode(mode);
+    syncUrl({ mode });
   }
 
   // Every tag in use, so visitors can browse by theme without guessing names.
@@ -110,20 +155,27 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
   }, [murals]);
 
   const visibleMurals = useMemo(() => {
+    const selected = activeTags.map((tag) => tag.toLowerCase());
+
     const filtered = murals.filter((mural) => {
       const matchesCategory =
         activeFilter === "all" || mural.category === activeFilter;
-      const matchesTag =
-        !activeTag ||
-        mural.tags.some((t) => t.toLowerCase() === activeTag.toLowerCase());
-      return matchesCategory && matchesTag;
+
+      const muralTags = new Set(mural.tags.map((tag) => tag.toLowerCase()));
+      const matchesTags =
+        selected.length === 0 ||
+        (tagMode === "all"
+          ? selected.every((tag) => muralTags.has(tag))
+          : selected.some((tag) => muralTags.has(tag)));
+
+      return matchesCategory && matchesTags;
     });
 
     return sortItems(
       filtered,
       SORT_OPTIONS.find((option) => option.value === sortValue)
     );
-  }, [murals, activeFilter, activeTag, sortValue]);
+  }, [murals, activeFilter, activeTags, tagMode, sortValue]);
 
   return (
     <>
@@ -153,12 +205,9 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                 <button
                   key={category.value}
                   type="button"
-                  onClick={() => {
-                    setActiveFilter(category.value);
-                    setActiveTag(null);
-                  }}
+                  onClick={() => setActiveFilter(category.value)}
                   className={`rounded-full px-3.5 py-1.5 font-heading text-xs uppercase tracking-wide transition-all duration-300 sm:px-6 sm:py-3 sm:text-sm ${
-                    activeFilter === category.value && !activeTag
+                    activeFilter === category.value
                       ? "bg-accent text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
@@ -166,22 +215,68 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                   {category.label}
                 </button>
               ))}
-              {activeTag && (
+            </motion.div>
+
+            {/* Selected tags + how they combine */}
+            {activeTags.length > 0 && (
+              <div className="mb-5 flex flex-wrap items-center justify-center gap-2">
+                {activeTags.map((tag, index) => (
+                  <span key={tag} className="flex items-center gap-2">
+                    {index > 0 && (
+                      <span className="font-heading text-[10px] uppercase tracking-wide text-gray-400">
+                        {tagMode === "all" ? "and" : "or"}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      title={`Remove ${tag}`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-ocean-deep px-3 py-1.5 text-xs tracking-wide text-white transition-colors hover:bg-accent"
+                    >
+                      {tag}
+                      <span className="text-white/60">&times;</span>
+                    </button>
+                  </span>
+                ))}
+
+                {activeTags.length > 1 && (
+                  <span
+                    className="ml-1 inline-flex overflow-hidden rounded-full bg-gray-100 p-0.5"
+                    role="group"
+                    aria-label="How selected tags combine"
+                  >
+                    {(["any", "all"] as TagMode[]).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => handleModeChange(mode)}
+                        aria-pressed={tagMode === mode}
+                        className={`rounded-full px-3 py-1 font-heading text-[11px] uppercase tracking-wide transition-colors ${
+                          tagMode === mode
+                            ? "bg-white text-gray-900 shadow-sm"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        {mode === "any" ? "Any" : "All"}
+                      </button>
+                    ))}
+                  </span>
+                )}
+
                 <button
                   type="button"
-                  onClick={() => setActiveTag(null)}
-                  className="inline-flex items-center gap-2 rounded-full bg-accent px-3.5 py-1.5 font-heading text-xs uppercase tracking-wide text-white transition-all duration-300 sm:px-6 sm:py-3 sm:text-sm"
+                  onClick={clearTags}
+                  className="text-xs uppercase tracking-wide text-gray-400 underline-offset-4 hover:text-accent hover:underline"
                 >
-                  Tag: {activeTag}
-                  <span className="text-white/70 hover:text-white">&times;</span>
+                  Clear
                 </button>
-              )}
-            </motion.div>
+              </div>
+            )}
 
             {/* Result Count + Tag Browser + Sort — one row on phones too */}
             <div className="mb-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 sm:mb-8 sm:justify-between sm:gap-4">
               <motion.p
-                key={`count-${activeFilter}-${activeTag ?? ""}`}
+                key={`count-${activeFilter}-${activeTags.join(",")}-${tagMode}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="w-full text-center font-heading text-xs tracking-wide text-gray-500 sm:w-auto sm:text-left sm:text-sm"
@@ -233,42 +328,63 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                   className="overflow-hidden"
                 >
                   <div className="mb-5 rounded-2xl border border-gray-100 bg-gray-50/60 p-4 sm:mb-8 sm:p-5">
+                    <p className="mb-3 font-heading text-[11px] uppercase tracking-wide text-gray-400">
+                      Pick as many as you like
+                      {activeTags.length > 1 &&
+                        ` — showing murals with ${
+                          tagMode === "all" ? "all" : "any"
+                        } of them`}
+                    </p>
                     <div className="max-h-44 overflow-y-auto sm:max-h-56">
                       <div className="flex flex-wrap gap-2">
                         {allTags.map(({ tag, count }) => {
-                          const isActive =
-                            activeTag?.toLowerCase() === tag.toLowerCase();
+                          const isActive = activeTags.some(
+                            (t) => t.toLowerCase() === tag.toLowerCase()
+                          );
                           return (
                             <button
                               key={tag}
                               type="button"
-                              onClick={() => {
-                                setActiveTag(isActive ? null : tag);
-                                // Collapse again so the grid comes straight back.
-                                setShowTags(false);
-                              }}
+                              onClick={() => toggleTag(tag)}
+                              aria-pressed={isActive}
                               className={`rounded-full px-3.5 py-1.5 text-xs tracking-wide transition-colors ${
                                 isActive
                                   ? "bg-ocean-deep text-white"
-                                  : "bg-white text-gray-500 hover:bg-white hover:text-gray-900"
+                                  : "bg-white text-gray-500 hover:text-gray-900"
                               }`}
                             >
                               {tag}
-                              <span className="ml-1.5 opacity-50">{count}</span>
+                              <span
+                                className={`ml-1.5 ${
+                                  isActive ? "text-white/60" : "opacity-50"
+                                }`}
+                              >
+                                {count}
+                              </span>
                             </button>
                           );
                         })}
                       </div>
                     </div>
-                    {activeTag && (
+                    <div className="mt-4 flex items-center gap-4">
                       <button
                         type="button"
-                        onClick={() => setActiveTag(null)}
-                        className="mt-4 text-xs uppercase tracking-wide text-gray-500 underline-offset-4 hover:text-accent hover:underline"
+                        onClick={() => setShowTags(false)}
+                        className="rounded-full bg-gray-900 px-4 py-1.5 font-heading text-[11px] uppercase tracking-wide text-white transition-colors hover:bg-gray-700"
                       >
-                        Clear tag filter
+                        Done
                       </button>
-                    )}
+                      {activeTags.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={clearTags}
+                          className="text-xs uppercase tracking-wide text-gray-500 underline-offset-4 hover:text-accent hover:underline"
+                        >
+                          Clear {activeTags.length}{" "}
+                          {activeTags.length === 1 ? "tag" : "tags"}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -277,7 +393,7 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
             {/* Murals Grid */}
             <AnimatePresence mode="wait">
               <motion.div
-                key={`${activeFilter}-${activeTag ?? ""}-${sortValue}`}
+                key={`${activeFilter}-${activeTags.join(",")}-${tagMode}-${sortValue}`}
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
@@ -351,12 +467,23 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                 className="text-center py-16"
               >
                 <p className="text-gray-500 text-lg">
-                  {activeTag
-                    ? `No murals tagged "${activeTag}"${
+                  {activeTags.length > 0
+                    ? `No murals tagged ${activeTags
+                        .map((tag) => `"${tag}"`)
+                        .join(tagMode === "all" ? " and " : " or ")}${
                         activeFilter === "all" ? "" : " in this category"
                       }.`
                     : "No murals found in this category."}
                 </p>
+                {activeTags.length > 1 && tagMode === "all" && (
+                  <button
+                    type="button"
+                    onClick={() => handleModeChange("any")}
+                    className="mt-3 font-heading text-sm uppercase tracking-wide text-accent underline-offset-4 hover:underline"
+                  >
+                    Try matching any tag instead
+                  </button>
+                )}
               </motion.div>
             )}
           </div>
