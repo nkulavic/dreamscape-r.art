@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uuidv7 } from "uuidv7";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import { uploadMedia } from "@/lib/upload-client";
 import { UPLOAD_LIMITS, uploadHint } from "@/lib/upload";
 import UploadProgress from "@/app/admin/(dashboard)/_components/UploadProgress";
@@ -166,16 +167,29 @@ export default function ClientForm({ client }: { client?: ClientData }) {
           disabled={uploading}
           className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200"
         />
-        <p className="mt-1 text-xs text-gray-500">{uploadHint("image")}</p>
+        <p className="mt-1 text-xs text-gray-500">
+          {logoUrl ? "Pick a file to replace the current logo. " : ""}
+          {uploadHint("image")}
+        </p>
         <UploadProgress percentage={uploadProgress} label="Uploading logo" />
         {logoUrl && (
-          <div className="mt-2">
+          <div className="mt-2 flex items-start gap-3">
             <img
               src={logoUrl}
               alt="Logo preview"
               className="h-16 w-auto rounded border border-gray-200 object-contain"
             />
-            <p className="mt-1 break-all text-xs text-gray-400">{logoUrl}</p>
+            <div className="min-w-0">
+              <button
+                type="button"
+                onClick={() => setLogoUrl("")}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+              >
+                <X className="h-3.5 w-3.5" />
+                Remove logo
+              </button>
+              <p className="mt-1 break-all text-xs text-gray-400">{logoUrl}</p>
+            </div>
           </div>
         )}
       </div>
