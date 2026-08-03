@@ -141,22 +141,23 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
         />
 
         {/* Portfolio Grid Section */}
-        <section className="py-24 bg-white">
+        <section className="py-12 bg-white sm:py-24">
           <div className="max-w-7xl mx-auto px-6">
             {/* Filter Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-wrap justify-center gap-3 mb-16"
+              className="mb-5 flex flex-wrap justify-center gap-2 sm:mb-12 sm:gap-3"
             >
               {categories.map((category) => (
                 <button
                   key={category.value}
+                  type="button"
                   onClick={() => {
                     setActiveFilter(category.value);
                     setActiveTag(null);
                   }}
-                  className={`px-6 py-3 rounded-full font-heading text-sm tracking-wide uppercase transition-all duration-300 ${
+                  className={`rounded-full px-3.5 py-1.5 font-heading text-xs uppercase tracking-wide transition-all duration-300 sm:px-6 sm:py-3 sm:text-sm ${
                     activeFilter === category.value && !activeTag
                       ? "bg-accent text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -169,7 +170,7 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                 <button
                   type="button"
                   onClick={() => setActiveTag(null)}
-                  className="px-6 py-3 rounded-full font-heading text-sm tracking-wide uppercase bg-accent text-white transition-all duration-300 inline-flex items-center gap-2"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent px-3.5 py-1.5 font-heading text-xs uppercase tracking-wide text-white transition-all duration-300 sm:px-6 sm:py-3 sm:text-sm"
                 >
                   Tag: {activeTag}
                   <span className="text-white/70 hover:text-white">&times;</span>
@@ -177,32 +178,33 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
               )}
             </motion.div>
 
-            {/* Result Count + Tag Browser + Sort */}
-            <div className="mb-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+            {/* Result Count + Tag Browser + Sort — one row on phones too */}
+            <div className="mb-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 sm:mb-8 sm:justify-between sm:gap-4">
               <motion.p
                 key={`count-${activeFilter}-${activeTag ?? ""}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="font-heading text-sm tracking-wide text-gray-500"
+                className="w-full text-center font-heading text-xs tracking-wide text-gray-500 sm:w-auto sm:text-left sm:text-sm"
                 aria-live="polite"
               >
                 {visibleMurals.length}{" "}
                 {visibleMurals.length === 1 ? "Project" : "Projects"}
               </motion.p>
 
-              <div className="flex flex-wrap items-center justify-center gap-3">
+              <div className="flex items-center justify-center gap-2 sm:gap-3">
                 {allTags.length > 0 && (
                   <button
                     type="button"
                     onClick={() => setShowTags((open) => !open)}
                     aria-expanded={showTags}
                     aria-controls={tagPanelId}
-                    className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-5 py-3 font-heading text-sm uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3.5 py-2 font-heading text-xs uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:gap-2 sm:px-5 sm:py-3 sm:text-sm"
                   >
-                    Browse tags
+                    <span className="sm:hidden">Tags</span>
+                    <span className="hidden sm:inline">Browse tags</span>
                     <span className="text-gray-400">{allTags.length}</span>
                     <HiChevronDown
-                      className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                      className={`h-3.5 w-3.5 text-gray-500 transition-transform duration-200 sm:h-4 sm:w-4 ${
                         showTags ? "rotate-180" : ""
                       }`}
                       aria-hidden
@@ -230,8 +232,8 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                   transition={{ duration: 0.25, ease: "easeOut" }}
                   className="overflow-hidden"
                 >
-                  <div className="mb-8 rounded-2xl border border-gray-100 bg-gray-50/60 p-5">
-                    <div className="max-h-56 overflow-y-auto">
+                  <div className="mb-5 rounded-2xl border border-gray-100 bg-gray-50/60 p-4 sm:mb-8 sm:p-5">
+                    <div className="max-h-44 overflow-y-auto sm:max-h-56">
                       <div className="flex flex-wrap gap-2">
                         {allTags.map(({ tag, count }) => {
                           const isActive =
