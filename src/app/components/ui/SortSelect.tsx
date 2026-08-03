@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { HiChevronDown } from "react-icons/hi";
+import { HiChevronDown, HiSwitchVertical } from "react-icons/hi";
 import type { SortOption } from "@/lib/sort";
 
 interface SortSelectProps<T> {
@@ -41,7 +41,7 @@ export default function SortSelect<T>({
           id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="cursor-pointer appearance-none rounded-full bg-gray-100 py-2 pl-4 pr-9 font-heading text-xs uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:py-3 sm:pl-5 sm:pr-11 sm:text-sm"
+          className="cursor-pointer appearance-none rounded-full bg-gray-100 py-2 pl-8 pr-9 font-heading text-xs uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:py-3 sm:pl-5 sm:pr-11 sm:text-sm"
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -49,6 +49,11 @@ export default function SortSelect<T>({
             </option>
           ))}
         </select>
+        {/* Stands in for the hidden label on phones, so the pill still reads as a sort control. */}
+        <HiSwitchVertical
+          className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 sm:hidden"
+          aria-hidden
+        />
         <HiChevronDown
           className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 sm:right-4 sm:h-4 sm:w-4"
           aria-hidden
