@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AIGenerateSEOButton from "./AIGenerateSEOButton";
+import { siteConfig } from "@/app/data/siteConfig";
 
 interface SettingsFormProps {
   settings: Record<string, string>;
@@ -17,6 +18,13 @@ const CONTACT_FIELDS = [
   { key: "email", label: "Email" },
   { key: "location", label: "Location" },
 ];
+
+/** Shown as placeholder text: what the site falls back to when a field is blank. */
+function fallbackFor(key: string): string | undefined {
+  if (!key.startsWith("social.")) return undefined;
+  const handle = key.slice("social.".length) as keyof typeof siteConfig.social;
+  return siteConfig.social[handle];
+}
 
 const SOCIAL_FIELDS = [
   { key: "social.instagram", label: "Instagram" },
@@ -108,6 +116,7 @@ export default function SettingsForm({ settings }: SettingsFormProps) {
             type="text"
             value={values[field.key] || ""}
             onChange={(e) => handleChange(field.key, e.target.value)}
+            placeholder={fallbackFor(field.key)}
             className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:ring-1 focus:ring-gray-500 focus:outline-none"
           />
         )}

@@ -3,6 +3,7 @@ import { eq, desc, inArray, and } from "drizzle-orm";
 import * as schema from "./schema";
 import type { SiteTheme } from "@/lib/theme";
 import { DEFAULT_THEME } from "@/lib/theme";
+import { siteConfig } from "@/app/data/siteConfig";
 
 // ── Types (matching old interfaces for backward compatibility) ──
 
@@ -402,6 +403,25 @@ export async function getSiteSettings(): Promise<Record<string, string>> {
     settings[row.key] = row.value;
   }
   return settings;
+}
+
+export type SocialLinks = typeof siteConfig.social;
+
+/**
+ * Social links as edited in the admin, falling back to `siteConfig` for any
+ * key that hasn't been set. This is what the public site should render —
+ * reading `siteConfig` directly makes the admin fields do nothing.
+ */
+export async function getSocialLinks(): Promise<SocialLinks> {
+  const settings = await getSiteSettings();
+  const resolved = { ...siteConfig.social };
+
+  for (const key of Object.keys(resolved) as (keyof SocialLinks)[]) {
+    const value = settings[`social.${key}`]?.trim();
+    if (value) resolved[key] = value;
+  }
+
+  return resolved;
 }
 
 export async function getSiteSetting(key: string): Promise<string | null> {

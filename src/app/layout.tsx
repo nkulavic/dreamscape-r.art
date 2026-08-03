@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat, Inter } from "next/font/google";
 import "./globals.css";
-import { getSiteTheme } from "@/db/dal";
+import { getSiteTheme, getSocialLinks } from "@/db/dal";
 import { themeToCSS, buildGoogleFontLinks } from "@/lib/theme";
 import JsonLd from "./components/seo/JsonLd";
+import { SocialLinksProvider } from "./components/SocialLinksProvider";
 
 const BASE_URL = "https://dreamscaper.art";
 
@@ -113,14 +114,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = await getSiteTheme();
+  const [theme, socialLinks] = await Promise.all([
+    getSiteTheme(),
+    getSocialLinks(),
+  ]);
   const fontLinks = theme ? buildGoogleFontLinks(theme) : null;
   const themeCSS = theme ? themeToCSS(theme) : null;
 
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <JsonLd />
+        <JsonLd social={socialLinks} />
         <meta name="geo.region" content="US-CO" />
         <meta name="geo.placename" content="Denver" />
         <meta name="geo.position" content="39.7392;-104.9903" />
@@ -135,7 +139,7 @@ export default async function RootLayout({
       <body
         className={`${bebasNeue.variable} ${montserrat.variable} ${inter.variable} antialiased bg-white text-gray-800`}
       >
-        {children}
+        <SocialLinksProvider value={socialLinks}>{children}</SocialLinksProvider>
       </body>
     </html>
   );

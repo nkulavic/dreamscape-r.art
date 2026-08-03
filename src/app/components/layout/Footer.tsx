@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { FaInstagram, FaFacebook, FaYoutube, FaLinkedin, FaTiktok, FaPinterest } from "react-icons/fa";
 import { HiMail } from "react-icons/hi";
-import { siteConfig } from "../../data/siteConfig";
+import { useSocialLinks } from "../SocialLinksProvider";
 
 const navLinks = [
   { label: "Portfolio", href: "/portfolio" },
@@ -14,18 +14,22 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-// siteConfig is the single source of truth for these — don't inline URLs here.
-const socialLinks = [
-  { icon: FaInstagram, href: siteConfig.social.instagram, label: "Instagram" },
-  { icon: FaFacebook, href: siteConfig.social.facebook, label: "Facebook" },
-  { icon: FaYoutube, href: siteConfig.social.youtube, label: "YouTube" },
-  { icon: FaLinkedin, href: siteConfig.social.linkedin, label: "LinkedIn" },
-  { icon: FaTiktok, href: siteConfig.social.tiktok, label: "TikTok" },
-  { icon: FaPinterest, href: siteConfig.social.pinterest, label: "Pinterest" },
-];
+// Icons only — the URLs come from the admin settings at render time.
+const socialIcons = [
+  { icon: FaInstagram, key: "instagram", label: "Instagram" },
+  { icon: FaFacebook, key: "facebook", label: "Facebook" },
+  { icon: FaYoutube, key: "youtube", label: "YouTube" },
+  { icon: FaLinkedin, key: "linkedin", label: "LinkedIn" },
+  { icon: FaTiktok, key: "tiktok", label: "TikTok" },
+  { icon: FaPinterest, key: "pinterest", label: "Pinterest" },
+] as const;
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const social = useSocialLinks();
+  const socialLinks = socialIcons
+    .map((item) => ({ ...item, href: social[item.key] }))
+    .filter((item) => Boolean(item.href));
 
   return (
     <footer className="bg-ocean-deep text-white">

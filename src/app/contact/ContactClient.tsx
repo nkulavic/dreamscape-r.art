@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { siteConfig } from "../data/siteConfig";
+import { useSocialLinks } from "../components/SocialLinksProvider";
 import {
   HiMail,
   HiLocationMarker,
@@ -52,28 +52,13 @@ const budgetRanges = [
   "Not sure yet",
 ];
 
-const socialLinks = [
-  {
-    icon: FaInstagram,
-    href: siteConfig.social.instagram,
-    label: "Instagram",
-  },
-  {
-    icon: FaFacebookF,
-    href: siteConfig.social.facebook,
-    label: "Facebook",
-  },
-  {
-    icon: FaYoutube,
-    href: siteConfig.social.youtube,
-    label: "YouTube",
-  },
-  {
-    icon: FaLinkedinIn,
-    href: siteConfig.social.linkedin,
-    label: "LinkedIn",
-  },
-];
+// Icons only — the URLs come from the admin settings at render time.
+const socialIcons = [
+  { icon: FaInstagram, key: "instagram", label: "Instagram" },
+  { icon: FaFacebookF, key: "facebook", label: "Facebook" },
+  { icon: FaYoutube, key: "youtube", label: "YouTube" },
+  { icon: FaLinkedinIn, key: "linkedin", label: "LinkedIn" },
+] as const;
 
 export default function ContactClient() {
   const [formState, setFormState] = useState({
@@ -90,6 +75,11 @@ export default function ContactClient() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const social = useSocialLinks();
+  const socialLinks = socialIcons
+    .map((item) => ({ ...item, href: social[item.key] }))
+    .filter((item) => Boolean(item.href));
 
   const handleChange = (
     e: React.ChangeEvent<
