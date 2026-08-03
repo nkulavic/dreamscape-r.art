@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Montserrat, Inter } from "next/font/google";
 import "./globals.css";
-import { getSiteTheme, getSocialLinks } from "@/db/dal";
+import { getSeoDefaults, getSiteTheme, getSocialLinks } from "@/db/dal";
+import { siteConfig } from "./data/siteConfig";
 import { themeToCSS, buildGoogleFontLinks } from "@/lib/theme";
 import JsonLd from "./components/seo/JsonLd";
 import { SocialLinksProvider } from "./components/SocialLinksProvider";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const BASE_URL = "https://dreamscaper.art";
 
@@ -29,85 +32,73 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(BASE_URL),
-  title: {
-    default: "DREAMSCAPER | Rachel Dinda - Professional Muralist",
-    template: "%s | DREAMSCAPER",
-  },
-  description:
-    "Large-scale mural art by Rachel Dinda. Transforming spaces with vibrant, community-driven murals across the US and internationally. Commission your next mural project.",
-  keywords: [
-    "muralist",
-    "mural artist",
-    "large scale art",
-    "street art",
-    "public art",
-    "commercial murals",
-    "community art",
-    "Denver muralist",
-    "Colorado muralist",
-    "Rachel Dinda",
-    "DREAMSCAPER",
-    "wall murals",
-    "building murals",
-    "outdoor art",
-    "urban art",
-    "mural commission",
-  ],
-  authors: [{ name: "Rachel Dinda", url: BASE_URL }],
-  creator: "Rachel Dinda",
-  publisher: "DREAMSCAPER",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  // Individual pages set their own canonical via alternates.canonical
-  // Do NOT set a root canonical here — it would override child page canonicals
-  openGraph: {
-    title: "DREAMSCAPER | Rachel Dinda - Professional Muralist",
-    description:
-      "Transforming spaces with vibrant, community-driven murals. 10+ years experience, international recognition. Commission your next mural project.",
-    type: "website",
-    locale: "en_US",
-    url: BASE_URL,
-    siteName: "DREAMSCAPER",
-    images: [
-      {
-        url: "/images/murals/protect-your-peace.jpg",
-        width: 1200,
-        height: 630,
-        alt: "DREAMSCAPER - Rachel Dinda Mural Art",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "DREAMSCAPER | Rachel Dinda - Professional Muralist",
-    description:
-      "Transforming spaces with vibrant, community-driven murals. Commission your next mural project.",
-    images: ["/images/murals/protect-your-peace.jpg"],
-    creator: "@dreamscape_r",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+/**
+ * Built from the admin's SEO settings, with the values in `getSeoDefaults()`
+ * as fallbacks. Child pages still override title/description/canonical.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getSeoDefaults();
+
+  return {
+    metadataBase: new URL(BASE_URL),
+    title: {
+      default: seo.title,
+      template: `%s | ${siteConfig.name}`,
+    },
+    description: seo.description,
+    keywords: seo.keywords,
+    authors: [{ name: siteConfig.artistName, url: BASE_URL }],
+    creator: siteConfig.artistName,
+    publisher: siteConfig.name,
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+    // Individual pages set their own canonical via alternates.canonical
+    // Do NOT set a root canonical here — it would override child page canonicals
+    openGraph: {
+      title: seo.title,
+      description: seo.description,
+      type: "website",
+      locale: "en_US",
+      url: BASE_URL,
+      siteName: siteConfig.name,
+      images: [
+        {
+          url: seo.ogImage,
+          width: 1200,
+          height: 630,
+          alt: `${siteConfig.name} - ${siteConfig.artistName} Mural Art`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.title,
+      description: seo.description,
+      images: [seo.ogImage],
+      creator: seo.twitterHandle,
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  verification: {
-    // Add these when you have the verification codes
-    // google: "your-google-verification-code",
-    // yandex: "your-yandex-verification-code",
-  },
-  category: "Art & Design",
-};
+    verification: {
+      // Add these when you have the verification codes
+      // google: "your-google-verification-code",
+      // yandex: "your-yandex-verification-code",
+    },
+    category: "Art & Design",
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -140,6 +131,12 @@ export default async function RootLayout({
         className={`${bebasNeue.variable} ${montserrat.variable} ${inter.variable} antialiased bg-white text-gray-800`}
       >
         <SocialLinksProvider value={socialLinks}>{children}</SocialLinksProvider>
+        {/*
+          Dormant until Web Analytics / Speed Insights are switched on for the
+          project in Vercel — nothing is collected or billed before that.
+        */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
