@@ -23,21 +23,12 @@ export const metadata: Metadata = {
       "Browse 50+ professional mural projects across the US and internationally. Commercial, community, and public art installations by Rachel Dinda.",
     type: "website",
     url: "https://dreamscaper.art/portfolio",
-    images: [
-      {
-        url: "/images/murals/protect-your-peace.jpg",
-        width: 1200,
-        height: 630,
-        alt: "DREAMSCAPER Mural Portfolio",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Mural Portfolio | DREAMSCAPER",
     description:
       "Browse 50+ professional mural projects by Rachel Dinda.",
-    images: ["/images/murals/protect-your-peace.jpg"],
   },
   alternates: {
     canonical: "https://dreamscaper.art/portfolio",

@@ -22,7 +22,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // Use SEO overrides if available, otherwise auto-generate
   const title = mural.seo?.title || `${mural.title} | DREAMSCAPER`;
   const description = mural.seo?.description || mural.description;
-  const imageUrl = mural.images.hero;
   const url = `https://dreamscaper.art/portfolio/${slug}`;
 
   // Use custom keywords or generate from tags and location
@@ -54,14 +53,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url,
       siteName: "DREAMSCAPER",
       locale: "en_US",
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: mural.title,
-        },
-      ],
       article: {
         publishedTime: new Date(mural.year, 0, 1).toISOString(),
         authors: ["Rachel Dinda"],
@@ -72,7 +63,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       card: "summary_large_image",
       title,
       description,
-      images: [imageUrl],
       creator: "@dreamscape_r",
     },
     other: {

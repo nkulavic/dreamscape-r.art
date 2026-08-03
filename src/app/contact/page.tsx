@@ -21,21 +21,12 @@ export const metadata: Metadata = {
       "Ready to transform your space? Get a free consultation for your mural project.",
     type: "website",
     url: "https://dreamscaper.art/contact",
-    images: [
-      {
-        url: "/images/murals/zen-shangri-la.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Contact DREAMSCAPER — Rachel Dinda muralist",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Contact DREAMSCAPER | Commission a Mural",
     description:
       "Ready to transform your space? Get a free consultation for your mural project.",
-    images: ["/images/murals/zen-shangri-la.jpg"],
   },
   alternates: {
     canonical: "https://dreamscaper.art/contact",

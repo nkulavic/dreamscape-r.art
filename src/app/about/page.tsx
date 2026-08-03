@@ -22,21 +22,12 @@ export const metadata: Metadata = {
       "10+ years transforming spaces with vibrant, community-driven murals. Learn about the artist behind DREAMSCAPER.",
     type: "profile",
     url: "https://dreamscaper.art/about",
-    images: [
-      {
-        url: "/images/murals/vw-bus-artist.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Rachel Dinda — DREAMSCAPER muralist",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "About Rachel Dinda | DREAMSCAPER",
     description:
       "10+ years transforming spaces with vibrant, community-driven murals.",
-    images: ["/images/murals/vw-bus-artist.jpg"],
   },
   alternates: {
     canonical: "https://dreamscaper.art/about",
