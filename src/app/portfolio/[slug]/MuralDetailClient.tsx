@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { HiArrowLeft, HiArrowRight, HiLocationMarker, HiCalendar, HiTag, HiPlay, HiPhotograph } from "react-icons/hi";
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
@@ -310,12 +311,12 @@ export default function MuralDetailClient({
                     <Link href={`/portfolio/${related.slug}`}>
                       <div className="card overflow-hidden">
                         <div className="aspect-[4/3] relative image-zoom bg-gray-200">
-                          <div
-                            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                            style={{
-                              backgroundImage: `url(${related.images.hero})`,
-                              backgroundColor: "#e5e7eb",
-                            }}
+                          <Image
+                            src={related.images.hero}
+                            alt={`${related.title} — mural by Rachel Dinda in ${related.location.city}, ${related.location.state || related.location.country}`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                         </div>
                         <div className="p-6">
