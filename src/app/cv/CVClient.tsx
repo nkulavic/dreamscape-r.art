@@ -1,12 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import ParallaxHero from "../components/ui/ParallaxHero";
+import SortSelect from "../components/ui/SortSelect";
 import { credentials } from "../data/experience";
+import { sortItems, type SortOption } from "@/lib/sort";
 import type { Exhibition, Festival, Publication, Client } from "@/db/dal";
+
+const EXHIBITION_SORTS: SortOption<Exhibition>[] = [
+  { value: "newest", label: "Newest first", getValue: (e) => e.year, direction: "desc" },
+  { value: "oldest", label: "Oldest first", getValue: (e) => e.year },
+  { value: "title", label: "Title A–Z", getValue: (e) => e.title },
+  { value: "venue", label: "Venue A–Z", getValue: (e) => e.venue },
+  { value: "location", label: "Location A–Z", getValue: (e) => e.location },
+  { value: "type", label: "Type A–Z", getValue: (e) => e.type },
+];
+
+const FESTIVAL_SORTS: SortOption<Festival>[] = [
+  { value: "newest", label: "Newest first", getValue: (f) => f.year, direction: "desc" },
+  { value: "oldest", label: "Oldest first", getValue: (f) => f.year },
+  { value: "name", label: "Name A–Z", getValue: (f) => f.name },
+  { value: "location", label: "Location A–Z", getValue: (f) => f.location },
+  {
+    value: "international",
+    label: "International first",
+    getValue: (f) => f.international,
+    direction: "desc",
+  },
+];
+
+const PUBLICATION_SORTS: SortOption<Publication>[] = [
+  { value: "newest", label: "Newest first", getValue: (p) => p.year, direction: "desc" },
+  { value: "oldest", label: "Oldest first", getValue: (p) => p.year },
+  { value: "outlet", label: "Outlet A–Z", getValue: (p) => p.outlet },
+  { value: "type", label: "Type A–Z", getValue: (p) => p.type },
+];
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -38,6 +70,23 @@ export default function CVClient({
   communityClients: Client[];
   educationClients: Client[];
 }) {
+  const [exhibitionSort, setExhibitionSort] = useState("newest");
+  const [festivalSort, setFestivalSort] = useState("newest");
+  const [publicationSort, setPublicationSort] = useState("newest");
+
+  const sortedExhibitions = sortItems(
+    exhibitions,
+    EXHIBITION_SORTS.find((option) => option.value === exhibitionSort)
+  );
+  const sortedFestivals = sortItems(
+    festivals,
+    FESTIVAL_SORTS.find((option) => option.value === festivalSort)
+  );
+  const sortedPublications = sortItems(
+    publications,
+    PUBLICATION_SORTS.find((option) => option.value === publicationSort)
+  );
+
   return (
     <>
       <Header variant="transparent" />
@@ -107,14 +156,19 @@ export default function CVClient({
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              <motion.h2
+              <motion.div
                 variants={fadeInUp}
-                className="font-display text-h3 text-gray-800 mb-8 pb-4 border-b border-gray-200"
+                className="mb-8 flex flex-col gap-3 border-b border-gray-200 pb-4 sm:flex-row sm:items-end sm:justify-between"
               >
-                EXHIBITIONS
-              </motion.h2>
+                <h2 className="font-display text-h3 text-gray-800">EXHIBITIONS</h2>
+                <SortSelect
+                  options={EXHIBITION_SORTS}
+                  value={exhibitionSort}
+                  onChange={setExhibitionSort}
+                />
+              </motion.div>
               <div className="space-y-6">
-                {exhibitions.map((exhibition) => (
+                {sortedExhibitions.map((exhibition) => (
                   <motion.div
                     key={exhibition.id}
                     variants={fadeInUp}
@@ -150,14 +204,21 @@ export default function CVClient({
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              <motion.h2
+              <motion.div
                 variants={fadeInUp}
-                className="font-display text-h3 text-gray-800 mb-8 pb-4 border-b border-gray-300"
+                className="mb-8 flex flex-col gap-3 border-b border-gray-300 pb-4 sm:flex-row sm:items-end sm:justify-between"
               >
-                FESTIVALS & EVENTS
-              </motion.h2>
+                <h2 className="font-display text-h3 text-gray-800">
+                  FESTIVALS &amp; EVENTS
+                </h2>
+                <SortSelect
+                  options={FESTIVAL_SORTS}
+                  value={festivalSort}
+                  onChange={setFestivalSort}
+                />
+              </motion.div>
               <div className="space-y-6">
-                {festivals.map((festival) => (
+                {sortedFestivals.map((festival) => (
                   <motion.div
                     key={festival.id}
                     variants={fadeInUp}
@@ -193,14 +254,21 @@ export default function CVClient({
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              <motion.h2
+              <motion.div
                 variants={fadeInUp}
-                className="font-display text-h3 text-gray-800 mb-8 pb-4 border-b border-gray-200"
+                className="mb-8 flex flex-col gap-3 border-b border-gray-200 pb-4 sm:flex-row sm:items-end sm:justify-between"
               >
-                PRESS & PUBLICATIONS
-              </motion.h2>
+                <h2 className="font-display text-h3 text-gray-800">
+                  PRESS &amp; PUBLICATIONS
+                </h2>
+                <SortSelect
+                  options={PUBLICATION_SORTS}
+                  value={publicationSort}
+                  onChange={setPublicationSort}
+                />
+              </motion.div>
               <div className="space-y-6">
-                {publications.map((pub) => (
+                {sortedPublications.map((pub) => (
                   <motion.div
                     key={pub.id}
                     variants={fadeInUp}

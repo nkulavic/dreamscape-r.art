@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { createComparator, type SortDirection } from "@/lib/sort";
 
-export type SortDirection = "asc" | "desc";
+export type { SortDirection };
 
 export interface SortController<Field extends string> {
   sortField: Field;
@@ -20,28 +21,11 @@ interface UseTableSortOptions<Row, Field extends string> {
   getValue?: (row: Row, field: Field) => unknown;
 }
 
-function isEmpty(value: unknown): boolean {
-  return value === null || value === undefined || value === "";
-}
-
-function compareValues(a: unknown, b: unknown): number {
-  if (typeof a === "number" && typeof b === "number") return a - b;
-  if (typeof a === "boolean" && typeof b === "boolean") return Number(a) - Number(b);
-  if (a instanceof Date || b instanceof Date) {
-    return new Date(a as string).getTime() - new Date(b as string).getTime();
-  }
-  // `numeric` keeps "Wall 2" ahead of "Wall 10"; `sensitivity` ignores case/accents.
-  return String(a).localeCompare(String(b), undefined, {
-    numeric: true,
-    sensitivity: "base",
-  });
-}
-
 /**
  * Client-side column sorting for the admin tables.
  *
- * Values are compared by type (numbers numerically, dates chronologically, strings
- * naturally), blanks always sink to the bottom, and ties keep their original order.
+ * Comparison rules live in `@/lib/sort`, shared with the public galleries: values
+ * are compared by type, blanks sink to the bottom, and ties keep their order.
  */
 export function useTableSort<Row, Field extends string>(
   rows: Row[],
@@ -98,19 +82,9 @@ export function useTableSort<Row, Field extends string>(
     const read =
       getValue ?? ((row: Row, field: Field) => (row as Record<string, unknown>)[field]);
 
-    return [...rows].sort((a, b) => {
-      const aValue = read(a, sortField);
-      const bValue = read(b, sortField);
-
-      const aEmpty = isEmpty(aValue);
-      const bEmpty = isEmpty(bValue);
-      if (aEmpty && bEmpty) return 0;
-      if (aEmpty) return 1;
-      if (bEmpty) return -1;
-
-      const comparison = compareValues(aValue, bValue);
-      return sortDirection === "asc" ? comparison : -comparison;
-    });
+    return [...rows].sort(
+      createComparator((row: Row) => read(row, sortField), sortDirection)
+    );
   }, [rows, sortField, sortDirection, getValue]);
 
   return { sortedRows, sortField, sortDirection, sortBy };
