@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import { getAllMurals } from "@/db/dal";
 import PortfolioClient from "./PortfolioClient";
@@ -45,11 +44,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function PortfolioPage() {
-  const murals = await getAllMurals();
+export default async function PortfolioPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [murals, params] = await Promise.all([getAllMurals(), searchParams]);
+
+  // Reading the filters here rather than with useSearchParams() keeps the grid
+  // server-rendered — the client component would otherwise opt the whole page
+  // out of prerendering and leave it blank until hydration.
   return (
-    <Suspense>
-      <PortfolioClient murals={murals} />
-    </Suspense>
+    <PortfolioClient
+      murals={murals}
+      initialTag={firstValue(params.tag)}
+      initialMatch={firstValue(params.match)}
+      initialSort={firstValue(params.sort)}
+    />
   );
+}
+
+function firstValue(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
 }

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useId, useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useId, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiChevronDown } from "react-icons/hi";
 import Link from "next/link";
@@ -47,7 +46,7 @@ const DEFAULT_SORT = SORT_OPTIONS[0].value;
 /** "any" matches murals carrying at least one selected tag; "all" requires every one. */
 type TagMode = "any" | "all";
 
-function parseTags(raw: string | null): string[] {
+function parseTags(raw: string | null | undefined): string[] {
   if (!raw) return [];
   const seen = new Set<string>();
   return raw
@@ -76,28 +75,42 @@ const staggerContainer = {
   },
 };
 
-export default function PortfolioClient({ murals }: { murals: Mural[] }) {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+interface PortfolioClientProps {
+  murals: Mural[];
+  /** Comma-separated tags, read from the URL on the server. */
+  initialTag?: string;
+  initialMatch?: string;
+  initialSort?: string;
+}
 
-  // Read once on mount — from here on this component owns the state and writes
-  // it back to the URL, so a filtered view stays shareable.
+export default function PortfolioClient({
+  murals,
+  initialTag,
+  initialMatch,
+  initialSort,
+}: PortfolioClientProps) {
+  // Filters arrive as props from the server render, so the grid is in the HTML
+  // and the controls are correct on first paint.
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
   const [activeTags, setActiveTags] = useState<string[]>(() =>
-    parseTags(searchParams.get("tag"))
+    parseTags(initialTag)
   );
-  const [tagMode, setTagMode] = useState<TagMode>(() =>
-    searchParams.get("match") === "all" ? "all" : "any"
+  const [tagMode, setTagMode] = useState<TagMode>(
+    initialMatch === "all" ? "all" : "any"
   );
-  const [sortValue, setSortValue] = useState<string>(() => {
-    const sort = searchParams.get("sort");
-    return sort && SORT_OPTIONS.some((option) => option.value === sort)
-      ? sort
-      : DEFAULT_SORT;
-  });
+  const [sortValue, setSortValue] = useState<string>(
+    initialSort && SORT_OPTIONS.some((option) => option.value === initialSort)
+      ? initialSort
+      : DEFAULT_SORT
+  );
   const [showTags, setShowTags] = useState(false);
   const tagPanelId = useId();
+
+  // The grid animates when filters change, but must not start hidden on the
+  // server render — otherwise the markup arrives at opacity 0 and the page
+  // looks empty until hydration.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   function syncUrl(next: { tags?: string[]; mode?: TagMode; sort?: string }) {
     const tags = next.tags ?? activeTags;
@@ -110,8 +123,14 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
     if (mode === "all" && tags.length > 1) params.set("match", "all");
     if (sort !== DEFAULT_SORT) params.set("sort", sort);
 
+    // history.replaceState rather than router.replace: filtering is instant and
+    // local, and a router navigation would round-trip to the server every click.
     const query = params.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    window.history.replaceState(
+      null,
+      "",
+      query ? `${window.location.pathname}?${query}` : window.location.pathname
+    );
   }
 
   function handleSortChange(value: string) {
@@ -195,12 +214,8 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
         {/* Portfolio Grid Section */}
         <section className="py-12 bg-white sm:py-24">
           <div className="max-w-7xl mx-auto px-6">
-            {/* Filter Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-5 flex flex-wrap justify-center gap-2 sm:mb-12 sm:gap-3"
-            >
+            {/* Filter Buttons — no entry animation; these must be usable at once */}
+            <div className="mb-5 flex flex-wrap justify-center gap-2 sm:mb-12 sm:gap-3">
               {categories.map((category) => (
                 <button
                   key={category.value}
@@ -215,7 +230,7 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                   {category.label}
                 </button>
               ))}
-            </motion.div>
+            </div>
 
             {/* Selected tags + how they combine */}
             {activeTags.length > 0 && (
@@ -275,16 +290,13 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
 
             {/* Result Count + Tag Browser + Sort — one row on phones too */}
             <div className="mb-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 sm:mb-8 sm:justify-between sm:gap-4">
-              <motion.p
-                key={`count-${activeFilter}-${activeTags.join(",")}-${tagMode}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+              <p
                 className="w-full text-center font-heading text-xs tracking-wide text-gray-500 sm:w-auto sm:text-left sm:text-sm"
                 aria-live="polite"
               >
                 {visibleMurals.length}{" "}
                 {visibleMurals.length === 1 ? "Project" : "Projects"}
-              </motion.p>
+              </p>
 
               <div className="flex items-center justify-center gap-2 sm:gap-3">
                 {allTags.length > 0 && (
@@ -391,10 +403,10 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
             </AnimatePresence>
 
             {/* Murals Grid */}
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={`${activeFilter}-${activeTags.join(",")}-${tagMode}-${sortValue}`}
-                initial="hidden"
+                initial={mounted ? "hidden" : false}
                 animate="visible"
                 exit="hidden"
                 variants={staggerContainer}
@@ -461,11 +473,7 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
 
             {/* Empty State */}
             {visibleMurals.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-16"
-              >
+              <div className="text-center py-16">
                 <p className="text-gray-500 text-lg">
                   {activeTags.length > 0
                     ? `No murals tagged ${activeTags
@@ -484,7 +492,7 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                     Try matching any tag instead
                   </button>
                 )}
-              </motion.div>
+              </div>
             )}
           </div>
         </section>
