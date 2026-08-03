@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useId, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { HiChevronDown } from "react-icons/hi";
 import Link from "next/link";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
@@ -65,6 +66,8 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [sortValue, setSortValue] = useState<string>(DEFAULT_SORT);
+  const [showTags, setShowTags] = useState(false);
+  const tagPanelId = useId();
 
   // Read tag and sort from the URL so a filtered view can be shared or bookmarked.
   useEffect(() => {
@@ -174,35 +177,7 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
               )}
             </motion.div>
 
-            {/* Tag Filters */}
-            {allTags.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="-mt-10 mb-12 flex flex-wrap justify-center gap-2"
-              >
-                {allTags.map(({ tag, count }) => {
-                  const isActive = activeTag?.toLowerCase() === tag.toLowerCase();
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => setActiveTag(isActive ? null : tag)}
-                      className={`rounded-full px-4 py-1.5 text-xs tracking-wide transition-colors ${
-                        isActive
-                          ? "bg-ocean-deep text-white"
-                          : "bg-gray-50 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                      }`}
-                    >
-                      {tag}
-                      <span className="ml-1.5 opacity-60">{count}</span>
-                    </button>
-                  );
-                })}
-              </motion.div>
-            )}
-
-            {/* Result Count + Sort */}
+            {/* Result Count + Tag Browser + Sort */}
             <div className="mb-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
               <motion.p
                 key={`count-${activeFilter}-${activeTag ?? ""}`}
@@ -215,12 +190,87 @@ export default function PortfolioClient({ murals }: { murals: Mural[] }) {
                 {visibleMurals.length === 1 ? "Project" : "Projects"}
               </motion.p>
 
-              <SortSelect
-                options={SORT_OPTIONS}
-                value={sortValue}
-                onChange={handleSortChange}
-              />
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                {allTags.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowTags((open) => !open)}
+                    aria-expanded={showTags}
+                    aria-controls={tagPanelId}
+                    className="inline-flex items-center gap-2 rounded-full bg-gray-100 px-5 py-3 font-heading text-sm uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    Browse tags
+                    <span className="text-gray-400">{allTags.length}</span>
+                    <HiChevronDown
+                      className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${
+                        showTags ? "rotate-180" : ""
+                      }`}
+                      aria-hidden
+                    />
+                  </button>
+                )}
+
+                <SortSelect
+                  options={SORT_OPTIONS}
+                  value={sortValue}
+                  onChange={handleSortChange}
+                />
+              </div>
             </div>
+
+            {/* Tag Panel — collapsed by default so it never crowds the grid */}
+            <AnimatePresence initial={false}>
+              {showTags && allTags.length > 0 && (
+                <motion.div
+                  id={tagPanelId}
+                  key="tag-panel"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="mb-8 rounded-2xl border border-gray-100 bg-gray-50/60 p-5">
+                    <div className="max-h-56 overflow-y-auto">
+                      <div className="flex flex-wrap gap-2">
+                        {allTags.map(({ tag, count }) => {
+                          const isActive =
+                            activeTag?.toLowerCase() === tag.toLowerCase();
+                          return (
+                            <button
+                              key={tag}
+                              type="button"
+                              onClick={() => {
+                                setActiveTag(isActive ? null : tag);
+                                // Collapse again so the grid comes straight back.
+                                setShowTags(false);
+                              }}
+                              className={`rounded-full px-3.5 py-1.5 text-xs tracking-wide transition-colors ${
+                                isActive
+                                  ? "bg-ocean-deep text-white"
+                                  : "bg-white text-gray-500 hover:bg-white hover:text-gray-900"
+                              }`}
+                            >
+                              {tag}
+                              <span className="ml-1.5 opacity-50">{count}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    {activeTag && (
+                      <button
+                        type="button"
+                        onClick={() => setActiveTag(null)}
+                        className="mt-4 text-xs uppercase tracking-wide text-gray-500 underline-offset-4 hover:text-accent hover:underline"
+                      >
+                        Clear tag filter
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Murals Grid */}
             <AnimatePresence mode="wait">
