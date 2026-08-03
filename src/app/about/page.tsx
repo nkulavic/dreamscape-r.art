@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { getSiteSettings } from "@/db/dal";
-import { siteConfig } from "../data/siteConfig";
+import { getSiteSettings, getSocialLinks } from "@/db/dal";
 import AboutClient from "./AboutClient";
 
 export const metadata: Metadata = {
@@ -45,7 +44,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const settings = await getSiteSettings();
+  const [settings, social] = await Promise.all([
+    getSiteSettings(),
+    getSocialLinks(),
+  ]);
 
   // Parse testimonials from JSON string
   let testimonials: { name: string; org: string; rating: number; text: string }[] = [];
@@ -75,11 +77,11 @@ export default async function AboutPage() {
         addressCountry: "US",
       },
       sameAs: [
-        siteConfig.social.instagram,
-        siteConfig.social.facebook,
-        siteConfig.social.youtube,
-        siteConfig.social.linkedin,
-      ],
+        social.instagram,
+        social.facebook,
+        social.youtube,
+        social.linkedin,
+      ].filter(Boolean),
       knowsAbout: [
         "Mural Art",
         "Street Art",

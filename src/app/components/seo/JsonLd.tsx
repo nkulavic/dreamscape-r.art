@@ -1,4 +1,5 @@
 import { siteConfig } from "../../data/siteConfig";
+import type { SocialLinks } from "@/db/dal";
 
 const BASE_URL = "https://dreamscaper.art";
 
@@ -139,12 +140,39 @@ const combinedSchema = {
   "@graph": [personSchema, businessSchema, websiteSchema, portfolioSchema],
 };
 
-export default function JsonLd() {
+/**
+ * `social` comes from the admin settings via the root layout; the siteConfig
+ * defaults only apply when a link hasn't been set there.
+ */
+export default function JsonLd({
+  social = siteConfig.social,
+}: {
+  social?: SocialLinks;
+}) {
+  const profiles = [
+    social.instagram,
+    social.facebook,
+    social.youtube,
+    social.linkedin,
+    social.tiktok,
+    social.pinterest,
+  ].filter(Boolean);
+
+  const schema = {
+    ...combinedSchema,
+    "@graph": [
+      { ...personSchema, sameAs: profiles },
+      { ...businessSchema, sameAs: profiles.slice(0, 4) },
+      websiteSchema,
+      portfolioSchema,
+    ],
+  };
+
   return (
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(combinedSchema),
+        __html: JSON.stringify(schema),
       }}
     />
   );
