@@ -100,7 +100,7 @@ const serviceTypes = [
     icon: HiGlobe,
     title: "International",
     description:
-      "Available for projects worldwide. I&apos;ve completed murals across multiple countries and am equipped to travel for the right project.",
+      "Available for projects worldwide. I've completed murals across multiple countries and am equipped to travel for the right project.",
     examples: ["Festival Participation", "Cultural Exchange", "International Brands", "Destination Projects"],
   },
 ];

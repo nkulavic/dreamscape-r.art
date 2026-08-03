@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { siteConfig } from "../data/siteConfig";
 import {
   HiMail,
   HiLocationMarker,
@@ -54,22 +55,22 @@ const budgetRanges = [
 const socialLinks = [
   {
     icon: FaInstagram,
-    href: "https://www.instagram.com/dreamscape_r",
+    href: siteConfig.social.instagram,
     label: "Instagram",
   },
   {
     icon: FaFacebookF,
-    href: "https://www.facebook.com/dreamscaper.art",
+    href: siteConfig.social.facebook,
     label: "Facebook",
   },
   {
     icon: FaYoutube,
-    href: "https://www.youtube.com/@dreamscape_r",
+    href: siteConfig.social.youtube,
     label: "YouTube",
   },
   {
     icon: FaLinkedinIn,
-    href: "https://www.linkedin.com/in/rachel-dinda",
+    href: siteConfig.social.linkedin,
     label: "LinkedIn",
   },
 ];

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/db/dal";
+import { siteConfig } from "../data/siteConfig";
 import AboutClient from "./AboutClient";
 
 export const metadata: Metadata = {
@@ -74,10 +75,10 @@ export default async function AboutPage() {
         addressCountry: "US",
       },
       sameAs: [
-        "https://www.instagram.com/dreamscape_r",
-        "https://www.facebook.com/dreamscaper.art",
-        "https://www.youtube.com/@dreamscape_r",
-        "https://www.linkedin.com/in/rachel-dinda",
+        siteConfig.social.instagram,
+        siteConfig.social.facebook,
+        siteConfig.social.youtube,
+        siteConfig.social.linkedin,
       ],
       knowsAbout: [
         "Mural Art",
