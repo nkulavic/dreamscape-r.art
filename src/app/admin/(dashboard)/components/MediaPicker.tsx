@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Image as ImageIcon, X, Check, Trash2, Replace } from "lucide-react";
+import { Upload, Image as ImageIcon, X, Check, Trash2, Replace, Crop } from "lucide-react";
+import ImageEditor from "../_components/ImageEditor";
 import { toast } from "sonner";
 import { uploadMedia } from "@/lib/upload-client";
 import { UPLOAD_LIMITS, formatBytes, uploadHint, type UploadKind } from "@/lib/upload";
@@ -43,6 +44,7 @@ export default function MediaPicker({
   const [selectedFile, setSelectedFile] = useState<string | null>(value || null);
   const [activeTab, setActiveTab] = useState<"existing" | "upload">("existing");
   const [deletingUrl, setDeletingUrl] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
 
   // Keep the preview in step when the parent form clears or replaces the value.
   useEffect(() => {
@@ -177,6 +179,31 @@ export default function MediaPicker({
     }
   }
 
+  /** Uploads the edited copy and points this field at it. */
+  async function handleEditedImage(file: File) {
+    setUploading(true);
+    setProgress({ label: file.name, percentage: 0 });
+    try {
+      const url = await uploadMedia(file, {
+        folder: folder ?? "uploads",
+        kind: "image",
+        onProgress: (percentage) => setProgress({ label: file.name, percentage }),
+      });
+      setSelectedFile(url);
+      onChange(url);
+      setEditing(false);
+      toast.success("Edited image saved");
+      fetchExistingFiles();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save the edited image"
+      );
+    } finally {
+      setUploading(false);
+      setProgress(null);
+    }
+  }
+
   function sendDelete(url: string, force: boolean) {
     return fetch("/api/admin/blob/delete", {
       method: "DELETE",
@@ -198,6 +225,16 @@ export default function MediaPicker({
             {value ? <Replace className="h-4 w-4" /> : <ImageIcon className="h-4 w-4" />}
             {value ? "Replace" : label}
           </button>
+          {value && kind === "image" && (
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+            >
+              <Crop className="h-4 w-4" />
+              Crop / resize
+            </button>
+          )}
           {value && (
             <button
               type="button"
@@ -377,6 +414,14 @@ export default function MediaPicker({
             </div>
           </div>
         </div>
+      )}
+
+      {editing && value && (
+        <ImageEditor
+          src={value}
+          onSave={handleEditedImage}
+          onClose={() => setEditing(false)}
+        />
       )}
     </>
   );

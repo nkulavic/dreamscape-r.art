@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uuidv7 } from "uuidv7";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { Crop, X } from "lucide-react";
 import { uploadMedia } from "@/lib/upload-client";
 import { UPLOAD_LIMITS, uploadHint, type UploadKind } from "@/lib/upload";
 import UploadProgress from "@/app/admin/(dashboard)/_components/UploadProgress";
+import ImageEditor from "@/app/admin/(dashboard)/_components/ImageEditor";
 
 interface VideoData {
   id: string;
@@ -37,8 +38,29 @@ export default function VideoForm({ video }: { video?: VideoData }) {
   const [posterProgress, setPosterProgress] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
 
+  const [editingPoster, setEditingPoster] = useState(false);
+
   const uploadingVideo = videoProgress !== null;
   const uploadingPoster = posterProgress !== null;
+
+  /** Saves the cropped poster as a new blob and points the video at it. */
+  async function handleEditedPoster(file: File) {
+    setPosterProgress(0);
+    try {
+      const url = await uploadMedia(file, {
+        folder: "posters",
+        kind: "image",
+        onProgress: setPosterProgress,
+      });
+      setPosterUrl(url);
+      setEditingPoster(false);
+      toast.success("Edited poster saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      setPosterProgress(null);
+    }
+  }
 
   async function handleFileUpload(
     file: File,
@@ -253,14 +275,24 @@ export default function VideoForm({ video }: { video?: VideoData }) {
               className="h-24 w-auto rounded border border-gray-200 object-cover"
             />
             <div className="min-w-0">
-              <button
-                type="button"
-                onClick={() => setPosterUrl("")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
-              >
-                <X className="h-3.5 w-3.5" />
-                Remove poster
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingPoster(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  <Crop className="h-3.5 w-3.5" />
+                  Crop / resize
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPosterUrl("")}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                >
+                  <X className="h-3.5 w-3.5" />
+                  Remove poster
+                </button>
+              </div>
               <p className="mt-1 break-all text-xs text-gray-400">{posterUrl}</p>
             </div>
           </div>
@@ -284,6 +316,15 @@ export default function VideoForm({ video }: { video?: VideoData }) {
           Cancel
         </button>
       </div>
+
+      {editingPoster && posterUrl && (
+        <ImageEditor
+          src={posterUrl}
+          defaultAspect={16 / 9}
+          onSave={handleEditedPoster}
+          onClose={() => setEditingPoster(false)}
+        />
+      )}
     </form>
   );
 }

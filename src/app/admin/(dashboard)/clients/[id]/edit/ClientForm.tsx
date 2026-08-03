@@ -4,10 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uuidv7 } from "uuidv7";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { Crop, X } from "lucide-react";
 import { uploadMedia } from "@/lib/upload-client";
 import { UPLOAD_LIMITS, uploadHint } from "@/lib/upload";
 import UploadProgress from "@/app/admin/(dashboard)/_components/UploadProgress";
+import ImageEditor from "@/app/admin/(dashboard)/_components/ImageEditor";
 
 interface ClientData {
   id: string;
@@ -31,8 +32,28 @@ export default function ClientForm({ client }: { client?: ClientData }) {
   const [logoUrl, setLogoUrl] = useState(client?.logoUrl ?? "");
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const uploading = uploadProgress !== null;
+
+  /** Saves the cropped copy as a new blob and points the client at it. */
+  async function handleEditedLogo(file: File) {
+    setUploadProgress(0);
+    try {
+      const url = await uploadMedia(file, {
+        folder: "logos",
+        kind: "image",
+        onProgress: setUploadProgress,
+      });
+      setLogoUrl(url);
+      setEditing(false);
+      toast.success("Edited logo saved");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed.");
+    } finally {
+      setUploadProgress(null);
+    }
+  }
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -180,14 +201,24 @@ export default function ClientForm({ client }: { client?: ClientData }) {
               className="h-16 w-auto rounded border border-gray-200 object-contain"
             />
             <div className="min-w-0">
-              <button
-                type="button"
-                onClick={() => setLogoUrl("")}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
-              >
-                <X className="h-3.5 w-3.5" />
-                Remove logo
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditing(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  <Crop className="h-3.5 w-3.5" />
+                  Crop / resize
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLogoUrl("")}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                >
+                  <X className="h-3.5 w-3.5" />
+                  Remove logo
+                </button>
+              </div>
               <p className="mt-1 break-all text-xs text-gray-400">{logoUrl}</p>
             </div>
           </div>
@@ -211,6 +242,15 @@ export default function ClientForm({ client }: { client?: ClientData }) {
           Cancel
         </button>
       </div>
+
+      {editing && logoUrl && (
+        <ImageEditor
+          src={logoUrl}
+          defaultAspect={1}
+          onSave={handleEditedLogo}
+          onClose={() => setEditing(false)}
+        />
+      )}
     </form>
   );
 }
