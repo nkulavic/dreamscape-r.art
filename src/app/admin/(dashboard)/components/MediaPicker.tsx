@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, Image as ImageIcon, X, Check } from "lucide-react";
+import { Upload, Image as ImageIcon, X, Check, Trash2, Replace } from "lucide-react";
 import { toast } from "sonner";
 import { uploadMedia } from "@/lib/upload-client";
 import { UPLOAD_LIMITS, formatBytes, uploadHint, type UploadKind } from "@/lib/upload";
@@ -42,6 +42,12 @@ export default function MediaPicker({
   );
   const [selectedFile, setSelectedFile] = useState<string | null>(value || null);
   const [activeTab, setActiveTab] = useState<"existing" | "upload">("existing");
+  const [deletingUrl, setDeletingUrl] = useState<string | null>(null);
+
+  // Keep the preview in step when the parent form clears or replaces the value.
+  useEffect(() => {
+    setSelectedFile(value || null);
+  }, [value]);
 
   // Fetch existing files when modal opens
   useEffect(() => {
@@ -120,23 +126,102 @@ export default function MediaPicker({
     toast.success("Image selected");
   }
 
+  function handleClear() {
+    setSelectedFile(null);
+    onChange("");
+  }
+
+  /** Permanently removes a file from blob storage, once nothing points at it. */
+  async function handleDeleteFromLibrary(url: string, pathname: string) {
+    if (!window.confirm(`Permanently delete "${pathname}" from your media library?`)) {
+      return;
+    }
+
+    setDeletingUrl(url);
+    try {
+      let response = await sendDelete(url, false);
+
+      if (response.status === 409) {
+        const data = (await response.json()) as {
+          usages?: { type: string; label: string }[];
+        };
+        const list = (data.usages ?? [])
+          .map((usage) => `${usage.type}: ${usage.label}`)
+          .join("\n");
+        const proceed = window.confirm(
+          `This file is still used by:\n\n${list}\n\nDeleting it will leave those entries with a broken image. Delete anyway?`
+        );
+        if (!proceed) return;
+        response = await sendDelete(url, true);
+      }
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to delete the file");
+      }
+
+      // Drop it from the grid without a round trip.
+      setExistingFiles((prev) =>
+        Object.fromEntries(
+          Object.entries(prev)
+            .map(([name, files]) => [name, files.filter((file) => file.url !== url)])
+            .filter(([, files]) => (files as BlobFile[]).length > 0)
+        )
+      );
+      if (selectedFile === url) handleClear();
+      toast.success("File deleted");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete the file");
+    } finally {
+      setDeletingUrl(null);
+    }
+  }
+
+  function sendDelete(url: string, force: boolean) {
+    return fetch("/api/admin/blob/delete", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, force }),
+    });
+  }
+
   return (
     <>
-      {/* Trigger Button */}
+      {/* Trigger + current selection */}
       <div className="space-y-2">
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          <ImageIcon className="h-4 w-4" />
-          {label}
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            {value ? <Replace className="h-4 w-4" /> : <ImageIcon className="h-4 w-4" />}
+            {value ? "Replace" : label}
+          </button>
+          {value && (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+            >
+              <X className="h-4 w-4" />
+              Remove
+            </button>
+          )}
+        </div>
 
         {/* Preview */}
         {value && (
-          <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-200">
-            <img src={value} alt="Selected" className="w-full h-full object-cover" />
+          <div className="group relative h-32 w-32 overflow-hidden rounded-lg border border-gray-200">
+            <img src={value} alt="Selected" className="h-full w-full object-cover" />
+            <button
+              type="button"
+              onClick={handleClear}
+              title="Remove this image"
+              className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
           </div>
         )}
       </div>
@@ -149,6 +234,7 @@ export default function MediaPicker({
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900">Select Media</h2>
               <button
+                type="button"
                 onClick={() => setIsOpen(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
@@ -159,6 +245,7 @@ export default function MediaPicker({
             {/* Tabs */}
             <div className="flex border-b border-gray-200 px-6">
               <button
+                type="button"
                 onClick={() => setActiveTab("existing")}
                 className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "existing"
@@ -169,6 +256,7 @@ export default function MediaPicker({
                 Choose Existing
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab("upload")}
                 className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === "upload"
@@ -198,30 +286,46 @@ export default function MediaPicker({
                         </h3>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                           {files.map((file) => (
-                            <button
+                            <div
                               key={file.url}
-                              type="button"
-                              title={`${file.pathname} — ${formatBytes(file.size)}`}
-                              onClick={() => handleSelectExisting(file.url)}
-                              className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                              className={`group relative aspect-square overflow-hidden rounded-lg border-2 transition-all ${
                                 selectedFile === file.url
                                   ? "border-blue-500 ring-2 ring-blue-200"
                                   : "border-gray-200 hover:border-gray-300"
-                              }`}
+                              } ${deletingUrl === file.url ? "opacity-50" : ""}`}
                             >
-                              <img
-                                src={file.url}
-                                alt={file.pathname}
-                                className="w-full h-full object-cover"
-                              />
-                              {selectedFile === file.url && (
-                                <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                  <div className="bg-blue-500 rounded-full p-1">
-                                    <Check className="h-4 w-4 text-white" />
+                              <button
+                                type="button"
+                                title={`${file.pathname} — ${formatBytes(file.size)}`}
+                                onClick={() => handleSelectExisting(file.url)}
+                                disabled={deletingUrl === file.url}
+                                className="h-full w-full"
+                              >
+                                <img
+                                  src={file.url}
+                                  alt={file.pathname}
+                                  className="h-full w-full object-cover"
+                                />
+                                {selectedFile === file.url && (
+                                  <div className="absolute inset-0 flex items-center justify-center bg-blue-500/20">
+                                    <div className="rounded-full bg-blue-500 p-1">
+                                      <Check className="h-4 w-4 text-white" />
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                            </button>
+                                )}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleDeleteFromLibrary(file.url, file.pathname)
+                                }
+                                disabled={deletingUrl === file.url}
+                                title={`Delete ${file.pathname} from the library`}
+                                className="absolute right-1 top-1 rounded-full bg-black/60 p-1.5 text-white opacity-0 transition-opacity hover:bg-red-600 focus-visible:opacity-100 group-hover:opacity-100 disabled:opacity-50"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
                           ))}
                         </div>
                       </div>

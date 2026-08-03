@@ -248,6 +248,7 @@ export default function ExperienceClient({
       <div className="flex border-b border-gray-200">
         {tabs.map((tab) => (
           <button
+            type="button"
             key={tab.key}
             onClick={() => {
               setActiveTab(tab.key);
@@ -270,6 +271,7 @@ export default function ExperienceClient({
       {/* Add Button */}
       <div className="mt-4 flex justify-end">
         <button
+          type="button"
           onClick={handleAdd}
           className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800"
         >
@@ -591,12 +593,14 @@ export default function ExperienceClient({
                   <td className="px-6 py-4 text-right text-sm">
                     <div className="flex items-center justify-end gap-3">
                       <button
+                        type="button"
                         onClick={() => handleEditExhibition(ex)}
                         className="font-medium text-gray-600 hover:text-gray-900"
                       >
                         Edit
                       </button>
                       <button
+                        type="button"
                         onClick={() =>
                           handleDelete(ex.id, "exhibition", ex.title)
                         }
@@ -669,12 +673,14 @@ export default function ExperienceClient({
                   <td className="px-6 py-4 text-right text-sm">
                     <div className="flex items-center justify-end gap-3">
                       <button
+                        type="button"
                         onClick={() => handleEditFestival(fest)}
                         className="font-medium text-gray-600 hover:text-gray-900"
                       >
                         Edit
                       </button>
                       <button
+                        type="button"
                         onClick={() =>
                           handleDelete(fest.id, "festival", fest.name)
                         }
@@ -734,12 +740,14 @@ export default function ExperienceClient({
                   <td className="px-6 py-4 text-right text-sm">
                     <div className="flex items-center justify-end gap-3">
                       <button
+                        type="button"
                         onClick={() => handleEditPublication(pub)}
                         className="font-medium text-gray-600 hover:text-gray-900"
                       >
                         Edit
                       </button>
                       <button
+                        type="button"
                         onClick={() =>
                           handleDelete(pub.id, "publication", pub.outlet)
                         }

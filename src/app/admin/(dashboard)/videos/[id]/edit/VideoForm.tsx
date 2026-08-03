@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uuidv7 } from "uuidv7";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import { uploadMedia } from "@/lib/upload-client";
 import { UPLOAD_LIMITS, uploadHint, type UploadKind } from "@/lib/upload";
 import UploadProgress from "@/app/admin/(dashboard)/_components/UploadProgress";
@@ -195,10 +196,31 @@ export default function VideoForm({ video }: { video?: VideoData }) {
           disabled={uploadingVideo}
           className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200"
         />
-        <p className="mt-1 text-xs text-gray-500">{uploadHint("video")}</p>
+        <p className="mt-1 text-xs text-gray-500">
+          {srcUrl ? "Pick a file to replace the current video. " : ""}
+          {uploadHint("video")}
+        </p>
         <UploadProgress percentage={videoProgress} label="Uploading video" />
         {srcUrl && (
-          <p className="mt-1 break-all text-xs text-gray-400">{srcUrl}</p>
+          <div className="mt-2">
+            <video
+              src={srcUrl}
+              controls
+              preload="metadata"
+              className="h-32 w-auto rounded border border-gray-200"
+            />
+            <div className="mt-1 flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setSrcUrl("")}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+              >
+                <X className="h-3.5 w-3.5" />
+                Remove video
+              </button>
+            </div>
+            <p className="mt-1 break-all text-xs text-gray-400">{srcUrl}</p>
+          </div>
         )}
       </div>
 
@@ -218,16 +240,29 @@ export default function VideoForm({ video }: { video?: VideoData }) {
           disabled={uploadingPoster}
           className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200"
         />
-        <p className="mt-1 text-xs text-gray-500">{uploadHint("image")}</p>
+        <p className="mt-1 text-xs text-gray-500">
+          {posterUrl ? "Pick a file to replace the current poster. " : ""}
+          {uploadHint("image")}
+        </p>
         <UploadProgress percentage={posterProgress} label="Uploading poster" />
         {posterUrl && (
-          <div className="mt-2">
+          <div className="mt-2 flex items-start gap-3">
             <img
               src={posterUrl}
               alt="Poster preview"
               className="h-24 w-auto rounded border border-gray-200 object-cover"
             />
-            <p className="mt-1 break-all text-xs text-gray-400">{posterUrl}</p>
+            <div className="min-w-0">
+              <button
+                type="button"
+                onClick={() => setPosterUrl("")}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+              >
+                <X className="h-3.5 w-3.5" />
+                Remove poster
+              </button>
+              <p className="mt-1 break-all text-xs text-gray-400">{posterUrl}</p>
+            </div>
           </div>
         )}
       </div>

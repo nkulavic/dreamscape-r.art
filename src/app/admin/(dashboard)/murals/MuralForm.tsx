@@ -125,6 +125,14 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // The picker isn't a native input, so required media is checked here.
+    if (!heroUrl) {
+      setError("A hero image is required.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setSaving(true);
     setError(null);
 
