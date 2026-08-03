@@ -97,9 +97,12 @@ Uploads go **directly from the browser to Vercel Blob** using client uploads (`u
 - Blobs get a random filename suffix, so re-uploading the same filename never collides.
 - Folders: `murals/`, `logos/`, `videos/`, `posters/`.
 
-### Admin Tables
+### Sorting
 
-All admin list views share `src/app/admin/(dashboard)/_components/SortableTable.tsx` — `useTableSort()` plus `<SortableHeader>` / `<StaticHeader>`. Sorting is type-aware (numbers, dates, booleans, natural string order), blanks sink to the bottom, headers expose `aria-sort`, and the chosen column is remembered per table in `localStorage`.
+Comparison rules live in `src/lib/sort.ts` (`compareValues`, `createComparator`, `sortItems`, `SortOption`) and are shared by both sides of the site: type-aware (numbers, dates, booleans, natural string order), blanks sink to the bottom, ties keep their original order.
+
+- **Admin tables** — `src/app/admin/(dashboard)/_components/SortableTable.tsx`: `useTableSort()` plus `<SortableHeader>` / `<StaticHeader>`. Headers expose `aria-sort`, and the chosen column is remembered per table in `localStorage`.
+- **Public lists** — `src/app/components/ui/SortSelect.tsx`: a native `<select>` styled to the site. Each page defines its own `SortOption[]`. Used on `/portfolio` (title, location, category, year, tag — plus a tag filter row, with `?sort=` and `?tag=` in the URL), `/cv` (per-section for exhibitions, festivals, publications) and `/publications` (one control reorders all three type groups).
 
 ### Authentication & Admin
 

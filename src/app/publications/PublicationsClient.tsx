@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -11,7 +12,17 @@ import {
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import ParallaxHero from "../components/ui/ParallaxHero";
+import SortSelect from "../components/ui/SortSelect";
+import { sortItems, type SortOption } from "@/lib/sort";
 import type { Publication } from "@/db/dal";
+
+const SORT_OPTIONS: SortOption<Publication>[] = [
+  { value: "newest", label: "Newest first", getValue: (p) => p.year, direction: "desc" },
+  { value: "oldest", label: "Oldest first", getValue: (p) => p.year },
+  { value: "outlet", label: "Outlet A–Z", getValue: (p) => p.outlet },
+  { value: "title", label: "Title A–Z", getValue: (p) => p.title },
+  { value: "location", label: "Location A–Z", getValue: (p) => p.location },
+];
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -66,11 +77,19 @@ export default function PublicationsClient({
 }: {
   publications: Publication[];
 }) {
-  const tvPublications = publications.filter((p) => p.type === "tv");
-  const magazinePublications = publications.filter(
+  const [sortValue, setSortValue] = useState("newest");
+
+  // One control reorders all three groups, so the whole page stays consistent.
+  const sorted = sortItems(
+    publications,
+    SORT_OPTIONS.find((option) => option.value === sortValue)
+  );
+
+  const tvPublications = sorted.filter((p) => p.type === "tv");
+  const magazinePublications = sorted.filter(
     (p) => p.type === "magazine" || p.type === "newspaper"
   );
-  const otherPublications = publications.filter(
+  const otherPublications = sorted.filter(
     (p) => p.type === "online" || p.type === "museum"
   );
 
@@ -89,8 +108,20 @@ export default function PublicationsClient({
           overlayIntensity="medium"
         />
 
+        {/* Sort */}
+        <div className="border-b border-gray-100 bg-white py-6">
+          <div className="mx-auto flex max-w-7xl justify-center px-6 sm:justify-end">
+            <SortSelect
+              options={SORT_OPTIONS}
+              value={sortValue}
+              onChange={setSortValue}
+              label="Sort coverage by"
+            />
+          </div>
+        </div>
+
         {/* TV Features */}
-        <section className="py-20 bg-white">
+        <section className="pb-20 pt-14 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <motion.div
               initial="hidden"
