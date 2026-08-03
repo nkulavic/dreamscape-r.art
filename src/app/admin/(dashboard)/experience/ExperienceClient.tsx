@@ -1,14 +1,23 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uuidv7 } from "uuidv7";
-import { Plus, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import type { Exhibition, Festival, Publication } from "@/db/dal";
+import {
+  SortableHeader,
+  StaticHeader,
+  useTableSort,
+} from "../_components/SortableTable";
 
 // ── Types ──────────────────────────────────────────────
 
 type Tab = "exhibitions" | "festivals" | "publications";
+
+type ExhibitionSortField = "title" | "venue" | "location" | "year" | "type";
+type FestivalSortField = "name" | "location" | "year" | "international";
+type PublicationSortField = "outlet" | "title" | "year" | "type";
 
 const EXHIBITION_TYPES = ["solo", "collaborative", "group"] as const;
 const PUBLICATION_TYPES = [
@@ -64,18 +73,21 @@ export default function ExperienceClient({
 
   const [saving, setSaving] = useState(false);
 
-  // Sorting state
-  const [exSort, setExSort] = useState<{ field: keyof Exhibition; dir: "asc" | "desc" }>({
-    field: "year",
-    dir: "desc",
+  // Sorting
+  const exSort = useTableSort<Exhibition, ExhibitionSortField>(exhibitions, {
+    initialField: "year",
+    initialDirection: "desc",
+    storageKey: "exhibitions",
   });
-  const [festSort, setFestSort] = useState<{ field: keyof Festival; dir: "asc" | "desc" }>({
-    field: "year",
-    dir: "desc",
+  const festSort = useTableSort<Festival, FestivalSortField>(festivals, {
+    initialField: "year",
+    initialDirection: "desc",
+    storageKey: "festivals",
   });
-  const [pubSort, setPubSort] = useState<{ field: keyof Publication; dir: "asc" | "desc" }>({
-    field: "year",
-    dir: "desc",
+  const pubSort = useTableSort<Publication, PublicationSortField>(publications, {
+    initialField: "year",
+    initialDirection: "desc",
+    storageKey: "publications",
   });
 
   const tabs: { key: Tab; label: string; count: number }[] = [
@@ -83,54 +95,6 @@ export default function ExperienceClient({
     { key: "festivals", label: "Festivals", count: festivals.length },
     { key: "publications", label: "Publications", count: publications.length },
   ];
-
-  // Sorted data
-  const sortedExhibitions = useMemo(() => {
-    return [...exhibitions].sort((a, b) => {
-      const aVal = a[exSort.field] ?? "";
-      const bVal = b[exSort.field] ?? "";
-      const comparison = String(aVal).localeCompare(String(bVal));
-      return exSort.dir === "asc" ? comparison : -comparison;
-    });
-  }, [exhibitions, exSort]);
-
-  const sortedFestivals = useMemo(() => {
-    return [...festivals].sort((a, b) => {
-      const aVal = a[festSort.field] ?? "";
-      const bVal = b[festSort.field] ?? "";
-      const comparison = String(aVal).localeCompare(String(bVal));
-      return festSort.dir === "asc" ? comparison : -comparison;
-    });
-  }, [festivals, festSort]);
-
-  const sortedPublications = useMemo(() => {
-    return [...publications].sort((a, b) => {
-      const aVal = a[pubSort.field] ?? "";
-      const bVal = b[pubSort.field] ?? "";
-      const comparison = String(aVal).localeCompare(String(bVal));
-      return pubSort.dir === "asc" ? comparison : -comparison;
-    });
-  }, [publications, pubSort]);
-
-  const handleSort = <T extends keyof Exhibition | keyof Festival | keyof Publication>(
-    current: { field: T; dir: "asc" | "desc" },
-    setter: (val: { field: T; dir: "asc" | "desc" }) => void,
-    field: T
-  ) => {
-    setter({
-      field,
-      dir: current.field === field && current.dir === "asc" ? "desc" : "asc",
-    });
-  };
-
-  const SortIcon = ({ isActive, direction }: { isActive: boolean; direction: "asc" | "desc" }) => {
-    if (!isActive) return <ArrowUpDown className="ml-1 inline h-3.5 w-3.5 text-gray-400" />;
-    return direction === "asc" ? (
-      <ArrowUp className="ml-1 inline h-3.5 w-3.5 text-gray-700" />
-    ) : (
-      <ArrowDown className="ml-1 inline h-3.5 w-3.5 text-gray-700" />
-    );
-  };
 
   function resetForm() {
     setShowForm(false);
@@ -583,48 +547,21 @@ export default function ExperienceClient({
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th
-                  onClick={() => handleSort(exSort, setExSort, "title")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Title
-                  <SortIcon isActive={exSort.field === "title"} direction={exSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(exSort, setExSort, "venue")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Venue
-                  <SortIcon isActive={exSort.field === "venue"} direction={exSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(exSort, setExSort, "location")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Location
-                  <SortIcon isActive={exSort.field === "location"} direction={exSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(exSort, setExSort, "year")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Year
-                  <SortIcon isActive={exSort.field === "year"} direction={exSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(exSort, setExSort, "type")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Type
-                  <SortIcon isActive={exSort.field === "type"} direction={exSort.dir} />
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Actions
-                </th>
+                <SortableHeader field="title" label="Title" sort={exSort} />
+                <SortableHeader field="venue" label="Venue" sort={exSort} />
+                <SortableHeader field="location" label="Location" sort={exSort} />
+                <SortableHeader
+                  field="year"
+                  label="Year"
+                  sort={exSort}
+                  firstDirection="desc"
+                />
+                <SortableHeader field="type" label="Type" sort={exSort} />
+                <StaticHeader label="Actions" align="right" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {sortedExhibitions.length === 0 && (
+              {exSort.sortedRows.length === 0 && (
                 <tr>
                   <td
                     colSpan={6}
@@ -634,7 +571,7 @@ export default function ExperienceClient({
                   </td>
                 </tr>
               )}
-              {sortedExhibitions.map((ex) => (
+              {exSort.sortedRows.map((ex) => (
                 <tr key={ex.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {ex.title}
@@ -679,41 +616,25 @@ export default function ExperienceClient({
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th
-                  onClick={() => handleSort(festSort, setFestSort, "name")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Name
-                  <SortIcon isActive={festSort.field === "name"} direction={festSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(festSort, setFestSort, "location")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Location
-                  <SortIcon isActive={festSort.field === "location"} direction={festSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(festSort, setFestSort, "year")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Year
-                  <SortIcon isActive={festSort.field === "year"} direction={festSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(festSort, setFestSort, "international")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  International
-                  <SortIcon isActive={festSort.field === "international"} direction={festSort.dir} />
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Actions
-                </th>
+                <SortableHeader field="name" label="Name" sort={festSort} />
+                <SortableHeader field="location" label="Location" sort={festSort} />
+                <SortableHeader
+                  field="year"
+                  label="Year"
+                  sort={festSort}
+                  firstDirection="desc"
+                />
+                <SortableHeader
+                  field="international"
+                  label="International"
+                  sort={festSort}
+                  firstDirection="desc"
+                />
+                <StaticHeader label="Actions" align="right" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {sortedFestivals.length === 0 && (
+              {festSort.sortedRows.length === 0 && (
                 <tr>
                   <td
                     colSpan={5}
@@ -723,7 +644,7 @@ export default function ExperienceClient({
                   </td>
                 </tr>
               )}
-              {sortedFestivals.map((fest) => (
+              {festSort.sortedRows.map((fest) => (
                 <tr key={fest.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {fest.name}
@@ -773,41 +694,20 @@ export default function ExperienceClient({
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50">
-                <th
-                  onClick={() => handleSort(pubSort, setPubSort, "outlet")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Outlet
-                  <SortIcon isActive={pubSort.field === "outlet"} direction={pubSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(pubSort, setPubSort, "title")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Title
-                  <SortIcon isActive={pubSort.field === "title"} direction={pubSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(pubSort, setPubSort, "year")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Year
-                  <SortIcon isActive={pubSort.field === "year"} direction={pubSort.dir} />
-                </th>
-                <th
-                  onClick={() => handleSort(pubSort, setPubSort, "type")}
-                  className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-                >
-                  Type
-                  <SortIcon isActive={pubSort.field === "type"} direction={pubSort.dir} />
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  Actions
-                </th>
+                <SortableHeader field="outlet" label="Outlet" sort={pubSort} />
+                <SortableHeader field="title" label="Title" sort={pubSort} />
+                <SortableHeader
+                  field="year"
+                  label="Year"
+                  sort={pubSort}
+                  firstDirection="desc"
+                />
+                <SortableHeader field="type" label="Type" sort={pubSort} />
+                <StaticHeader label="Actions" align="right" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {sortedPublications.length === 0 && (
+              {pubSort.sortedRows.length === 0 && (
                 <tr>
                   <td
                     colSpan={5}
@@ -817,7 +717,7 @@ export default function ExperienceClient({
                   </td>
                 </tr>
               )}
-              {sortedPublications.map((pub) => (
+              {pubSort.sortedRows.map((pub) => (
                 <tr key={pub.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {pub.outlet}

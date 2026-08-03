@@ -1,33 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import DeleteUserButton from "./DeleteUserButton";
+import type { Video } from "@/db/dal";
+import DeleteVideoButton from "./DeleteVideoButton";
 import {
   SortableHeader,
   StaticHeader,
   useTableSort,
 } from "../_components/SortableTable";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: string | null;
-  emailVerified: boolean;
-  createdAt: Date;
-};
+type SortField = "title" | "category" | "duration" | "featured";
 
-type SortField = "name" | "email" | "role" | "createdAt";
-
-interface UsersListClientProps {
-  users: User[];
+interface VideosListClientProps {
+  videos: Video[];
 }
 
-export default function UsersListClient({ users }: UsersListClientProps) {
-  const sort = useTableSort<User, SortField>(users, {
-    initialField: "createdAt",
-    initialDirection: "desc",
-    storageKey: "users",
+export default function VideosListClient({ videos }: VideosListClientProps) {
+  const sort = useTableSort<Video, SortField>(videos, {
+    initialField: "title",
+    storageKey: "videos",
   });
 
   return (
@@ -35,12 +26,12 @@ export default function UsersListClient({ users }: UsersListClientProps) {
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50">
-            <SortableHeader field="name" label="Name" sort={sort} />
-            <SortableHeader field="email" label="Email" sort={sort} />
-            <SortableHeader field="role" label="Role" sort={sort} />
+            <SortableHeader field="title" label="Title" sort={sort} />
+            <SortableHeader field="category" label="Category" sort={sort} />
+            <SortableHeader field="duration" label="Duration" sort={sort} />
             <SortableHeader
-              field="createdAt"
-              label="Created"
+              field="featured"
+              label="Featured"
               sort={sort}
               firstDirection="desc"
             />
@@ -54,39 +45,41 @@ export default function UsersListClient({ users }: UsersListClientProps) {
                 colSpan={5}
                 className="px-6 py-12 text-center text-sm text-gray-500"
               >
-                No users yet. Add your first user to get started.
+                No videos yet. Add your first video to get started.
               </td>
             </tr>
           )}
-          {sort.sortedRows.map((user) => (
-            <tr key={user.id} className="hover:bg-gray-50">
+          {sort.sortedRows.map((video) => (
+            <tr key={video.id} className="hover:bg-gray-50">
               <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                {user.name}
+                {video.title}
               </td>
-              <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
               <td className="px-6 py-4 text-sm capitalize text-gray-600">
-                {user.role === "admin" ? (
-                  <span className="inline-flex rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                    Admin
+                {video.category}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-600">
+                {video.duration || "—"}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-600">
+                {video.featured ? (
+                  <span className="inline-flex rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                    Yes
                   </span>
                 ) : (
                   <span className="inline-flex rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
-                    User
+                    No
                   </span>
                 )}
-              </td>
-              <td className="px-6 py-4 text-sm text-gray-600">
-                {new Date(user.createdAt).toLocaleDateString()}
               </td>
               <td className="px-6 py-4 text-right text-sm">
                 <div className="flex items-center justify-end gap-3">
                   <Link
-                    href={`/admin/users/${user.id}/edit`}
+                    href={`/admin/videos/${video.id}/edit`}
                     className="font-medium text-gray-600 hover:text-gray-900"
                   >
                     Edit
                   </Link>
-                  <DeleteUserButton id={user.id} name={user.name} />
+                  <DeleteVideoButton id={video.id} title={video.title} />
                 </div>
               </td>
             </tr>

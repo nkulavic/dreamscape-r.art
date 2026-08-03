@@ -3,13 +3,19 @@
 import { useState, useEffect } from "react";
 import { Upload, Image as ImageIcon, X, Check } from "lucide-react";
 import { toast } from "sonner";
+import { uploadMedia } from "@/lib/upload-client";
+import { UPLOAD_LIMITS, formatBytes, uploadHint, type UploadKind } from "@/lib/upload";
 
 interface MediaPickerProps {
   value?: string;
   onChange: (url: string) => void;
-  accept?: string;
   label?: string;
-  folder?: string; // Optional folder filter (e.g., "murals", "logos")
+  /** Blob folder used both to filter the library and to store new uploads. */
+  folder?: string;
+  /** Images (default) or videos — determines the size limit and accepted types. */
+  kind?: UploadKind;
+  /** Allow selecting several files at once; `onChange` fires once per upload. */
+  multiple?: boolean;
 }
 
 interface BlobFile {
@@ -22,14 +28,18 @@ interface BlobFile {
 export default function MediaPicker({
   value,
   onChange,
-  accept = "image/*",
   label = "Choose Media",
   folder,
+  kind = "image",
+  multiple = false,
 }: MediaPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [existingFiles, setExistingFiles] = useState<Record<string, BlobFile[]>>({});
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState<{ label: string; percentage: number } | null>(
+    null
+  );
   const [selectedFile, setSelectedFile] = useState<string | null>(value || null);
   const [activeTab, setActiveTab] = useState<"existing" | "upload">("existing");
 
@@ -57,34 +67,49 @@ export default function MediaPicker({
   }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files ?? []);
+    // Let the same file be picked again after an error.
+    e.target.value = "";
+    if (files.length === 0) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
+    let uploadedCount = 0;
+    let lastUrl: string | null = null;
 
     try {
-      const response = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
+      for (const [index, file] of files.entries()) {
+        const counter = files.length > 1 ? ` (${index + 1}/${files.length})` : "";
+        setProgress({ label: `${file.name}${counter}`, percentage: 0 });
 
-      if (!response.ok) throw new Error("Upload failed");
+        try {
+          const url = await uploadMedia(file, {
+            folder: folder ?? "uploads",
+            kind,
+            onProgress: (percentage) =>
+              setProgress({ label: `${file.name}${counter}`, percentage }),
+          });
+          lastUrl = url;
+          uploadedCount += 1;
+          onChange(url);
+        } catch (error) {
+          console.error("Upload error:", error);
+          toast.error(
+            error instanceof Error ? error.message : `Failed to upload ${file.name}`
+          );
+        }
+      }
 
-      const data = await response.json();
-      setSelectedFile(data.url);
-      onChange(data.url);
-      toast.success("File uploaded successfully");
-      setIsOpen(false);
-
-      // Refresh existing files
-      fetchExistingFiles();
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error("Failed to upload file");
+      if (uploadedCount > 0) {
+        if (lastUrl) setSelectedFile(lastUrl);
+        toast.success(
+          uploadedCount === 1 ? "File uploaded" : `${uploadedCount} files uploaded`
+        );
+        setIsOpen(false);
+        fetchExistingFiles();
+      }
     } finally {
       setUploading(false);
+      setProgress(null);
     }
   }
 
@@ -175,6 +200,8 @@ export default function MediaPicker({
                           {files.map((file) => (
                             <button
                               key={file.url}
+                              type="button"
+                              title={`${file.pathname} — ${formatBytes(file.size)}`}
                               onClick={() => handleSelectExisting(file.url)}
                               className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
                                 selectedFile === file.url
@@ -203,27 +230,42 @@ export default function MediaPicker({
                 </div>
               ) : (
                 <div className="max-w-md mx-auto">
-                  <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                  <label
+                    className={`flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg bg-gray-50 transition-colors ${
+                      uploading
+                        ? "cursor-not-allowed opacity-60"
+                        : "cursor-pointer hover:bg-gray-100"
+                    }`}
+                  >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <Upload className="w-12 h-12 mb-4 text-gray-400" />
                       <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
+                        <span className="font-semibold">Click to upload</span>
+                        {multiple ? " one or more files" : ""} or drag and drop
                       </p>
-                      <p className="text-xs text-gray-500">
-                        {accept === "image/*" ? "Images only" : "Any file type"}
-                      </p>
+                      <p className="text-xs text-gray-500">{uploadHint(kind)}</p>
                     </div>
                     <input
                       type="file"
                       className="hidden"
-                      accept={accept}
+                      accept={UPLOAD_LIMITS[kind].accept}
+                      multiple={multiple}
                       onChange={handleFileUpload}
                       disabled={uploading}
                     />
                   </label>
-                  {uploading && (
-                    <div className="mt-4 text-center text-sm text-gray-600">
-                      Uploading...
+                  {progress && (
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between text-sm text-gray-600">
+                        <span className="truncate pr-3">{progress.label}</span>
+                        <span className="tabular-nums">{progress.percentage}%</span>
+                      </div>
+                      <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-gray-200">
+                        <div
+                          className="h-full rounded-full bg-gray-900 transition-all duration-200"
+                          style={{ width: `${progress.percentage}%` }}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>

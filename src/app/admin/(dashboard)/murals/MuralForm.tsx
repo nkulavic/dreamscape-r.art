@@ -68,7 +68,6 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
   const isEdit = Boolean(mural);
 
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form state
@@ -119,50 +118,6 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
       setSlug(slugify(title));
     }
   }, [title, isEdit]);
-
-  async function uploadFile(file: File): Promise<string> {
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: formData,
-    });
-    if (!res.ok) throw new Error("Upload failed");
-    const data = await res.json();
-    return data.url;
-  }
-
-  async function handleHeroUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const url = await uploadFile(file);
-      setHeroUrl(url);
-      // Also set thumbnail to same image if not already set
-      if (!thumbnailUrl) setThumbnailUrl(url);
-    } catch {
-      setError("Failed to upload hero image");
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    setUploading(true);
-    try {
-      const urls = await Promise.all(
-        Array.from(files).map((f) => uploadFile(f))
-      );
-      setGalleryUrls((prev) => [...prev, ...urls]);
-    } catch {
-      setError("Failed to upload gallery images");
-    } finally {
-      setUploading(false);
-    }
-  }
 
   function removeGalleryImage(index: number) {
     setGalleryUrls((prev) => prev.filter((_, i) => i !== index));
@@ -745,9 +700,10 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
             <div className="mt-2">
               <MediaPicker
                 value=""
-                onChange={(url) => setGalleryUrls([...galleryUrls, url])}
-                label="Add Gallery Image"
+                onChange={(url) => setGalleryUrls((prev) => [...prev, url])}
+                label="Add Gallery Images"
                 folder="murals"
+                multiple
               />
             </div>
           </div>
@@ -914,7 +870,7 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
 
       {/* ── Actions ─────────────────────────────────────── */}
       <div className="flex items-center gap-3">
-        <Button type="submit" disabled={saving || uploading}>
+        <Button type="submit" disabled={saving}>
           {saving ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -929,12 +885,6 @@ export default function MuralForm({ mural }: { mural?: MuralRow }) {
         >
           Cancel
         </Button>
-        {uploading && (
-          <span className="flex items-center gap-2 text-sm text-gray-500">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Uploading...
-          </span>
-        )}
       </div>
     </form>
   );

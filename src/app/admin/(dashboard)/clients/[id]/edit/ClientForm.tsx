@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { uuidv7 } from "uuidv7";
+import { toast } from "sonner";
+import { uploadMedia } from "@/lib/upload-client";
+import { UPLOAD_LIMITS, uploadHint } from "@/lib/upload";
+import UploadProgress from "@/app/admin/(dashboard)/_components/UploadProgress";
 
 interface ClientData {
   id: string;
@@ -24,29 +28,29 @@ export default function ClientForm({ client }: { client?: ClientData }) {
   const [projectSize, setProjectSize] = useState(client?.projectSize ?? "");
   const [featured, setFeatured] = useState(client?.featured ?? false);
   const [logoUrl, setLogoUrl] = useState(client?.logoUrl ?? "");
-  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const uploading = uploadProgress !== null;
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
 
-    setUploading(true);
+    setUploadProgress(0);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
+      const url = await uploadMedia(file, {
+        folder: "logos",
+        kind: "image",
+        onProgress: setUploadProgress,
       });
-      const data = await res.json();
-      if (data.url) {
-        setLogoUrl(data.url);
-      }
-    } catch {
-      alert("Upload failed.");
+      setLogoUrl(url);
+      toast.success("Logo uploaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed.");
     } finally {
-      setUploading(false);
+      setUploadProgress(null);
     }
   }
 
@@ -157,14 +161,13 @@ export default function ClientForm({ client }: { client?: ClientData }) {
         <label className="block text-sm font-medium text-gray-700">Logo</label>
         <input
           type="file"
-          accept="image/*"
+          accept={UPLOAD_LIMITS.image.accept}
           onChange={handleLogoUpload}
           disabled={uploading}
           className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 hover:file:bg-gray-200"
         />
-        {uploading && (
-          <p className="mt-1 text-sm text-gray-500">Uploading...</p>
-        )}
+        <p className="mt-1 text-xs text-gray-500">{uploadHint("image")}</p>
+        <UploadProgress percentage={uploadProgress} label="Uploading logo" />
         {logoUrl && (
           <div className="mt-2">
             <img
@@ -181,7 +184,7 @@ export default function ClientForm({ client }: { client?: ClientData }) {
       <div className="flex items-center gap-3 pt-4">
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || uploading}
           className="rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
         >
           {saving ? "Saving..." : isEditing ? "Update Client" : "Create Client"}

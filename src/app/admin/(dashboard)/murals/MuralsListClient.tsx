@@ -1,132 +1,78 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import * as schema from "@/db/schema";
 import MuralActions from "./MuralActions";
+import {
+  SortableHeader,
+  StaticHeader,
+  useTableSort,
+} from "../_components/SortableTable";
 
 type Mural = typeof schema.murals.$inferSelect;
-type SortField = "title" | "category" | "city" | "year" | "status" | "featured";
-type SortDirection = "asc" | "desc";
+type SortField =
+  | "title"
+  | "category"
+  | "city"
+  | "year"
+  | "status"
+  | "featured"
+  | "createdAt";
 
 interface MuralsListClientProps {
   murals: Mural[];
 }
 
 export default function MuralsListClient({ murals }: MuralsListClientProps) {
-  const [sortField, setSortField] = useState<SortField>("year");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  const sortedMurals = useMemo(() => {
-    return [...murals].sort((a, b) => {
-      let aValue: any = a[sortField];
-      let bValue: any = b[sortField];
-
-      // Handle null/undefined values
-      if (aValue === null || aValue === undefined) aValue = "";
-      if (bValue === null || bValue === undefined) bValue = "";
-
-      // String comparison
-      if (typeof aValue === "string") {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
-      }
-
-      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [murals, sortField, sortDirection]);
-
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) {
-      return <ArrowUpDown className="ml-1 inline h-3.5 w-3.5 text-gray-400" />;
-    }
-    return sortDirection === "asc" ? (
-      <ArrowUp className="ml-1 inline h-3.5 w-3.5 text-gray-700" />
-    ) : (
-      <ArrowDown className="ml-1 inline h-3.5 w-3.5 text-gray-700" />
-    );
-  };
+  const sort = useTableSort<Mural, SortField>(murals, {
+    initialField: "year",
+    initialDirection: "desc",
+    storageKey: "murals",
+  });
 
   return (
-    <div className="overflow-hidden rounded-xl bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-xl bg-white shadow-sm">
       <table className="w-full">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50">
-            <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Thumbnail
-            </th>
-            <th
-              onClick={() => handleSort("title")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Title
-              <SortIcon field="title" />
-            </th>
-            <th
-              onClick={() => handleSort("category")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Category
-              <SortIcon field="category" />
-            </th>
-            <th
-              onClick={() => handleSort("city")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              City
-              <SortIcon field="city" />
-            </th>
-            <th
-              onClick={() => handleSort("year")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Year
-              <SortIcon field="year" />
-            </th>
-            <th
-              onClick={() => handleSort("status")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Status
-              <SortIcon field="status" />
-            </th>
-            <th
-              onClick={() => handleSort("featured")}
-              className="cursor-pointer px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-gray-700"
-            >
-              Featured
-              <SortIcon field="featured" />
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500">
-              Actions
-            </th>
+            <StaticHeader label="Thumbnail" />
+            <SortableHeader field="title" label="Title" sort={sort} />
+            <SortableHeader field="category" label="Category" sort={sort} />
+            <SortableHeader field="city" label="City" sort={sort} />
+            <SortableHeader
+              field="year"
+              label="Year"
+              sort={sort}
+              firstDirection="desc"
+            />
+            <SortableHeader field="status" label="Status" sort={sort} />
+            <SortableHeader
+              field="featured"
+              label="Featured"
+              sort={sort}
+              firstDirection="desc"
+            />
+            <SortableHeader
+              field="createdAt"
+              label="Added"
+              sort={sort}
+              firstDirection="desc"
+            />
+            <StaticHeader label="Actions" align="right" />
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {sortedMurals.length === 0 && (
+          {sort.sortedRows.length === 0 && (
             <tr>
               <td
-                colSpan={8}
+                colSpan={9}
                 className="px-6 py-12 text-center text-sm text-gray-500"
               >
                 No murals found. Create your first mural to get started.
               </td>
             </tr>
           )}
-          {sortedMurals.map((mural) => (
+          {sort.sortedRows.map((mural) => (
             <tr key={mural.id} className="hover:bg-gray-50">
               <td className="px-6 py-4">
                 <div className="relative h-16 w-16 overflow-hidden rounded-lg">
@@ -172,6 +118,9 @@ export default function MuralsListClient({ murals }: MuralsListClientProps) {
                     No
                   </span>
                 )}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-600">
+                {new Date(mural.createdAt).toLocaleDateString()}
               </td>
               <td className="px-6 py-4 text-right text-sm">
                 <MuralActions id={mural.id} title={mural.title} />
