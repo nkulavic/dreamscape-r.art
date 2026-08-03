@@ -64,20 +64,13 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: "en_US",
       url: BASE_URL,
       siteName: siteConfig.name,
-      images: [
-        {
-          url: seo.ogImage,
-          width: 1200,
-          height: 630,
-          alt: `${siteConfig.name} - ${siteConfig.artistName} Mural Art`,
-        },
-      ],
+      // No `images` here — opengraph-image.tsx generates the card, and listing
+      // one as well would emit two og:image tags.
     },
     twitter: {
       card: "summary_large_image",
       title: seo.title,
       description: seo.description,
-      images: [seo.ogImage],
       creator: seo.twitterHandle,
     },
     robots: {
