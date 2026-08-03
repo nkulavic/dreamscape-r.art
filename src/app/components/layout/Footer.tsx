@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FaInstagram, FaFacebook, FaYoutube, FaLinkedin, FaTiktok, FaPinterest } from "react-icons/fa";
 import { HiMail } from "react-icons/hi";
+import { siteConfig } from "../../data/siteConfig";
 
 const navLinks = [
   { label: "Portfolio", href: "/portfolio" },
@@ -13,13 +14,14 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
+// siteConfig is the single source of truth for these — don't inline URLs here.
 const socialLinks = [
-  { icon: FaInstagram, href: "https://instagram.com/dreamscape_r", label: "Instagram" },
-  { icon: FaFacebook, href: "https://facebook.com/Dreamscapesbydesign", label: "Facebook" },
-  { icon: FaYoutube, href: "https://youtube.com/@dreamscaper", label: "YouTube" },
-  { icon: FaLinkedin, href: "https://linkedin.com/in/dreamscapeart", label: "LinkedIn" },
-  { icon: FaTiktok, href: "https://tiktok.com/@dreamscapes_design", label: "TikTok" },
-  { icon: FaPinterest, href: "https://pinterest.com/Dreamscape_r", label: "Pinterest" },
+  { icon: FaInstagram, href: siteConfig.social.instagram, label: "Instagram" },
+  { icon: FaFacebook, href: siteConfig.social.facebook, label: "Facebook" },
+  { icon: FaYoutube, href: siteConfig.social.youtube, label: "YouTube" },
+  { icon: FaLinkedin, href: siteConfig.social.linkedin, label: "LinkedIn" },
+  { icon: FaTiktok, href: siteConfig.social.tiktok, label: "TikTok" },
+  { icon: FaPinterest, href: siteConfig.social.pinterest, label: "Pinterest" },
 ];
 
 export default function Footer() {

@@ -29,9 +29,10 @@ export default function SortSelect<T>({
 
   return (
     <div className={`inline-flex items-center gap-2 ${className}`}>
+      {/* Hidden on small screens to save room, still read by screen readers. */}
       <label
         htmlFor={id}
-        className="font-heading text-sm uppercase tracking-wide text-gray-500"
+        className="sr-only font-heading text-sm uppercase tracking-wide text-gray-500 sm:not-sr-only"
       >
         {label}
       </label>
@@ -40,7 +41,7 @@ export default function SortSelect<T>({
           id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="cursor-pointer appearance-none rounded-full bg-gray-100 py-3 pl-5 pr-11 font-heading text-sm uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="cursor-pointer appearance-none rounded-full bg-gray-100 py-2 pl-4 pr-9 font-heading text-xs uppercase tracking-wide text-gray-700 transition-colors hover:bg-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:py-3 sm:pl-5 sm:pr-11 sm:text-sm"
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -49,7 +50,7 @@ export default function SortSelect<T>({
           ))}
         </select>
         <HiChevronDown
-          className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
+          className="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-500 sm:right-4 sm:h-4 sm:w-4"
           aria-hidden
         />
       </div>

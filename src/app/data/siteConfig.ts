@@ -32,8 +32,8 @@ export const siteConfig: SiteConfig = {
   social: {
     instagram: "https://instagram.com/dreamscape_r",
     facebook: "https://facebook.com/Dreamscapesbydesign",
-    youtube: "https://youtube.com/channel/UCgOWotYDWnDgVfuFQUw-dOQ",
-    linkedin: "https://linkedin.com/in/dreamscapeart",
+    youtube: "https://youtube.com/@dreamscapesdesign",
+    linkedin: "https://www.linkedin.com/in/rachel-dinda-4a294230b",
     tiktok: "https://tiktok.com/@dreamscapes_design",
     pinterest: "https://pinterest.com/Dreamscape_r",
   },

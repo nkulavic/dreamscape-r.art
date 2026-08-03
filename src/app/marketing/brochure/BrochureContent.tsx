@@ -46,9 +46,9 @@ export async function BrochureContent({ audience }: Props) {
             Instagram: @dreamscape_r<br />
             Facebook: /Dreamscapesbydesign<br />
             TikTok: @dreamscapes_design<br />
-            YouTube: DREAMSCAPER<br />
+            YouTube: @dreamscapesdesign<br />
             Pinterest: /Dreamscape_r<br />
-            LinkedIn: /dreamscapeart
+            LinkedIn: Rachel Dinda
           </div>
         </Panel>
 
